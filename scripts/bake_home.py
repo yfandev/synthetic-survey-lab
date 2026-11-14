@@ -22,6 +22,15 @@ SCORES = ROOT / "data" / "scoreboard.json"
 START = "    <!--BAKE:START-->"
 END = "    <!--BAKE:END-->"
 
+# The page numbers its questions Q1..Q8 like the sample ballot. A judge should not
+# have to hold that map in their head, so the table says what each one asked.
+LABELS = {
+    "Q1": "Spending on education",
+    "Q2": "Happiness",
+    "Q4": "Trust in people",
+    "Q5": "Government's role",
+}
+
 
 def esc(text: str) -> str:
     return html.escape(str(text), quote=True)
@@ -113,12 +122,20 @@ def main() -> None:
     for r in rows:
         parts.append(
             '          <tr style="border-top:1px solid var(--line)">'
-            f'<td style="padding:4px 8px">{esc(r["qid"])}</td><td>{esc(r["group"])}</td>'
+            f'<td style="padding:4px 8px">{esc(LABELS.get(r["qid"], r["qid"]))} ({esc(r["qid"])})</td>'
+            f'<td>{esc(r["group"])}</td>'
             f'<td>{r["distance"]["drex"]:.3f}</td><td>{r["gemini_distance"]:.3f}</td>'
             f'<td>{r["distance"]["whole_sample"]:.3f}</td></tr>'
         )
     parts.append("        </tbody>")
     parts.append("      </table>")
+    parts.append(
+        '      <div style="font-size:17px;color:var(--muted);margin-top:8px">Four survey questions — spending on '
+        "education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked "
+        "of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 "
+        "combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, "
+        "which is too few to call a real answer.</div>"
+    )
     parts.append("    </div>")
 
     parts.append(

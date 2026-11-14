@@ -76,14 +76,14 @@
 <main>
   <section class="card">
     <h2>Drex vs. the giants, measured</h2>
-    <p class="lead">A company, campaign or newsroom that wants to know how a group of Americans would answer a
-      question normally has to go and ask them. This predicts the split in 275 ms for $0.000006 an answer, then
-      measures itself against a real national survey so you see how wrong it is before you spend anything. Use
-      it to test a hypothesis, not to replace a survey.</p>
+    <p class="lead">The case that matters is a question nobody has asked yet: a campaign wants to know how a
+      group would answer before paying for fieldwork, and no real answer exists to look up. To know whether to
+      trust that prediction, we grade it on questions where the answer already exists — the national survey
+      asked them, so we can measure exactly how far off Drex is.</p>
     <p class="lead" style="font-size:20px">The numbers below are already measured, so nothing here needs a click.</p>
     <p style="font-size:20px;color:var(--ink);background:#0f131c;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
       <b>What runs here:</b> <b>Drex</b> makes every prediction (live). <b>Gemini 3.1 Flash-Lite</b> is the
-      frontier model we compare against. We asked it the same 11 questions once each, in a fixed order, and saved
+      frontier model we compare against. We asked it the same 11 question-and-group pairs once each, in a fixed order, and saved
       the answers; it never runs on the scoreboard, and the only place it runs live is the wording test.
       <b>Nace NDI</b>, Nace's document parser, reads your PDF (live).</p>
     <!--BAKE:START-->
@@ -105,19 +105,20 @@
       <table style="width:100%;border-collapse:collapse;font-size:19px">
         <thead><tr style="text-align:left;color:var(--muted);font-size:15px"><th style="padding:4px 8px">Question</th><th>Group</th><th>Drex</th><th>Gemini</th><th>National avg</th></tr></thead>
         <tbody>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q1</td><td>18-29, bachelor&#x27;s</td><td>0.276</td><td>0.062</td><td>0.058</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q1</td><td>65+</td><td>0.342</td><td>0.243</td><td>0.062</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q1</td><td>Democrats</td><td>0.189</td><td>0.089</td><td>0.084</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q2</td><td>18-29, bachelor&#x27;s</td><td>0.039</td><td>0.076</td><td>0.009</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q2</td><td>65+</td><td>0.123</td><td>0.043</td><td>0.047</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q2</td><td>Democrats</td><td>0.232</td><td>0.044</td><td>0.034</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q4</td><td>65+</td><td>0.120</td><td>0.025</td><td>0.075</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q4</td><td>Democrats</td><td>0.466</td><td>0.376</td><td>0.040</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q5</td><td>18-29, bachelor&#x27;s</td><td>0.251</td><td>0.214</td><td>0.178</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q5</td><td>65+</td><td>0.404</td><td>0.338</td><td>0.077</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Q5</td><td>Democrats</td><td>0.490</td><td>0.472</td><td>0.140</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Spending on education (Q1)</td><td>18-29, bachelor&#x27;s</td><td>0.276</td><td>0.062</td><td>0.058</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Spending on education (Q1)</td><td>65+</td><td>0.342</td><td>0.243</td><td>0.062</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Spending on education (Q1)</td><td>Democrats</td><td>0.189</td><td>0.089</td><td>0.084</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Happiness (Q2)</td><td>18-29, bachelor&#x27;s</td><td>0.039</td><td>0.076</td><td>0.009</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Happiness (Q2)</td><td>65+</td><td>0.123</td><td>0.043</td><td>0.047</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Happiness (Q2)</td><td>Democrats</td><td>0.232</td><td>0.044</td><td>0.034</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Trust in people (Q4)</td><td>65+</td><td>0.120</td><td>0.025</td><td>0.075</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Trust in people (Q4)</td><td>Democrats</td><td>0.466</td><td>0.376</td><td>0.040</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Government&#x27;s role (Q5)</td><td>18-29, bachelor&#x27;s</td><td>0.251</td><td>0.214</td><td>0.178</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Government&#x27;s role (Q5)</td><td>65+</td><td>0.404</td><td>0.338</td><td>0.077</td></tr>
+          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Government&#x27;s role (Q5)</td><td>Democrats</td><td>0.490</td><td>0.472</td><td>0.140</td></tr>
         </tbody>
       </table>
+      <div style="font-size:17px;color:var(--muted);margin-top:8px">Four survey questions — spending on education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a real answer.</div>
     </div>
     <p class="num" style="margin-top:12px">Timing was taken per call, end to end, on the same machine, with Gemini on its free tier — a real measurement, not a benchmark harness.</p>
     <!--BAKE:END-->
