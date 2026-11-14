@@ -93,7 +93,6 @@
   button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);box-shadow:none}
   .file{font-size:18px;font-weight:600;border:1px dashed #3a4358;border-radius:12px;padding:13px 20px;cursor:pointer}
   .file.has{border-style:solid;border-color:var(--real);color:var(--real)}
-  .range{font-size:18px;color:var(--muted);display:flex;gap:10px;align-items:center}
   .meta{margin-top:16px;color:var(--muted);font-size:16px;display:flex;gap:18px;flex-wrap:wrap}
   .meta b{color:var(--ink)}
   .err{margin-top:16px;color:var(--bad);font-size:17px;border:1px solid #4a1d26;background:#1b0d11;
@@ -220,8 +219,6 @@
       on, so you can check each one against the paper.</p>
     <div class="row">
       <label class="file" id="pick">Choose PDF<input id="file" type="file" accept="application/pdf" hidden /></label>
-      <div class="range">Pages <input id="from" type="number" value="1" min="1" /> to
-        <input id="to" type="number" value="0" min="0" placeholder="end" /></div>
       <button id="go" disabled>Read questions</button>
     </div>
     <div id="err" class="err" hidden></div>
@@ -396,7 +393,7 @@ $("go").onclick = async () => {
     const data = await fetch("/api/extract", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ...uploaded, from: $("from").value || "1", to: $("to").value || "0" }),
+      body: JSON.stringify(uploaded),
     }).then(r => r.json());
     if (data.error) {
       $("err").hidden = false;
@@ -410,7 +407,6 @@ $("go").onclick = async () => {
       `<span>${data.cached ? "<b>cached</b>" : "<b>live</b> NDI job"}</span>`,
       `<span>NDI <b>${(data.wall_ms / 1000).toFixed(1)}</b> s</span>`,
       `<span><b>${data.units ?? "—"}</b> units</span>`,
-      data.page_range ? `<span>pages <b>${data.page_range.from}–${data.page_range.to}</b></span>` : "<span>all pages</span>",
     ].join("");
   } catch (err) {
     $("err").hidden = false; $("err").textContent = String(err);

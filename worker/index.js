@@ -407,14 +407,11 @@ async function handle(request, env) {
         if (!body.file_id || !body.workspace_id) {
           return json({ error: "send workspace_id and file_id from the upload" }, 400);
         }
-        const from = Math.max(1, Number(body.from || 1));
-        const to = Number(body.to || 0);
-        const key = `ws:${body.workspace_id}:${body.file_id}:${from}-${to || "end"}`;
+        const key = `ws:${body.workspace_id}:${body.file_id}`;
         if (INTAKE_CACHE.has(key)) return json({ cached: true, ...INTAKE_CACHE.get(key) });
 
         stage = "extract";
         const options = { schema: QUESTION_SCHEMA, instructions: QUESTION_INSTRUCTIONS };
-        if (to >= from && to > 0) options.page_ranges = [{ start: from, end: to }];
         const source = { type: "workspace_file", workspace_id: body.workspace_id, file_id: body.file_id };
         const out = await ndiDocument(env, "extract", source, options);
         const job = out.response || {};
@@ -433,7 +430,6 @@ async function handle(request, env) {
         const payload = {
           hash: null,
           file: body.name || "questionnaire.pdf",
-          page_range: options.page_ranges ? { from, to } : null,
           questions: mapQuestions(job),
           units: (job.result || {}).units ?? null,
           job_id: job.job_id,
@@ -454,11 +450,9 @@ async function handle(request, env) {
       const file = form.get("file");
       if (!file || typeof file === "string") return json({ error: "send the PDF as the `file` field" }, 400);
       const name = file.name || "questionnaire.pdf";
-      const from = Math.max(1, Number(form.get("from") || 1));
-      const to = Number(form.get("to") || 0);
       const bytes = await file.arrayBuffer();
       const hash = await sha256Hex(bytes);
-      const key = `${hash}:${from}-${to || "end"}`;
+      const key = hash;
 
       if (INTAKE_CACHE.has(key)) {
         return json({ cached: true, ...INTAKE_CACHE.get(key) });
@@ -472,8 +466,6 @@ async function handle(request, env) {
         schema: QUESTION_SCHEMA,
         instructions: QUESTION_INSTRUCTIONS,
       };
-      if (to >= from && to > 0) options.page_ranges = [{ start: from, end: to }];
-
       const out = await ndiDocument(env, "extract", upload.source, options);
       const job = out.response || {};
       if (job.status !== "succeeded") {
@@ -493,7 +485,6 @@ async function handle(request, env) {
       const payload = {
         hash,
         file: name,
-        page_range: options.page_ranges ? { from, to } : null,
         questions: mapQuestions(job),
         units: (job.result || {}).units ?? null,
         job_id: job.job_id,
