@@ -48,6 +48,14 @@
   .resfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
   .resfoot select{font-size:16px;padding:8px 10px}
   .unver{color:var(--warn);font-size:18px;margin-top:10px}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 8px}
+  .barfill{height:100%;background:var(--accent);transition:width .3s}
+  .sumtab{width:100%;border-collapse:collapse;font-size:17px;margin-top:10px}
+  .sumtab th{text-align:left;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+             padding:6px 10px 6px 0;border-bottom:1px solid var(--line);font-weight:600}
+  .sumtab td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .sumtab tr:last-child td{border-bottom:0;font-weight:600}
+  .sumline{font-size:17px;margin-top:12px;color:var(--muted)}
   .models{font-size:17px;color:var(--muted);line-height:1.6;background:var(--panel2);border:1px solid var(--line);
           border-radius:14px;padding:20px 22px;margin:8px 0 0}
   .models b{color:var(--ink)}
@@ -222,6 +230,11 @@
     <h2>Results</h2>
     <p class="lead">Every question is scored as soon as the PDF is read. Each real answer is labelled with
       where it came from: percentages printed in your PDF, a national survey question, or both.</p>
+    <div id="progress" hidden>
+      <div class="bar"><div class="barfill" id="barfill" style="width:0%"></div></div>
+      <div class="num" id="progresstext">Starting…</div>
+    </div>
+    <div id="runsummary" hidden></div>
     <div id="results"></div>
   </section>
 
@@ -245,7 +258,7 @@
     <div id="dstats" class="stats3"></div>
   </section>
 
-  <section class="card">
+  <section class="card" hidden>
     <h2>Scoreboard</h2>
     <p class="lead">Every pair we checked, scored once. Error is the share of answers sitting on the wrong
       option: 0 is perfect, 0.27 means 27% misplaced. The whole-country guess column uses the same survey
@@ -261,7 +274,7 @@
     <div id="misses" style="margin-top:18px"></div>
   </section>
 
-  <section class="card">
+  <section class="card" hidden>
     <h2>Panel run</h2>
     <p class="lead">Ask the same question as 100 different real respondents, one call each, with each person's
       recorded demographics as the only input, then add up the answers. It shows how fast Drex works through a
@@ -277,7 +290,7 @@
     <div id="pchart" class="chart"></div>
   </section>
 
-  <section class="card">
+  <section class="card" hidden>
     <h2>Wording test</h2>
     <p class="lead">A prediction is useful when it survives a change of words. Gemini 3.1 Flash-Lite writes four
       other ways to ask the same question. Drex checks that each one means the same thing (score 0.90 or higher),
@@ -661,7 +674,7 @@ $("rwrun").onclick = async () => {
 };
 
 
-/* ------------------------------------------------------------ results ---- */
+/* ------------------------------------------------------------ one run ---- */
 
 const GROUP_CHOICES = [
   { label: "All U.S. adults", selection: {} },
@@ -672,37 +685,55 @@ const GROUP_CHOICES = [
 
 let scored = [];
 
+const normOpt = (s) => String(s == null ? "" : s).toLowerCase().trim();
+
+/** Share of answers sitting on the wrong option. */
+function tvd(a, b) {
+  const by = new Map((b || []).map((o) => [normOpt(o.option), o.p]));
+  return (a || []).reduce((acc, s) => acc + Math.abs(s.p - (by.get(normOpt(s.option)) || 0)), 0) / 2;
+}
+
+function setProgress(done, total, label) {
+  $("progress").hidden = false;
+  $("barfill").style.width = `${Math.round((done / Math.max(total, 1)) * 100)}%`;
+  $("progresstext").textContent = label;
+}
+
 function barBlock(shares, kind) {
-  return `<div class="chart" style="margin-top:8px">` + shares.map(s => `
+  return `<div class="chart" style="margin-top:8px">` + shares.map((s) => `
     <div class="pair"><div class="resline"><span class="lbl">${esc(s.option)}</span>
       <span class="num">${(s.p * 100).toFixed(0)}%</span></div>
       <div class="track one"><div class="fill ${kind}" style="width:${Math.max(1, s.p * 100).toFixed(1)}%"></div></div>
     </div>`).join("") + `</div>`;
 }
 
-function distanceTo(a, b) {
-  const by = new Map((b || []).map(o => [o.option, o.p]));
-  return a.reduce((acc, s) => acc + Math.abs(s.p - (by.get(s.option) || 0)), 0) / 2;
-}
-
 function paintResult(i) {
   const st = scored[i];
   const box = $("res-" + i);
   if (!st) return;
-  const q = st.q, r = st.resolve;
+  const q = st.q;
+  if (st.grid) {
+    box.innerHTML = `<div class="reshead"><span class="qid">${esc(q.id)}</span><span class="qtext">${esc(q.text)}</span></div>
+      <div class="unver">A grid of items: each row has its own answer scale, and the document prints no
+      result for it, so there is nothing to score yet.</div>`;
+    return;
+  }
+  const r = st.resolve;
   const gss = st.rejected ? null : r.gss;
-  const pred = st.pred;
   const blocks = [];
   if (r.pdf) blocks.push({ kind: "pdf", tag: "From your PDF", note: r.pdf.page ? `page ${r.pdf.page}` : "printed in the document", shares: r.pdf.shares });
   if (gss && st.split) blocks.push({ kind: "gss", tag: "National survey", note: `${gss.variable} · 2024 · ${st.groupLabel} · n=${st.split.real.n}`, shares: st.split.real.shares });
+  const primary = blocks.length ? blocks[blocks.length - 1].shares : null;
 
   box.innerHTML = `
     <div class="reshead"><span class="qid">${esc(q.id)}</span><span class="qtext">${esc(q.text)}</span></div>
-    ${pred ? `<div><span class="tag">Drex · live</span></div>${barBlock(pred.shares, "drex")}` : ""}
-    ${blocks.map(b => `
+    ${st.pred ? `<div><span class="tag">Drex · live</span></div>${barBlock(st.pred.shares, "drex")}` : ""}
+    ${primary && st.pred ? `<div class="num">${(tvd(st.pred.shares, primary) * 100).toFixed(0)}% of answers on the wrong option</div>` : ""}
+    ${st.gemini ? `<div><span class="tag">Gemini 3.1 Flash-Lite · live</span></div>${barBlock(st.gemini, "gss")}` : ""}
+    ${primary && st.gemini ? `<div class="num">${(tvd(st.gemini, primary) * 100).toFixed(0)}% of answers on the wrong option</div>` : ""}
+    ${blocks.map((b) => `
       <div><span class="tag ${b.kind}">${esc(b.tag)}</span> <span class="num">${esc(b.note)}</span></div>
-      ${barBlock(b.shares, b.kind)}
-      <div class="num">${((distanceTo(pred ? pred.shares : [], b.shares)) * 100).toFixed(0)}% of answers on the wrong option</div>`).join("")}
+      ${barBlock(b.shares, b.kind)}`).join("")}
     ${blocks.length === 0 ? `<div class="unver"><b>Unverified prediction.</b> No survey answer and no printed result to score against.</div>` : ""}
     <div class="resfoot">
       ${gss && !r.pdf ? `<select data-group="${i}">${GROUP_CHOICES.map((g, gi) => `<option value="${gi}" ${gi === st.groupIndex ? "selected" : ""}>${esc(g.label)}</option>`).join("")}</select>` : ""}
@@ -712,41 +743,152 @@ function paintResult(i) {
 }
 
 async function scoreOne(q, i) {
+  const box = $("res-" + i);
   try {
+    if (!Array.isArray(q.options) || q.options.length < 2) {
+      scored[i] = { q, grid: true };
+      paintResult(i);
+      return;
+    }
     const r = await post("/api/resolve", {
       text: q.text, options: q.options,
       reported_result: q.reported_result || [], page: q.page, quote: q.quote,
     });
     if (r.error) throw new Error(r.error);
-    let pred;
+
     const st = { q, resolve: r, rejected: false, groupIndex: 0, groupLabel: GROUP_CHOICES[0].label, split: null };
+    let optionsForModels = q.options;
     if (r.gss) {
-      // predicted shares use the survey's own options, so both sides line up
-      const p = await post("/api/predict", { variable: r.gss.variable, text: q.text, selection: {} });
-      if (p.error) throw new Error(p.error);
-      pred = { shares: p.drex.probabilities };
-      st.split = { real: { shares: p.real.shares, n: p.real.n } };
+      // both models answer with the survey's own options, so the comparison lines up
+      const d = await post("/api/predict", { variable: r.gss.variable, text: q.text, selection: {} });
+      if (d.error) throw new Error(d.error);
+      st.pred = { shares: d.drex.probabilities };
+      st.split = { real: { shares: d.real.shares, n: d.real.n } };
+      st.drexMs = d.drex.wall_ms;
+      st.drexTokens = d.drex.input_tokens;
+      optionsForModels = r.gss.options;
     } else {
-      pred = await post("/api/predict-options", { text: q.text, options: q.options, selection: {} });
-      if (pred.error) throw new Error(pred.error);
+      const d = await post("/api/predict-options", { text: q.text, options: q.options, selection: {} });
+      if (d.error) throw new Error(d.error);
+      st.pred = { shares: d.shares };
+      st.drexMs = d.wall_ms;
+      st.drexTokens = d.input_tokens;
     }
-    st.pred = pred;
+
+    const g = await post("/api/gemini-predict", { text: q.text, options: optionsForModels });
+    if (g.shares) {
+      st.gemini = g.shares;
+      st.geminiMs = g.wall_ms;
+    } else if (g.reason) {
+      st.geminiNote = g.reason;
+    }
+
     scored[i] = st;
     paintResult(i);
   } catch (err) {
-    $("res-" + i).innerHTML = `<div class="err">${esc(String(err))}</div>`;
+    box.innerHTML = `<div class="err">${esc(String(err))}</div>`;
   }
+}
+
+function renderSummary() {
+  const rows = scored.filter((s) => s && s.pred);
+  if (!rows.length) return;
+  const withReal = rows.filter((s) => s.resolve.pdf || (s.resolve.gss && !s.rejected && s.split));
+  const realOf = (s) => (s.resolve.gss && !s.rejected && s.split ? s.split.real.shares : s.resolve.pdf ? s.resolve.pdf.shares : null);
+
+  const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+  const drexErr = withReal.map((s) => tvd(s.pred.shares, realOf(s)));
+  const gemErr = withReal.filter((s) => s.gemini).map((s) => tvd(s.gemini, realOf(s)));
+  const drexMs = rows.map((s) => s.drexMs).filter((x) => x != null);
+  const gemMs = rows.map((s) => s.geminiMs).filter((x) => x != null);
+  const tokens = rows.reduce((a, s) => a + (s.drexTokens || 0), 0);
+
+  const fmtPct = (x) => (x == null ? "—" : `${(x * 100).toFixed(0)}%`);
+  const fmtMs = (x) => (x == null ? "—" : `${Math.round(x)} ms`);
+
+  const table = `
+    <table class="sumtab">
+      <tr><th>Question</th><th>Real answer</th><th>Drex error</th><th>Gemini error</th><th>Drex</th><th>Gemini</th></tr>
+      ${rows.map((s) => {
+        const real = realOf(s);
+        return `<tr>
+          <td>${esc(s.q.id)}</td>
+          <td>${real ? (s.resolve.gss && !s.rejected && s.split ? "Survey" : "Your PDF") : "—"}</td>
+          <td>${real ? fmtPct(tvd(s.pred.shares, real)) : "—"}</td>
+          <td>${real && s.gemini ? fmtPct(tvd(s.gemini, real)) : "—"}</td>
+          <td>${fmtMs(s.drexMs)}</td>
+          <td>${fmtMs(s.geminiMs)}</td>
+        </tr>`;
+      }).join("")}
+      <tr>
+        <td>Mean</td><td>${withReal.length} scored</td>
+        <td>${fmtPct(mean(drexErr))}</td><td>${fmtPct(mean(gemErr))}</td>
+        <td>${fmtMs(mean(drexMs))}</td><td>${fmtMs(mean(gemMs))}</td>
+      </tr>
+    </table>`;
+
+  const cost = tokens ? ` Drex used ${tokens} input tokens: $${((tokens * 0.03) / 1e6 * (1000 / rows.length)).toFixed(4)} per 1,000 answers at Nace's list price.` : "";
+  // medians, so one throttled model call cannot flatter the ratio
+  const median = (xs) => {
+    if (!xs.length) return null;
+    const s = [...xs].sort((a, b) => a - b);
+    return s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
+  };
+  const speed = median(drexMs) && median(gemMs)
+    ? ` On the median question Drex answered in ${Math.round(median(drexMs))} ms against ${Math.round(median(gemMs))} ms for Gemini, ${(median(gemMs) / median(drexMs)).toFixed(1)}× faster.`
+    : "";
+  const missing = rows.filter((s) => !s.gemini).length;
+  const note = missing ? ` Gemini did not answer ${missing} of the questions (${esc((rows.find((s) => !s.gemini) || {}).geminiNote || "no reply")}).` : "";
+
+  $("runsummary").innerHTML = `
+    <h3 style="font-size:22px;margin-top:6px">Measured on your questionnaire</h3>
+    ${table}
+    <p class="sumline">${withReal.length
+      ? `Error is the share of answers sitting on the wrong option, averaged over the ${withReal.length} questions with a real answer.${speed}${cost}`
+      : "No question had a real answer, so there is no error to report. Drex's predictions are shown below."}${note}</p>
+    <p class="sumline" id="wordingline">Wording check running…</p>`;
+  $("runsummary").hidden = false;
+}
+
+async function wordingCheck() {
+  const target = scored.find((s) => s && s.resolve && s.resolve.gss && !s.rejected);
+  const line = $("wordingline");
+  if (!line) return;
+  if (!target) {
+    line.textContent = "Wording check: no survey-matched question to reword.";
+    return;
+  }
+  const r = await post("/api/reword", { variable: target.resolve.gss.variable, text: target.q.text, selection: {} });
+  if (r.skipped) {
+    line.textContent = `Wording check: skipped (${r.reason}).`;
+    return;
+  }
+  if (r.error) {
+    line.textContent = `Wording check: ${r.error}.`;
+    return;
+  }
+  line.innerHTML = `<b>Wording check (${esc(target.q.id)}):</b> Gemini wrote ${r.proposed} other ways to ask it; Drex kept ${r.kept.length} as the same question. The answer moved by ${(r.max_distance * 100).toFixed(0)} points at most, so the prediction ${r.unstable ? "changes when the words change — treat it as fragile." : "holds when the words change."}`;
 }
 
 async function scoreAll() {
   if (!questions.length) return;
   $("results-card").hidden = false;
+  $("runsummary").hidden = true;
   scored = [];
   $("results").innerHTML = questions.map((q, i) =>
-    `<div class="res" id="res-${i}"><div class="num">Scoring ${esc(q.id)}…</div></div>`).join("");
+    `<div class="res" id="res-${i}"><div class="num">Waiting to score ${esc(q.id)}…</div></div>`).join("");
+  setProgress(0, questions.length, `Scoring 0 of ${questions.length} questions…`);
+  let done = 0;
   for (let i = 0; i < questions.length; i += 3) {
     await Promise.all(questions.slice(i, i + 3).map((q, k) => scoreOne(q, i + k)));
+    done = Math.min(i + 3, questions.length);
+    setProgress(done, questions.length, `Scoring ${done} of ${questions.length} questions…`);
   }
+  setProgress(questions.length, questions.length, "Writing the summary…");
+  renderSummary();
+  await wordingCheck();
+  setProgress(questions.length, questions.length, "Done.");
+  $("progress").hidden = true;
 }
 
 document.addEventListener("click", async (e) => {
@@ -756,6 +898,7 @@ document.addEventListener("click", async (e) => {
   if (!st) return;
   st.rejected = true;
   paintResult(Number(reject));
+  renderSummary();
 });
 
 document.addEventListener("change", async (e) => {
@@ -767,6 +910,7 @@ document.addEventListener("change", async (e) => {
   st.groupLabel = choice.label;
   st.split = await post("/api/split", { variable: st.resolve.gss.variable, selection: choice.selection });
   paintResult(Number(g));
+  renderSummary();
 });
 
 loadGroups().catch(e => { $("verr").hidden = false; $("verr").textContent = String(e); });

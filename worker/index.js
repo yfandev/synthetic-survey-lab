@@ -878,6 +878,57 @@ async function handle(request, env) {
     }
   }
 
+  if (route === "/api/gemini-predict" && request.method === "POST") {
+    // Same question, same options, answered by the general-purpose model we
+    // compare against, live, so an uploaded questionnaire gets a head-to-head.
+    try {
+      if (!env.GEMINI_API_KEY) return json({ skipped: true, reason: "GEMINI_API_KEY not set on the server" }, 200);
+      const body = await request.json();
+      const text = String(body.text || "");
+      const options = Array.isArray(body.options) ? body.options : [];
+      if (!text || options.length < 2) return json({ error: "send text and at least two options" }, 400);
+
+      const prompt =
+        `You are estimating public opinion in the United States. Question: "${text}". ` +
+        `Answer options: ${JSON.stringify(options)}. ` +
+        `Give the share of U.S. adults who would choose each option, as percentages that add up to 100. ` +
+        `Reply with JSON only: {"shares": [{"option": "...", "percent": 0}]}`;
+
+      const started = Date.now();
+      const res = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent",
+        {
+          method: "POST",
+          headers: { "x-goog-api-key": env.GEMINI_API_KEY, "content-type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json", temperature: 0 },
+          }),
+        },
+      );
+      const wall = Date.now() - started;
+      if (!res.ok) return json({ skipped: true, reason: `gemini ${res.status}: ${(await res.text()).slice(0, 200)}` }, 200);
+      const gBody = await res.json();
+      const raw = gBody.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+      let parsed = {};
+      try { parsed = JSON.parse(raw); } catch { parsed = {}; }
+      const byOption = new Map();
+      for (const row of parsed.shares || []) {
+        if (!row || typeof row.option !== "string") continue;
+        byOption.set(row.option.toLowerCase().trim(), Number(row.percent) / 100);
+      }
+      let shares = options.map((opt) => {
+        const hit = byOption.get(opt.toLowerCase().trim());
+        return { option: opt, p: Number.isFinite(hit) ? hit : 0 };
+      });
+      const sum = shares.reduce((a, b) => a + b.p, 0);
+      if (sum > 0) shares.forEach((d) => (d.p = d.p / sum));
+      return json({ shares, wall_ms: wall, model: "gemini-3.1-flash-lite", free_tier: true });
+    } catch (err) {
+      return json({ error: String(err.message || err) }, 502);
+    }
+  }
+
   if (route === "/api/predict-options" && request.method === "POST") {
     // Drex answers a question exactly as the uploaded document words it, so a
     // question with no survey counterpart still gets a prediction.
