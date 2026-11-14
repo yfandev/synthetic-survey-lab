@@ -42,6 +42,7 @@
        border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin:12px 8px 8px 0}
   .tag.pdf{color:var(--warn);border-color:#4d3a1d}
   .tag.gss{color:var(--real);border-color:#1d4d3f}
+  .tag.unstable{color:var(--warn);border-color:#4d3a1d}
   .track.one{grid-template-columns:1fr;height:22px}
   .fill.pdf{background:var(--warn)}
   .fill.gemini{background:var(--real)}
@@ -735,6 +736,7 @@ function paintResult(i) {
 
   box.innerHTML = `
     <div class="reshead"><span class="qid">${esc(q.id)}</span><span class="qtext">${esc(q.text)}</span></div>
+    ${st.wording ? `<div><span class="tag ${st.wording.unstable ? "unstable" : ""}">${st.wording.unstable ? "Unstable wording" : "Wording stable"}</span> <span class="num">${(st.wording.max_distance * 100).toFixed(0)} points of movement at most, flag at ${(st.wording.threshold * 100).toFixed(0)}</span></div>` : ""}
     ${st.pred ? `<div><span class="tag">Drex · live</span></div>${barBlock(st.pred.shares, "drex")}` : ""}
     ${primary && st.pred ? `<div class="num">${(tvd(st.pred.shares, primary) * 100).toFixed(0)}% of answers on the wrong option</div>` : ""}
     ${st.gemini ? `<div><span class="tag">Gemini 3.1 Flash-Lite · live</span></div>${barBlock(st.gemini, "gemini")}` : ""}
@@ -888,6 +890,11 @@ async function wordingCheck() {
     return;
   }
   const r = await post("/api/reword", { variable: target.resolve.gss.variable, text: target.q.text, selection: {} });
+  const at = scored.indexOf(target);
+  if (!r.skipped && !r.error && at >= 0) {
+    target.wording = r;
+    paintResult(at);
+  }
   if (r.skipped) {
     line.textContent = `Wording check: skipped (${r.reason}).`;
     return;
@@ -906,7 +913,7 @@ async function wordingCheck() {
     <b>Wording check (${esc(target.q.id)}):</b> Gemini wrote ${r.proposed} other ways to ask it; Drex kept
     ${r.kept.length} as the same question (0.90 or higher). The answer moved by
     ${(r.max_distance * 100).toFixed(0)} points at most, so the prediction
-    ${r.unstable ? "changes when the words change — treat it as fragile." : "holds when the words change."}
+    ${r.unstable ? `is flagged unstable: it moves when only the words change (limit ${(r.threshold * 100).toFixed(0)} points).` : "is stable: it holds when only the words change."}
     <table class="sumtab wtab" style="margin-top:12px">
       <tr><th>Wording</th><th>${options.map(esc).join(" · ")}</th><th>Moved</th></tr>
       ${r.variants.map((v, i) => `<tr>
