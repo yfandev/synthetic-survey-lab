@@ -34,6 +34,20 @@
   .stat .k{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .stat .v{font-size:42px;line-height:1.1;font-weight:700;margin:10px 0 8px;font-variant-numeric:tabular-nums}
   .stat .num{font-size:15px;color:var(--muted);line-height:1.45}
+  .res{border-top:1px solid var(--line);padding:22px 0}
+  .res:first-child{border-top:0;padding-top:4px}
+  .reshead{display:flex;gap:12px;align-items:baseline}
+  .reshead .qtext{font-size:20px;font-weight:600;line-height:1.4}
+  .tag{display:inline-block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+       border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin:12px 8px 8px 0}
+  .tag.pdf{color:var(--warn);border-color:#4d3a1d}
+  .tag.gss{color:var(--real);border-color:#1d4d3f}
+  .track.one{grid-template-columns:1fr;height:22px}
+  .fill.pdf{background:var(--warn)}
+  .resline{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;margin-top:6px}
+  .resfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+  .resfoot select{font-size:16px;padding:8px 10px}
+  .unver{color:var(--warn);font-size:18px;margin-top:10px}
   .models{font-size:17px;color:var(--muted);line-height:1.6;background:var(--panel2);border:1px solid var(--line);
           border-radius:14px;padding:20px 22px;margin:8px 0 0}
   .models b{color:var(--ink)}
@@ -129,13 +143,13 @@
       21%, 59%, 20%.</p>
     <!--BAKE:START-->
     <div class="stats3">
-      <div class="stat"><div class="k">Faster</div><div class="v good">4.7×</div><div class="num">275 ms vs 1304 ms per answer<br>median 243 vs 767 ms</div></div>
-      <div class="stat"><div class="k">Cost</div><div class="v good">$0.0061</div><div class="num">per 1,000 answers at Nace's list price. Gemini ran on a free tier, so there is no frontier price to compare.</div></div>
-      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.267</div><div class="num">27% of answers on the wrong option, against 18% for Gemini and 7% for guessing that every group answers like the whole country.</div></div>
+      <div class="stat"><div class="k">Faster</div><div class="v good">5.7×</div><div class="num">260.9 ms vs 1486 ms per answer<br>median 250 vs 766 ms</div></div>
+      <div class="stat"><div class="k">Cost</div><div class="v good">$0.0060</div><div class="num">per 1,000 answers at Nace's list price. Gemini ran on a free tier, so there is no frontier price to compare.</div></div>
+      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.223</div><div class="num">22% of answers on the wrong option, against 12% for Gemini and 5% for guessing that every group answers like the whole country.</div></div>
     </div>
     <!--BAKE:END-->
     <p class="models"><b>Three things run here.</b> <b>Drex</b> answers the survey questions, live.
-      <b>Gemini 3.1 Flash-Lite</b> is a top general-purpose AI we measure against: we asked it the same 11
+      <b>Gemini 3.1 Flash-Lite</b> is a top general-purpose AI we measure against: we asked it the same 8
       pairs once each and saved the answers, so its scores stay fixed. <b>Nace NDI</b> reads the questionnaire
       PDF you upload — a survey, a ballot, a feedback form — and pulls out every question with its options and
       the page it came from, live. In the wording test Gemini runs live again to write alternative phrasings.</p>
@@ -179,12 +193,9 @@
       <tr><td>Happiness (Q2)</td><td>Democrats</td><td>0.232</td><td>0.044</td><td>0.034</td></tr>
       <tr><td>Trust in people (Q4)</td><td>65+</td><td>0.120</td><td>0.025</td><td>0.075</td></tr>
       <tr><td>Trust in people (Q4)</td><td>Democrats</td><td>0.466</td><td>0.376</td><td>0.040</td></tr>
-      <tr><td>Government&#x27;s role (Q5)</td><td>18-29, bachelor&#x27;s</td><td>0.251</td><td>0.214</td><td>0.178</td></tr>
-      <tr><td>Government&#x27;s role (Q5)</td><td>65+</td><td>0.404</td><td>0.338</td><td>0.077</td></tr>
-      <tr><td>Government&#x27;s role (Q5)</td><td>Democrats</td><td>0.490</td><td>0.472</td><td>0.140</td></tr>
     </tbody></table>
     </div>
-    <p class="num" style="margin-top:14px">11 pairs have a real survey answer to score against. The other 4 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every answer matches the real survey, 0.27 means 27% of them are misplaced. The national average column is the same survey asked of all 3,986 respondents, weighted, then used as the answer for every group.</p>
+    <p class="num" style="margin-top:14px">8 pairs have a real survey answer to score against. The other 5 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every answer matches the real survey, 0.27 means 27% of them are misplaced. The whole-country guess column is the same survey asked of all 3,986 respondents, weighted, then used as the answer for every group.</p>
     <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a real answer.</p>
     <p class="num">Each call was timed end to end on the same machine, with Gemini on its free tier: a real measurement of both models side by side. The Gemini answers come from one pass, one question at a time, saved as they arrived.</p>
     <!--BAKE2:END-->
@@ -207,7 +218,14 @@
     <div id="qlist" class="qlist"><div class="empty">Choose a PDF to begin.</div></div>
   </section>
 
-  <section class="card">
+  <section class="card" id="results-card" hidden>
+    <h2>Results</h2>
+    <p class="lead">Every question is scored as soon as the PDF is read. Each real answer is labelled with
+      where it came from: percentages printed in your PDF, a national survey question, or both.</p>
+    <div id="results"></div>
+  </section>
+
+  <section class="card" hidden>
     <h2>Predict a group</h2>
     <p class="lead">Pick a question and a group. Drex answers with a share for every option, and the real
       survey answer appears beside it.</p>
@@ -371,6 +389,7 @@ $("go").onclick = async () => {
     }
     questions = data.questions || [];
     renderQuestions();
+    scoreAll();
     $("meta").innerHTML = [
       `<span>${data.cached ? "<b>cached</b>" : "<b>live</b> NDI job"}</span>`,
       `<span>NDI <b>${(data.wall_ms / 1000).toFixed(1)}</b> s</span>`,
@@ -640,6 +659,115 @@ $("rwrun").onclick = async () => {
   }
   btn.disabled = false;
 };
+
+
+/* ------------------------------------------------------------ results ---- */
+
+const GROUP_CHOICES = [
+  { label: "All U.S. adults", selection: {} },
+  { label: "18-29", selection: { age_group: 0 } },
+  { label: "65 and over", selection: { age_group: 3 } },
+  { label: "Democrats", selection: { party_id: 0 } },
+];
+
+let scored = [];
+
+function barBlock(shares, kind) {
+  return `<div class="chart" style="margin-top:8px">` + shares.map(s => `
+    <div class="pair"><div class="resline"><span class="lbl">${esc(s.option)}</span>
+      <span class="num">${(s.p * 100).toFixed(0)}%</span></div>
+      <div class="track one"><div class="fill ${kind}" style="width:${Math.max(1, s.p * 100).toFixed(1)}%"></div></div>
+    </div>`).join("") + `</div>`;
+}
+
+function distanceTo(a, b) {
+  const by = new Map((b || []).map(o => [o.option, o.p]));
+  return a.reduce((acc, s) => acc + Math.abs(s.p - (by.get(s.option) || 0)), 0) / 2;
+}
+
+function paintResult(i) {
+  const st = scored[i];
+  const box = $("res-" + i);
+  if (!st) return;
+  const q = st.q, r = st.resolve;
+  const gss = st.rejected ? null : r.gss;
+  const pred = st.pred;
+  const blocks = [];
+  if (r.pdf) blocks.push({ kind: "pdf", tag: "From your PDF", note: r.pdf.page ? `page ${r.pdf.page}` : "printed in the document", shares: r.pdf.shares });
+  if (gss && st.split) blocks.push({ kind: "gss", tag: "National survey", note: `${gss.variable} · 2024 · ${st.groupLabel} · n=${st.split.real.n}`, shares: st.split.real.shares });
+
+  box.innerHTML = `
+    <div class="reshead"><span class="qid">${esc(q.id)}</span><span class="qtext">${esc(q.text)}</span></div>
+    ${pred ? `<div><span class="tag">Drex · live</span></div>${barBlock(pred.shares, "drex")}` : ""}
+    ${blocks.map(b => `
+      <div><span class="tag ${b.kind}">${esc(b.tag)}</span> <span class="num">${esc(b.note)}</span></div>
+      ${barBlock(b.shares, b.kind)}
+      <div class="num">${((distanceTo(pred ? pred.shares : [], b.shares)) * 100).toFixed(0)}% of answers on the wrong option</div>`).join("")}
+    ${blocks.length === 0 ? `<div class="unver"><b>Unverified prediction.</b> No survey answer and no printed result to score against.</div>` : ""}
+    <div class="resfoot">
+      ${gss && !r.pdf ? `<select data-group="${i}">${GROUP_CHOICES.map((g, gi) => `<option value="${gi}" ${gi === st.groupIndex ? "selected" : ""}>${esc(g.label)}</option>`).join("")}</select>` : ""}
+      ${r.pdf ? `<span class="num">The printed result covers all adults, so the group selector is locked.</span>` : ""}
+      ${gss ? `<button class="ghost" data-reject="${i}">Reject this match</button>` : ""}
+    </div>`;
+}
+
+async function scoreOne(q, i) {
+  try {
+    const r = await post("/api/resolve", {
+      text: q.text, options: q.options,
+      reported_result: q.reported_result || [], page: q.page, quote: q.quote,
+    });
+    if (r.error) throw new Error(r.error);
+    let pred;
+    const st = { q, resolve: r, rejected: false, groupIndex: 0, groupLabel: GROUP_CHOICES[0].label, split: null };
+    if (r.gss) {
+      // predicted shares use the survey's own options, so both sides line up
+      const p = await post("/api/predict", { variable: r.gss.variable, text: q.text, selection: {} });
+      if (p.error) throw new Error(p.error);
+      pred = { shares: p.drex.probabilities };
+      st.split = { real: { shares: p.real.shares, n: p.real.n } };
+    } else {
+      pred = await post("/api/predict-options", { text: q.text, options: q.options, selection: {} });
+      if (pred.error) throw new Error(pred.error);
+    }
+    st.pred = pred;
+    scored[i] = st;
+    paintResult(i);
+  } catch (err) {
+    $("res-" + i).innerHTML = `<div class="err">${esc(String(err))}</div>`;
+  }
+}
+
+async function scoreAll() {
+  if (!questions.length) return;
+  $("results-card").hidden = false;
+  scored = [];
+  $("results").innerHTML = questions.map((q, i) =>
+    `<div class="res" id="res-${i}"><div class="num">Scoring ${esc(q.id)}…</div></div>`).join("");
+  for (let i = 0; i < questions.length; i += 3) {
+    await Promise.all(questions.slice(i, i + 3).map((q, k) => scoreOne(q, i + k)));
+  }
+}
+
+document.addEventListener("click", async (e) => {
+  const reject = e.target.dataset && e.target.dataset.reject;
+  if (reject == null) return;
+  const st = scored[Number(reject)];
+  if (!st) return;
+  st.rejected = true;
+  paintResult(Number(reject));
+});
+
+document.addEventListener("change", async (e) => {
+  const g = e.target.dataset && e.target.dataset.group;
+  if (g == null) return;
+  const st = scored[Number(g)];
+  const choice = GROUP_CHOICES[Number(e.target.value)];
+  st.groupIndex = Number(e.target.value);
+  st.groupLabel = choice.label;
+  st.split = await post("/api/split", { variable: st.resolve.gss.variable, selection: choice.selection });
+  paintResult(Number(g));
+});
 
 loadGroups().catch(e => { $("verr").hidden = false; $("verr").textContent = String(e); });
 renderQuestions();

@@ -211,6 +211,20 @@ const QUESTION_SCHEMA = {
           id: { type: "string", description: "Short id printed in the questionnaire, else Q<number>" },
           text: { type: "string", description: "The question exactly as printed, without its number" },
           options: { type: "array", items: { type: "string" }, description: "Answer options in printed order" },
+          reported_result: {
+            type: "array",
+            description:
+              "Only when the document prints result percentages for this question (a results table, a previous survey's answers). One entry per option, in the same order. Leave empty when the document prints no percentages.",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["option", "percent"],
+              properties: {
+                option: { type: "string" },
+                percent: { type: "number", description: "Percent as printed, 0-100" },
+              },
+            },
+          },
         },
       },
     },
@@ -242,6 +256,7 @@ function mapQuestions(job) {
     options: Array.isArray(q.options) ? q.options : [],
     page: pageFor[i] ? pageFor[i].page : null,
     quote: pageFor[i] ? pageFor[i].quote : null,
+    reported_result: Array.isArray(q.reported_result) ? q.reported_result : [],
   }));
 }
 
@@ -291,6 +306,77 @@ async function handle(request, env) {
       if (!r.ok) return json({ error: `upload-grant ${r.status}: ${text.slice(0, 300)}` }, 502);
       const g = JSON.parse(text);
       return json({ upload_url: g.upload_url, token: g.token, path, expires_at: g.expires_at });
+    } catch (err) {
+      return json({ error: String(err.message || err) }, 502);
+    }
+  }
+
+  if (route === "/api/resolve" && request.method === "POST") {
+    // Result source, per question, first rule that applies:
+    //   1. percentages printed in the uploaded PDF (with the group selector locked)
+    //   2. a GSS variable, checked by a Drex same-question decision at 0.8 plus
+    //      one-to-one option mapping
+    //   3. unverified
+    try {
+      const body = await request.json();
+      const text = String(body.text || "");
+      const options = Array.isArray(body.options) ? body.options : [];
+      const printed = Array.isArray(body.reported_result) ? body.reported_result : [];
+
+      let pdf = null;
+      if (printed.length === options.length && options.length > 1) {
+        const shares = printed.map((r, i) => ({ option: options[i], p: Number(r.percent) / 100 }));
+        const total = shares.reduce((a, b) => a + b.p, 0);
+        const sane = shares.every((s) => Number.isFinite(s.p) && s.p >= 0 && s.p <= 1.2);
+        if (sane && total > 0.9 && total < 1.1) pdf = { shares, page: body.page ?? null, quote: body.quote ?? null };
+      }
+
+      const gss = await loadGss(request, env);
+      const top = candidates(gss, text, options, 5);
+      const printedName = gss.variables.find((v) => {
+        const re = new RegExp(`\\b${v.name.replace(/[^a-z0-9_]/gi, "")}\\b`, "i");
+        return re.test(text);
+      });
+      const pool = printedName ? [{ variable: printedName, score: 1, text: 1, opts: 1 }, ...top.filter((c) => c.variable.name !== printedName)] : top;
+      const shortlist = pool.slice(0, 5);
+
+      const questions = {};
+      shortlist.forEach((c, i) => {
+        questions[`q${i}`] = {
+          type: "noul",
+          instructions:
+            "Do these two survey questions ask the same thing, with compatible answer options? " +
+            `A: "${text}" with options ${JSON.stringify(options)}. ` +
+            `B: "${c.variable.label}" (variable ${c.variable.name}) with options ${JSON.stringify(c.variable.options)}.`,
+        };
+      });
+      const state =
+        "Two questions ask the same thing when a respondent would give the same answer to both, " +
+        "and the option sets line up one-to-one. Different wording of the same idea counts as the same. " +
+        "A broader or narrower topic does not.";
+      const out = await drexDecide(env, state, questions);
+      const answers = (out.response && out.response.answers) || {};
+      const ranked = shortlist.map((c, i) => {
+        const noul = answers[`q${i}`] ? answers[`q${i}`].noul : null;
+        return {
+          variable: c.variable.name,
+          label: c.variable.label,
+          options: c.variable.options,
+          same_thing: noul,
+          options_compatible: optionsCompatible({ options }, c.variable),
+          named_in_text: printedName ? c.variable.name === printedName.name : false,
+        };
+      });
+      const accepted =
+        ranked.find((r) => r.options_compatible && r.same_thing != null && r.same_thing >= 0.8) || null;
+
+      return json({
+        decision: pdf && accepted ? "both" : pdf ? "pdf" : accepted ? "gss" : "none",
+        pdf,
+        gss: accepted,
+        candidates: ranked,
+        drex: { wall_ms: out.wall_ms, request_id: out.request_id },
+      });
     } catch (err) {
       return json({ error: String(err.message || err) }, 502);
     }
@@ -786,6 +872,57 @@ async function handle(request, env) {
         threshold: 0.1,
         gemini_ms: Date.now() - started,
         note: "Question text was sent to Gemini (free tier) to write rewordings.",
+      });
+    } catch (err) {
+      return json({ error: String(err.message || err) }, 502);
+    }
+  }
+
+  if (route === "/api/predict-options" && request.method === "POST") {
+    // Drex answers a question exactly as the uploaded document words it, so a
+    // question with no survey counterpart still gets a prediction.
+    try {
+      const body = await request.json();
+      const text = String(body.text || "");
+      const options = Array.isArray(body.options) ? body.options : [];
+      if (!text || options.length < 2) return json({ error: "send text and at least two options" }, 400);
+      const who = persona(body.selection || {}, (await loadGss(request, env)).groups);
+      const criteria = {};
+      options.forEach((opt, i) => (criteria[`o${i}`] = opt));
+      const out = await drexDecide(env, who, {
+        share: {
+          type: "choice",
+          instructions: `${who} is asked: "${text}" Which answer does this person give? Answer as the share of people like this, not one individual.`,
+          criteria,
+        },
+      });
+      const raw = ((out.response || {}).answers || {}).share || {};
+      const probs = raw.probabilities || {};
+      const shares = options.map((opt, i) => ({ option: opt, p: Number(probs[`o${i}`] || 0) }));
+      const sum = shares.reduce((a, b) => a + b.p, 0);
+      if (sum > 0) shares.forEach((d) => (d.p = d.p / sum));
+      return json({ shares, wall_ms: out.wall_ms, request_id: out.request_id, input_tokens: ((out.response || {}).usage || {}).input_tokens ?? null });
+    } catch (err) {
+      return json({ error: String(err.message || err) }, 502);
+    }
+  }
+
+  if (route === "/api/split" && request.method === "POST") {
+    // The real survey answer for one group, plus the whole-country answer.
+    try {
+      const body = await request.json();
+      const gss = await loadGss(request, env);
+      const variable = gss.byName.get(String(body.variable || "").toLowerCase());
+      if (!variable) return json({ error: `no GSS variable ${body.variable}` }, 404);
+      const selection = body.selection || {};
+      const real = split(gss, variable, selection);
+      const whole = split(gss, variable, {});
+      return json({
+        variable: variable.name,
+        label: variable.label,
+        options: variable.options,
+        real: { shares: real.shares, n: real.n },
+        whole: { shares: whole.shares, n: whole.n },
       });
     } catch (err) {
       return json({ error: String(err.message || err) }, 502);

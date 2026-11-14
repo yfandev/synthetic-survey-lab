@@ -17,9 +17,19 @@ code in this repo. Keys live only on the server.
    answer options and the page each was printed on. Hash-cached: the same file is parsed once.
 2. **Match** — each question is matched to a GSS 2024 variable: five lexical candidates, then a Drex yes/no
    *"do these ask the same thing, with compatible options?"*, accepted at 0.80 or above.
-3. **Predict** — Drex answers with a probability for every option. Two baselines are always shown beside it:
-   the whole-sample split and a uniform split.
-4. **Reveal** — the weighted real GSS shares for that group, when it holds at least 30 respondents.
+3. **Results** — every question is scored as soon as the PDF is read, and each real answer carries the
+   source it came from. Per question, the first rule that applies wins:
+   1. *printed in your PDF* — NDI pulled result percentages for that question from the document (with a
+      page citation): that is the answer key, it covers all adults, and the group selector is locked;
+   2. *national survey* — a GSS variable was accepted by a Drex same-question decision at ≥ 0.8 **and**
+      the option lists map one-to-one in order (non-answer options like "Don't know" are ignored); the
+      group selector is enabled;
+   3. *unverified* — neither, so the page shows Drex's prediction and no real bars.
+
+   When both 1 and 2 apply, both are shown, each labelled with its source, survey year and matched
+   wording. **Reject this match** reverts a question to unverified, and no real result is ever shown
+   without its source label.
+4. **Reveal** — the weighted real GSS shares for the chosen group, when it holds at least 30 respondents.
 5. **Scoreboard** — every verified question × group pair once, with mean total-variation distance and the
    five biggest misses.
 6. **Panel run** — Drex answers as N sampled real GSS respondents, one call each, with live counters.
@@ -28,22 +38,22 @@ code in this repo. Keys live only on the server.
 
 ## Measured results
 
-Eleven verified question × group pairs, compared with the weighted real GSS 2024 split.
+Eight verified question × group pairs, compared with the weighted real GSS 2024 split.
 Distance is total variation: 0 identical, 1 no overlap.
 
 | | Mean distance | Mean latency |
 |---|---|---|
-| Drex | **0.267** | **275 ms** |
-| Gemini 3.1 Flash-Lite (recorded) | 0.180 | 1,304 ms |
-| Whole-sample baseline | **0.073** | — |
-| Uniform baseline | 0.279 | — |
+| Drex | **0.223** | **261 ms** |
+| Gemini 3.1 Flash-Lite (recorded) | 0.120 | 1,486 ms |
+| Whole-country baseline | **0.051** | — |
+| Uniform baseline | 0.307 | — |
 
-**Drex is 4.7× faster than the recorded frontier model and loses on accuracy to both it and the naive
-national average.** We tested two rescues and are reporting both:
+**Drex is 5.7× faster than the recorded frontier model and loses on accuracy to both it and the naive
+whole-country guess.** We tested two rescues and are reporting both:
 
 - *Microsimulation* (one Drex decision per real demographic cell, weighted): helped `nateduc`
   (0.342 → 0.263) and hurt `happy` (0.039 → 0.126); not enough to overtake the baselines.
-- *Confidence as a trust signal*: Pearson(confidence, error) = **+0.27** over 11 pairs — the wrong
+- *Confidence as a trust signal*: Pearson(confidence, error) = **+0.13** over 9 pairs — the wrong
   direction, and the two most confident pairs were the two worst (0.490, 0.466).
 
 Panel run: 60 Drex decisions in 2.66 s (22.5 calls/s at 6-way concurrency), 0 failures, $0.00026 at the
@@ -72,9 +82,12 @@ sequentially, six seconds apart, with exponential backoff, resumable, and writes
 
 - weight **`wtssnrps_as`**, the nonresponse-adjusted post-stratification weight that makes all 3,986 cases
   (AmeriSpeak included) analysable together, per *GSS 2024 — What's New R3a*;
-- 413 attitude items with 2–9 options and at least 200 valid answers;
+- 366 attitude items with 2–9 options and at least 200 valid answers;
 - non-answers (don't know, refused, no answer, not applicable) are dropped, never imputed;
-- 46 items flagged ordinal by a label-shape heuristic (see `_looks_ordinal`).
+- items whose release labels leave numeric codes unmapped are dropped instead of being scored on a
+  partial answer scale (this is why `helpnot` is gone: codes 2 and 4 carry no label, so any split would
+  have silently discarded a quarter of the answers);
+- 45 items flagged ordinal by a label-shape heuristic (see `_looks_ordinal`).
 
 ## Run it
 

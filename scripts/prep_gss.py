@@ -196,6 +196,21 @@ def attitude_variables(df, meta) -> list[dict]:
         if len(ordered) < 2:
             continue
 
+        # A code that appears in the data but carries no label (common when a
+        # release ships a trimmed label set) cannot be placed on the answer
+        # scale, and silently dropping those answers would distort every share.
+        numeric_present = {}
+        for v in raw:
+            if v != v:
+                continue
+            f = float(v)
+            if f == int(f):
+                numeric_present[int(f)] = numeric_present.get(int(f), 0) + 1
+        total_rows = int(raw.notna().sum()) or 1
+        unlabeled_share = sum(c for code, c in numeric_present.items() if code not in code_to_index) / total_rows
+        if unlabeled_share > 0.02:
+            continue
+
         values = [
             code_to_index.get(int(round(float(v))), 255) if v == v else 255
             for v in raw

@@ -156,7 +156,30 @@ export function candidates(gss, questionText, questionOptions = [], limit = 6) {
 }
 
 /** Options count difference is a hard compatibility signal. */
+const normOption = (s) =>
+  String(s).toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+
+const words = (s) => new Set(normOption(s).split(" ").filter((w) => w.length > 2));
+
+/** Same option, allowing small wording differences ("very happy" vs "pretty happy"). */
+function sameOption(a, b) {
+  if (a === b) return true;
+  const A = words(a);
+  const B = words(b);
+  if (!A.size || !B.size) return false;
+  let shared = 0;
+  A.forEach((w) => {
+    if (B.has(w)) shared += 1;
+  });
+  return shared / Math.max(A.size, B.size) >= 0.5;
+}
+
+const NON_ANSWER_OPTION = /\b(don'?t know|do not know|no opinion|not sure|refused|no answer)\b/i;
+
+/** True when the question's options map one-to-one, in order, onto the variable's. */
 export function optionsCompatible(question, variable) {
-  const diff = Math.abs((question.options || []).length - variable.options.length);
-  return diff <= 1;
+  const q = (question.options || []).filter((o) => !NON_ANSWER_OPTION.test(o)).map(normOption);
+  const v = variable.options.map(normOption);
+  if (q.length !== v.length) return false;
+  return q.every((opt, i) => sameOption(opt, v[i]));
 }
