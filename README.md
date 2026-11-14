@@ -85,9 +85,27 @@ seven requests, not one. Reword test: 4 rewordings, 4 kept at 0.92–0.97, worst
 - **Nace Drex** — every decision: the predicted split for a group, the yes/no gate that accepts a survey
   question as the same question, and the same-meaning gate in the wording check, all live (`.03/M` input).
 - **Nace NDI** — reads every page of the uploaded PDF and returns each question with its options and page.
-- **Intern** (`intern-agent`, `github.com/nace-ai/intern`) — Nace's agent harness, installed with
-  `uv tool install`, run with Drex as its System 1 decision layer (`--system1 drex-latest`). Used to inspect
-  the deployed worker and verify its route surface; the run is recorded in `artifacts/intern-run.txt`.
+- **Intern** ([`nace-ai/intern`](https://github.com/nace-ai/intern), Apache-2.0) — Nace's agent harness,
+  vendored in this repo at `vendor/intern` (tag `v0.30.1`, the version that was run) as the organizers asked.
+  It runs with Drex as its System 1 decision layer (`--system1 drex-latest`); the deployed-worker verification
+  is recorded in `artifacts/intern-run.txt`. Intern is the harness that inspects the project — it is not part
+  of the prediction pipeline, which is Nace NDI → Drex → Gemini → scoring.
+
+## Running Intern against this project
+
+Intern is merged into this repo, not just installed, so a judge can run it from a checkout:
+
+```bash
+cd vendor/intern
+uv tool install .            # or: pip install -e .
+cd -
+intern --system1 drex-latest --system2 deepinfra/Qwen/Qwen3.8-27B \
+  "List the HTTP routes the worker in worker/index.js serves, and nothing else."
+```
+
+`NACE_API_KEY` must be set for System 1 (Drex) to answer. The run recorded for submission used the same
+command and is kept in `artifacts/intern-run.txt`: 2 turns, 14 routes, `System 1: 2 asks`.
+
 
 ## Where each API is called
 
