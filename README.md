@@ -52,8 +52,8 @@ Distance is total variation: 0 identical, 1 no overlap.
 | Whole-country baseline | 0.051 | — |
 | Uniform baseline | 0.307 | — |
 
-**Drex is 3.1× faster than Gemini 3.1 Flash-Lite by median (250 ms against 766 ms) and, with the blend,
-ahead on accuracy too: 0.047 against Gemini's 0.120 and the whole-country guess's 0.051.** The 5.7× you get
+**Drex is 3.2× faster than Gemini 3.1 Flash-Lite by median (238 ms against 766 ms) and, with the blend,
+ahead on accuracy too: 0.047 against Gemini's 0.120 and the whole-country guess's 0.051.** The 5.8× you get
 from the means comes from Gemini's latency tail: it ran on the free tier, where throttled calls take seconds.
 
 **How the group answer is formed.** Drex's split for the group is mixed with the whole-country split for the

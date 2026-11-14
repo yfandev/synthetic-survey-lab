@@ -132,11 +132,12 @@ def detail(m: dict, rows: list[dict]) -> list[str]:
             '      <div class="xlbl">Worked example · Democrats, '
             "“taken all together, how happy are you these days?”</div>"
         )
-        out.append(f'      <div class="xl"><b>Drex said</b> {drex_txt}</div>')
+        out.append(f'      <div class="xl"><b>Drex said</b> {drex_txt} <span class="num">(group answer, blended 90/10 with the country)</span></div>')
         out.append(f'      <div class="xl"><b>Real answer</b> {real_txt}</div>')
         out.append(
             '      <div class="xl" style="color:var(--warn)">'
-            f"Drex puts {ex['distance']['drex'] * 100:.0f}% of the answers on the wrong option · "
+            f"Drex puts {ex['distance']['drex'] * 100:.0f}% of the answers on the wrong option "
+            f"(raw group answer, before the blend: {ex['distance']['drex_raw'] * 100:.0f}%) · "
             f"Gemini {ex['gemini_distance'] * 100:.0f}% · national average "
             f"{ex['distance']['whole_sample'] * 100:.0f}%</div>"
         )
