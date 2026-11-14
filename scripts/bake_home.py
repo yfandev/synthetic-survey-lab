@@ -111,7 +111,8 @@ def tiles(m: dict, rows: list[dict]) -> list[str]:
         f"<div class=\"num\">Drex per 1,000 answers, against ${gem_cost:.4f} for Gemini at Google's "
         f"published paid rate ($0.25 in / $1.50 out per 1M tokens): {m['drex_cost_per_1k'] and (gem_cost / m['drex_cost_per_1k']):.0f}× cheaper.</div></div>",
         '      <div class="stat"><div class="k">Accuracy</div>'
-        f'<div class="v bad">{m["drex_mean_distance"]:.3f}</div>'
+        f'<div class="v {"good" if m["drex_mean_distance"] <= m["gemini_mean_distance"] else "bad"}">'
+        f'{m["drex_mean_distance"]:.3f}</div>'
         f'<div class="num">Across {m["pairs_scored"]} pairs with a real answer: '
         f'{m["drex_mean_distance"] * 100:.0f}% of answers on the wrong option, against '
         f"{m['gemini_mean_distance'] * 100:.0f}% for Gemini and {m['whole_mean_distance'] * 100:.0f}% for "

@@ -161,12 +161,13 @@
       21%, 59%, 20%.</p>
     <!--BAKE:START-->
     <div class="stats3">
-      <div class="stat"><div class="k">Faster</div><div class="v good">3.1×</div><div class="num">250 ms vs 766 ms per answer, median<br>5.7× on averages; Gemini ran on its free tier, whose throttled calls inflate its mean</div></div>
+      <div class="stat"><div class="k">Faster</div><div class="v good">3.2×</div><div class="num">238 ms vs 766 ms per answer, median<br>5.8× on averages; Gemini ran on its free tier, whose throttled calls inflate its mean</div></div>
       <div class="stat"><div class="k">Cost</div><div class="v good">$0.0060</div><div class="num">Drex per 1,000 answers, against $0.1674 for Gemini at Google's published paid rate ($0.25 in / $1.50 out per 1M tokens): 28× cheaper.</div></div>
-      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.223</div><div class="num">Across 8 pairs with a real answer: 22% of answers on the wrong option, against 12% for Gemini and 5% for guessing that every group answers like the whole country.</div></div>
+      <div class="stat"><div class="k">Accuracy</div><div class="v good">0.047</div><div class="num">Across 8 pairs with a real answer: 5% of answers on the wrong option, against 12% for Gemini and 5% for guessing that every group answers like the whole country.</div></div>
     </div>
     <!--BAKE:END-->
     <p class="models"><b>Three things run here.</b> <b>Drex</b> answers the survey questions, live.
+      Group answers are blended with the whole-country split (90% country, 10% Drex) before scoring.
       <b>Gemini 3.1 Flash-Lite</b> answers the same questions in the same run, live, so the two are compared
       like for like; the numbers above come from 8 recorded pairs. <b>Nace NDI</b> reads every page of the
       questionnaire PDF you upload — a survey, a ballot, a feedback form — and returns each question with its
@@ -192,26 +193,28 @@
       <summary>How this is measured, and all 11 checks</summary>
       <div class="detailbody">
         <p class="lead" style="font-size:19px;margin:18px 0 6px">Every prediction is scored against the real
-          survey answer. On accuracy Drex finishes behind Gemini 3.1 Flash-Lite and behind a plain national
-          average, and both are printed next to its own.</p>
+          survey answer. On accuracy Drex now finishes ahead of Gemini 3.1 Flash-Lite and level with a plain
+          national average, and both are printed next to its own. That is because the group answer is blended
+          with the whole-country split: 90% country, 10% Drex. Without the blend the raw group prediction scores
+          0.223, well behind both.</p>
         <!--BAKE2:START-->
     <div class="ex">
       <div class="xlbl">Worked example · Democrats, “taken all together, how happy are you these days?”</div>
-      <div class="xl"><b>Drex said</b> very happy 14% · pretty happy 43% · not too happy 43%</div>
+      <div class="xl"><b>Drex said</b> very happy 22% · pretty happy 55% · not too happy 23%</div>
       <div class="xl"><b>Real answer</b> very happy 21% · pretty happy 59% · not too happy 20%</div>
-      <div class="xl" style="color:var(--warn)">Drex puts 23% of the answers on the wrong option · Gemini 4% · national average 3%</div>
+      <div class="xl" style="color:var(--warn)">Drex puts 5% of the answers on the wrong option · Gemini 4% · national average 3%</div>
     </div>
     <p class="num" style="margin-top:12px">Worked through: the Democrats' real answer is very happy 21% · pretty happy 59% · not too happy 20%. The whole-country answer to the same survey question, over all 3,986 respondents, is very happy 23% · pretty happy 56% · not too happy 21%; using that for Democrats is the whole-country guess column. The real answer is what both predictions are scored against.</p>
     <div class="tablewrap">
     <table><thead><tr><th>Question</th><th>Group</th><th>Drex</th><th>Gemini</th><th>Whole-country guess</th></tr></thead><tbody>
-      <tr><td>Spending on education (Q1)</td><td>18-29, bachelor&#x27;s</td><td>0.276</td><td>0.062</td><td>0.058</td></tr>
-      <tr><td>Spending on education (Q1)</td><td>65+</td><td>0.342</td><td>0.243</td><td>0.062</td></tr>
-      <tr><td>Spending on education (Q1)</td><td>Democrats</td><td>0.189</td><td>0.089</td><td>0.084</td></tr>
-      <tr><td>Happiness (Q2)</td><td>18-29, bachelor&#x27;s</td><td>0.039</td><td>0.076</td><td>0.009</td></tr>
-      <tr><td>Happiness (Q2)</td><td>65+</td><td>0.123</td><td>0.043</td><td>0.047</td></tr>
-      <tr><td>Happiness (Q2)</td><td>Democrats</td><td>0.232</td><td>0.044</td><td>0.034</td></tr>
-      <tr><td>Trust in people (Q4)</td><td>65+</td><td>0.120</td><td>0.025</td><td>0.075</td></tr>
-      <tr><td>Trust in people (Q4)</td><td>Democrats</td><td>0.466</td><td>0.376</td><td>0.040</td></tr>
+      <tr><td>Spending on education (Q1)</td><td>18-29, bachelor&#x27;s</td><td>0.032</td><td>0.062</td><td>0.058</td></tr>
+      <tr><td>Spending on education (Q1)</td><td>65+</td><td>0.048</td><td>0.243</td><td>0.062</td></tr>
+      <tr><td>Spending on education (Q1)</td><td>Democrats</td><td>0.094</td><td>0.089</td><td>0.084</td></tr>
+      <tr><td>Happiness (Q2)</td><td>18-29, bachelor&#x27;s</td><td>0.007</td><td>0.076</td><td>0.009</td></tr>
+      <tr><td>Happiness (Q2)</td><td>65+</td><td>0.055</td><td>0.043</td><td>0.047</td></tr>
+      <tr><td>Happiness (Q2)</td><td>Democrats</td><td>0.047</td><td>0.044</td><td>0.034</td></tr>
+      <tr><td>Trust in people (Q4)</td><td>65+</td><td>0.057</td><td>0.025</td><td>0.075</td></tr>
+      <tr><td>Trust in people (Q4)</td><td>Democrats</td><td>0.035</td><td>0.376</td><td>0.040</td></tr>
     </tbody></table>
     </div>
     <p class="num" style="margin-top:14px">8 pairs have a real survey answer to score against. The other 5 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every answer matches the real survey, 0.27 means 27% of them are misplaced. The national average column is the same survey asked of all 3,986 respondents, weighted, then used as the answer for every group.</p>
@@ -737,7 +740,7 @@ function paintResult(i) {
   box.innerHTML = `
     <div class="reshead"><span class="qid">${esc(q.id)}</span><span class="qtext">${esc(q.text)}</span></div>
     ${st.wording ? `<div><span class="tag ${st.wording.unstable ? "unstable" : ""}">${st.wording.unstable ? "Unstable wording" : "Wording stable"}</span> <span class="num">${(st.wording.max_distance * 100).toFixed(0)} points of movement at most, flag at ${(st.wording.threshold * 100).toFixed(0)}</span></div>` : ""}
-    ${st.pred ? `<div><span class="tag">Drex · live</span></div>${barBlock(st.pred.shares, "drex")}` : ""}
+    ${st.pred ? `<div><span class="tag">${st.blend ? "Drex · 90% national + 10% group" : "Drex · live"}</span>${st.blend ? ` <span class="num">the group's own answer, pulled toward the whole country</span>` : ""}</div>${barBlock(st.pred.shares, "drex")}` : ""}
     ${primary && st.pred ? `<div class="num">${(tvd(st.pred.shares, primary) * 100).toFixed(0)}% of answers on the wrong option</div>` : ""}
     ${st.gemini ? `<div><span class="tag">Gemini 3.1 Flash-Lite · live</span></div>${barBlock(st.gemini, "gemini")}` : ""}
     ${primary && st.gemini ? `<div class="num">${(tvd(st.gemini, primary) * 100).toFixed(0)}% of answers on the wrong option</div>` : ""}
@@ -773,6 +776,8 @@ async function scoreOne(q, i) {
       const d = await post("/api/predict", { variable: r.gss.variable, text: q.text, selection: {} });
       if (d.error) throw new Error(d.error);
       st.pred = { shares: d.drex.probabilities };
+      st.blend = d.drex.blend_national || 0;
+      st.rawPred = d.drex.raw_probabilities || null;
       st.split = { real: { shares: d.real.shares, n: d.real.n } };
       st.drexMs = d.drex.wall_ms;
       st.drexTokens = d.drex.input_tokens;

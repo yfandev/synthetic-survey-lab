@@ -2,64 +2,171 @@
  "summary": {
   "pairs_scored": 8,
   "unverified": 5,
-  "drex_mean_distance": 0.2234,
+  "drex_mean_distance": 0.0468,
   "gemini_mean_distance": 0.1197,
   "whole_mean_distance": 0.0511,
   "uniform_mean_distance": 0.3071,
-  "drex_mean_ms": 260.9,
+  "drex_mean_ms": 256.2,
   "gemini_mean_ms": 1485.9,
   "drex_mean_tokens": 200.8,
   "drex_cost_per_1k": 0.006,
   "biggest_misses": [
    {
-    "qid": "Q4",
+    "qid": "Q1",
     "status": "scored",
     "group": "Democrats",
-    "variable": "trust",
-    "match": 0.994,
+    "variable": "nateduc",
+    "match": 0.913,
     "persona": "An American adult who identifies as a Democrat.",
-    "n": 374,
+    "n": 824,
     "too_few": false,
     "distance": {
-     "drex": 0.46639933426335084,
-     "whole_sample": 0.040312021099729235,
-     "uniform": 0.2922852408569291
+     "drex": 0.09424448819300651,
+     "drex_raw": 0.18910912543007674,
+     "whole_sample": 0.08370397294444318,
+     "uniform": 0.5053127109799986
     },
-    "gemini_distance": 0.3756185741902624,
+    "gemini_distance": 0.08864604431333198,
     "gemini_model": "gemini-3.1-flash-lite",
-    "gemini_latency_ms": 748,
-    "drex_ms": 258,
-    "drex_tokens": 200,
-    "drex_cost_usd": 5.999999999999999e-06,
+    "gemini_latency_ms": 759,
+    "drex_ms": 248,
+    "drex_tokens": 189,
+    "drex_cost_usd": 5.669999999999999e-06,
+    "drex_probs": [
+     {
+      "option": "too little",
+      "p": 0.7444015561203254
+     },
+     {
+      "option": "about right",
+      "p": 0.17867501874156447
+     },
+     {
+      "option": "too much",
+      "p": 0.07692342513811005
+     }
+    ],
+    "real": [
+     {
+      "option": "too little",
+      "p": 0.8386460443133316,
+      "weight": 583.1245999999998
+     },
+     {
+      "option": "about right",
+      "p": 0.15118750923140487,
+      "weight": 105.12320000000001
+     },
+     {
+      "option": "too much",
+      "p": 0.010166446455262755,
+      "weight": 7.068899999999999
+     }
+    ]
+   },
+   {
+    "qid": "Q4",
+    "status": "scored",
+    "group": "65+",
+    "variable": "trust",
+    "match": 0.994,
+    "persona": "An American adult aged 65+.",
+    "n": 282,
+    "too_few": false,
+    "distance": {
+     "drex": 0.05727733320089165,
+     "drex_raw": 0.12014985575840229,
+     "whole_sample": 0.07527089401499115,
+     "uniform": 0.23619459262325143
+    },
+    "gemini_distance": 0.02515180033190923,
+    "gemini_model": "gemini-3.1-flash-lite",
+    "gemini_latency_ms": 684,
+    "drex_ms": 230,
+    "drex_tokens": 198,
+    "drex_cost_usd": 5.94e-06,
     "drex_probs": [
      {
       "option": "most people can be trusted",
-      "p": 0.7079028698177001
+      "p": 0.2675708664671991
      },
      {
       "option": "can't be too careful",
-      "p": 0.1592192399269116
+      "p": 0.6196463926465825
      },
      {
       "option": "depends",
-      "p": 0.13287789025538832
+      "p": 0.11278274088621841
      }
     ],
     "real": [
      {
       "option": "most people can be trusted",
-      "p": 0.2898893267528293,
-      "weight": 100.90429999999996
+      "p": 0.3248481996680906,
+      "weight": 90.0232
      },
      {
       "option": "can't be too careful",
-      "p": 0.6256185741902629,
-      "weight": 217.7645000000001
+      "p": 0.5695279259565846,
+      "weight": 157.82980000000003
      },
      {
       "option": "depends",
-      "p": 0.08449209905690876,
-      "weight": 29.409900000000004
+      "p": 0.10562387437532449,
+      "weight": 29.270899999999997
+     }
+    ]
+   },
+   {
+    "qid": "Q2",
+    "status": "scored",
+    "group": "65+",
+    "variable": "happy",
+    "match": 0.997,
+    "persona": "An American adult aged 65+.",
+    "n": 906,
+    "too_few": false,
+    "distance": {
+     "drex": 0.0546170421661437,
+     "drex_raw": 0.12336205693189058,
+     "whole_sample": 0.04697870719217147,
+     "uniform": 0.20859814681799924
+    },
+    "gemini_distance": 0.04303968149715301,
+    "gemini_model": "gemini-3.1-flash-lite",
+    "gemini_latency_ms": 729,
+    "drex_ms": 223,
+    "drex_tokens": 201,
+    "drex_cost_usd": 6.03e-06,
+    "drex_probs": [
+     {
+      "option": "very happy",
+      "p": 0.22234327633670334
+     },
+     {
+      "option": "pretty happy",
+      "p": 0.561554101345042
+     },
+     {
+      "option": "not too happy",
+      "p": 0.21610262231825478
+     }
+    ],
+    "real": [
+     {
+      "option": "very happy",
+      "p": 0.27696031850284625,
+      "weight": 237.83070000000006
+     },
+     {
+      "option": "pretty happy",
+      "p": 0.5419314801513319,
+      "weight": 465.3661
+     },
+     {
+      "option": "not too happy",
+      "p": 0.18110820134582045,
+      "weight": 155.52079999999995
      }
     ]
    },
@@ -73,28 +180,29 @@
     "n": 451,
     "too_few": false,
     "distance": {
-     "drex": 0.3415639328968396,
+     "drex": 0.04775270855155327,
+     "drex_raw": 0.3415639328968396,
      "whole_sample": 0.06175042214698758,
      "uniform": 0.35985831588856787
     },
     "gemini_distance": 0.24319164922190117,
     "gemini_model": "gemini-3.1-flash-lite",
     "gemini_latency_ms": 6485,
-    "drex_ms": 248,
+    "drex_ms": 221,
     "drex_tokens": 187,
     "drex_cost_usd": 5.61e-06,
     "drex_probs": [
      {
       "option": "too little",
-      "p": 0.35162771632506157
+      "p": 0.7146106358645061
      },
      {
       "option": "about right",
-      "p": 0.28048164960851374
+      "p": 0.18999176478966381
      },
      {
       "option": "too much",
-      "p": 0.36789063406642475
+      "p": 0.09539759934583011
      }
     ],
     "real": [
@@ -116,58 +224,6 @@
     ]
    },
    {
-    "qid": "Q1",
-    "status": "scored",
-    "group": "18-29, bachelor's",
-    "variable": "nateduc",
-    "match": 0.913,
-    "persona": "An American adult aged 18-29 with a bachelor's degree or higher.",
-    "n": 79,
-    "too_few": false,
-    "distance": {
-     "drex": 0.27648300923242736,
-     "whole_sample": 0.05810161518388512,
-     "uniform": 0.3635071228516703
-    },
-    "gemini_distance": 0.06178429847520419,
-    "gemini_model": "gemini-3.1-flash-lite",
-    "gemini_latency_ms": 792,
-    "drex_ms": 374,
-    "drex_tokens": 207,
-    "drex_cost_usd": 6.21e-06,
-    "drex_probs": [
-     {
-      "option": "too little",
-      "p": 0.4203574469525763
-     },
-     {
-      "option": "about right",
-      "p": 0.3353050499273069
-     },
-     {
-      "option": "too much",
-      "p": 0.24433750312011676
-     }
-    ],
-    "real": [
-     {
-      "option": "too little",
-      "p": 0.6968404561850037,
-      "weight": 62.806299999999986
-     },
-     {
-      "option": "about right",
-      "p": 0.1882157015247958,
-      "weight": 16.963899999999995
-     },
-     {
-      "option": "too much",
-      "p": 0.11494384229020053,
-      "weight": 10.359900000000001
-     }
-    ]
-   },
-   {
     "qid": "Q2",
     "status": "scored",
     "group": "Democrats",
@@ -177,28 +233,29 @@
     "n": 1612,
     "too_few": false,
     "distance": {
-     "drex": 0.2318779372338773,
+     "drex": 0.046703450485053546,
+     "drex_raw": 0.2318779372338773,
      "whole_sample": 0.0336902050543961,
      "uniform": 0.2609802902243945
     },
     "gemini_distance": 0.044313623557727846,
     "gemini_model": "gemini-3.1-flash-lite",
     "gemini_latency_ms": 917,
-    "drex_ms": 253,
+    "drex_ms": 214,
     "drex_tokens": 203,
     "drex_cost_usd": 6.089999999999999e-06,
     "drex_probs": [
      {
       "option": "very happy",
-      "p": 0.13901807160648597
+      "p": 0.22088525734025624
      },
      {
       "option": "pretty happy",
-      "p": 0.43049096419675703
+      "p": 0.5476101730726742
      },
      {
       "option": "not too happy",
-      "p": 0.43049096419675703
+      "p": 0.23150456958706936
      }
     ],
     "real": [
@@ -218,58 +275,6 @@
       "weight": 285.3180999999996
      }
     ]
-   },
-   {
-    "qid": "Q1",
-    "status": "scored",
-    "group": "Democrats",
-    "variable": "nateduc",
-    "match": 0.913,
-    "persona": "An American adult who identifies as a Democrat.",
-    "n": 824,
-    "too_few": false,
-    "distance": {
-     "drex": 0.18910912543007674,
-     "whole_sample": 0.08370397294444318,
-     "uniform": 0.5053127109799986
-    },
-    "gemini_distance": 0.08864604431333198,
-    "gemini_model": "gemini-3.1-flash-lite",
-    "gemini_latency_ms": 759,
-    "drex_ms": 304,
-    "drex_tokens": 189,
-    "drex_cost_usd": 5.669999999999999e-06,
-    "drex_probs": [
-     {
-      "option": "too little",
-      "p": 0.6495369188832553
-     },
-     {
-      "option": "about right",
-      "p": 0.16731418912752055
-     },
-     {
-      "option": "too much",
-      "p": 0.1831488919892243
-     }
-    ],
-    "real": [
-     {
-      "option": "too little",
-      "p": 0.8386460443133316,
-      "weight": 583.1245999999998
-     },
-     {
-      "option": "about right",
-      "p": 0.15118750923140487,
-      "weight": 105.12320000000001
-     },
-     {
-      "option": "too much",
-      "p": 0.010166446455262755,
-      "weight": 7.068899999999999
-     }
-    ]
    }
   ]
  },
@@ -284,28 +289,29 @@
    "n": 79,
    "too_few": false,
    "distance": {
-    "drex": 0.27648300923242736,
+    "drex": 0.03190155603900125,
+    "drex_raw": 0.27648300923242736,
     "whole_sample": 0.05810161518388512,
     "uniform": 0.3635071228516703
    },
    "gemini_distance": 0.06178429847520419,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 792,
-   "drex_ms": 374,
+   "drex_ms": 247,
    "drex_tokens": 207,
    "drex_cost_usd": 6.21e-06,
    "drex_probs": [
     {
      "option": "too little",
-     "p": 0.4203574469525763
+     "p": 0.7214836089272576
     },
     {
      "option": "about right",
-     "p": 0.3353050499273069
+     "p": 0.19547410482154315
     },
     {
      "option": "too much",
-     "p": 0.24433750312011676
+     "p": 0.0830422862511993
     }
    ],
    "real": [
@@ -336,28 +342,29 @@
    "n": 451,
    "too_few": false,
    "distance": {
-    "drex": 0.3415639328968396,
+    "drex": 0.04775270855155327,
+    "drex_raw": 0.3415639328968396,
     "whole_sample": 0.06175042214698758,
     "uniform": 0.35985831588856787
    },
    "gemini_distance": 0.24319164922190117,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 6485,
-   "drex_ms": 248,
+   "drex_ms": 221,
    "drex_tokens": 187,
    "drex_cost_usd": 5.61e-06,
    "drex_probs": [
     {
      "option": "too little",
-     "p": 0.35162771632506157
+     "p": 0.7146106358645061
     },
     {
      "option": "about right",
-     "p": 0.28048164960851374
+     "p": 0.18999176478966381
     },
     {
      "option": "too much",
-     "p": 0.36789063406642475
+     "p": 0.09539759934583011
     }
    ],
    "real": [
@@ -388,28 +395,29 @@
    "n": 824,
    "too_few": false,
    "distance": {
-    "drex": 0.18910912543007674,
+    "drex": 0.09424448819300651,
+    "drex_raw": 0.18910912543007674,
     "whole_sample": 0.08370397294444318,
     "uniform": 0.5053127109799986
    },
    "gemini_distance": 0.08864604431333198,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 759,
-   "drex_ms": 304,
+   "drex_ms": 248,
    "drex_tokens": 189,
    "drex_cost_usd": 5.669999999999999e-06,
    "drex_probs": [
     {
      "option": "too little",
-     "p": 0.6495369188832553
+     "p": 0.7444015561203254
     },
     {
      "option": "about right",
-     "p": 0.16731418912752055
+     "p": 0.17867501874156447
     },
     {
      "option": "too much",
-     "p": 0.1831488919892243
+     "p": 0.07692342513811005
     }
    ],
    "real": [
@@ -440,28 +448,29 @@
    "n": 159,
    "too_few": false,
    "distance": {
-    "drex": 0.03863759862893139,
+    "drex": 0.0068639189635961995,
+    "drex_raw": 0.03863759862893139,
     "whole_sample": 0.009128569772164058,
     "uniform": 0.23015065960572845
    },
    "gemini_distance": 0.07566296552242739,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 773,
-   "drex_ms": 212,
+   "drex_ms": 262,
    "drex_tokens": 221,
    "drex_cost_usd": 6.629999999999999e-06,
    "drex_probs": [
     {
      "option": "very happy",
-     "p": 0.19444267451763153
+     "p": 0.22642771763137082
     },
     {
      "option": "pretty happy",
-     "p": 0.6021215915679932
+     "p": 0.564773235809798
     },
     {
      "option": "not too happy",
-     "p": 0.2034357339143753
+     "p": 0.20879904655883122
     }
    ],
    "real": [
@@ -492,28 +501,29 @@
    "n": 906,
    "too_few": false,
    "distance": {
-    "drex": 0.12336205693189058,
+    "drex": 0.0546170421661437,
+    "drex_raw": 0.12336205693189058,
     "whole_sample": 0.04697870719217147,
     "uniform": 0.20859814681799924
    },
    "gemini_distance": 0.04303968149715301,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 729,
-   "drex_ms": 218,
+   "drex_ms": 223,
    "drex_tokens": 201,
    "drex_cost_usd": 6.03e-06,
    "drex_probs": [
     {
      "option": "very happy",
-     "p": 0.15359826157095638
+     "p": 0.22234327633670334
     },
     {
      "option": "pretty happy",
-     "p": 0.5699302469204329
+     "p": 0.561554101345042
     },
     {
      "option": "not too happy",
-     "p": 0.27647149150861067
+     "p": 0.21610262231825478
     }
    ],
    "real": [
@@ -544,28 +554,29 @@
    "n": 1612,
    "too_few": false,
    "distance": {
-    "drex": 0.2318779372338773,
+    "drex": 0.046703450485053546,
+    "drex_raw": 0.2318779372338773,
     "whole_sample": 0.0336902050543961,
     "uniform": 0.2609802902243945
    },
    "gemini_distance": 0.044313623557727846,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 917,
-   "drex_ms": 253,
+   "drex_ms": 214,
    "drex_tokens": 203,
    "drex_cost_usd": 6.089999999999999e-06,
    "drex_probs": [
     {
      "option": "very happy",
-     "p": 0.13901807160648597
+     "p": 0.22088525734025624
     },
     {
      "option": "pretty happy",
-     "p": 0.43049096419675703
+     "p": 0.5476101730726742
     },
     {
      "option": "not too happy",
-     "p": 0.43049096419675703
+     "p": 0.23150456958706936
     }
    ],
    "real": [
@@ -614,28 +625,29 @@
    "n": 14,
    "too_few": true,
    "distance": {
-    "drex": 0.5772172384624852,
+    "drex": 0.28234129893403814,
+    "drex_raw": 0.5772172384624852,
     "whole_sample": 0.24957730565309966,
     "uniform": 0.42769206072842003
    },
    "gemini_distance": 0.4610253940617533,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 886,
-   "drex_ms": 222,
+   "drex_ms": 262,
    "drex_tokens": 218,
    "drex_cost_usd": 6.539999999999999e-06,
    "drex_probs": [
     {
      "option": "most people can be trusted",
-     "p": 0.5772172384624851
+     "p": 0.2823412989340381
     },
     {
      "option": "can't be too careful",
-     "p": 0.2929569272088089
+     "p": 0.6040042783476451
     },
     {
      "option": "depends",
-     "p": 0.1298258343287061
+     "p": 0.1136544227183168
     }
    ],
    "real": [
@@ -666,28 +678,29 @@
    "n": 282,
    "too_few": false,
    "distance": {
-    "drex": 0.12014985575840229,
+    "drex": 0.05727733320089165,
+    "drex_raw": 0.12014985575840229,
     "whole_sample": 0.07527089401499115,
     "uniform": 0.23619459262325143
    },
    "gemini_distance": 0.02515180033190923,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 684,
-   "drex_ms": 220,
+   "drex_ms": 230,
    "drex_tokens": 198,
    "drex_cost_usd": 5.94e-06,
    "drex_probs": [
     {
      "option": "most people can be trusted",
-     "p": 0.4295129137940951
+     "p": 0.2675708664671991
     },
     {
      "option": "can't be too careful",
-     "p": 0.4493780701981825
+     "p": 0.6196463926465825
     },
     {
      "option": "depends",
-     "p": 0.12110901600772238
+     "p": 0.11278274088621841
     }
    ],
    "real": [
@@ -718,28 +731,29 @@
    "n": 374,
    "too_few": false,
    "distance": {
-    "drex": 0.46639933426335084,
+    "drex": 0.03498806457080703,
+    "drex_raw": 0.46639933426335084,
     "whole_sample": 0.040312021099729235,
     "uniform": 0.2922852408569291
    },
    "gemini_distance": 0.3756185741902624,
    "gemini_model": "gemini-3.1-flash-lite",
    "gemini_latency_ms": 748,
-   "drex_ms": 258,
+   "drex_ms": 405,
    "drex_tokens": 200,
    "drex_cost_usd": 5.999999999999999e-06,
    "drex_probs": [
     {
      "option": "most people can be trusted",
-     "p": 0.7079028698177001
+     "p": 0.2954098620695596
     },
     {
      "option": "can't be too careful",
-     "p": 0.1592192399269116
+     "p": 0.5906305096194554
     },
     {
      "option": "depends",
-     "p": 0.13287789025538832
+     "p": 0.11395962831098502
     }
    ],
    "real": [

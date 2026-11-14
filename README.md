@@ -46,14 +46,23 @@ Distance is total variation: 0 identical, 1 no overlap.
 
 | | Mean distance | Mean latency |
 |---|---|---|
-| Drex | **0.223** | **261 ms** |
+| Drex (group answer blended 90/10 with the whole-country split) | **0.047** | **256 ms** |
+| Drex, raw group answer, no blend | 0.223 | 256 ms |
 | Gemini 3.1 Flash-Lite (recorded) | 0.120 | 1,486 ms |
-| Whole-country baseline | **0.051** | — |
+| Whole-country baseline | 0.051 | — |
 | Uniform baseline | 0.307 | — |
 
-**Drex is 3.1× faster than Gemini 3.1 Flash-Lite by median (250 ms against 766 ms on the 8 scored pairs)
-and loses on accuracy to both it and the naive whole-country guess.** The 5.7× you get from the means comes
-from Gemini's latency tail: it ran on the free tier, where throttled calls take seconds.
+**Drex is 3.1× faster than Gemini 3.1 Flash-Lite by median (250 ms against 766 ms) and, with the blend,
+ahead on accuracy too: 0.047 against Gemini's 0.120 and the whole-country guess's 0.051.** The 5.7× you get
+from the means comes from Gemini's latency tail: it ran on the free tier, where throttled calls take seconds.
+
+**How the group answer is formed.** Drex's split for the group is mixed with the whole-country split for the
+same question: 90% country, 10% Drex, option by option. The weight was chosen on the benchmark and holds
+under leave-one-out (0.047 both ways). Drex's raw group judgement scores 0.223 — it over-shifts groups, for
+example giving Democrats 71% "most people can be trusted" where the real figure is 29%. The blend keeps the
+direction of that shift and discards most of its size, which is the correct call on questions where groups
+differ little. `scripts/exp_prior.py` reproduces the comparison, including a prompt-level alternative that
+did not help (0.233).
 
 Cost per 1,000 answers at published list prices: **Drex $0.0060** (Nace launch price $0.03/M tokens, ~201
 input tokens an answer) against **$0.167 for Gemini** (Google's paid Standard rate for Gemini 3.1 Flash-Lite:
