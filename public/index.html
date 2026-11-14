@@ -161,7 +161,7 @@
       21%, 59%, 20%.</p>
     <!--BAKE:START-->
     <div class="stats3">
-      <div class="stat"><div class="k">Faster</div><div class="v good">5.7×</div><div class="num">260.9 ms vs 1486 ms per answer<br>median 250 vs 766 ms</div></div>
+      <div class="stat"><div class="k">Faster</div><div class="v good">3.1×</div><div class="num">250 ms vs 766 ms per answer, median<br>5.7× on averages; Gemini ran on its free tier, whose throttled calls inflate its mean</div></div>
       <div class="stat"><div class="k">Cost</div><div class="v good">$0.0060</div><div class="num">Drex per 1,000 answers, against $0.1674 for Gemini at Google's published paid rate ($0.25 in / $1.50 out per 1M tokens): 28× cheaper.</div></div>
       <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.223</div><div class="num">Across 8 pairs with a real answer: 22% of answers on the wrong option, against 12% for Gemini and 5% for guessing that every group answers like the whole country.</div></div>
     </div>
@@ -192,7 +192,7 @@
       <summary>How this is measured, and all 11 checks</summary>
       <div class="detailbody">
         <p class="lead" style="font-size:19px;margin:18px 0 6px">Every prediction is scored against the real
-          survey answer. On accuracy Drex finishes behind the frontier model and behind a plain national
+          survey answer. On accuracy Drex finishes behind Gemini 3.1 Flash-Lite and behind a plain national
           average, and both are printed next to its own.</p>
         <!--BAKE2:START-->
     <div class="ex">
@@ -860,7 +860,7 @@ const missing = rows.filter((s) => !s.gemini).length;
       <div class="crit-tile ${ratio && ratio > 1 ? "win" : "lose"}">
         <div class="crit-k">Faster</div>
         <div class="crit-v">${ratio ? ratio.toFixed(1) + "×" : "—"}</div>
-        <div class="crit-n">${medD && medG ? `${Math.round(medD)} ms against ${Math.round(medG)} ms per question, median` : "waiting for timings"}</div>
+        <div class="crit-n">${medD && medG ? `${Math.round(medD)} ms against ${Math.round(medG)} ms per question, median. Gemini ran on its free tier, whose throttled calls inflate its average.` : "waiting for timings"}</div>
       </div>
       <div class="crit-tile ${cheaper && cheaper > 1 ? "win" : "lose"}">
         <div class="crit-k">Cheaper</div>

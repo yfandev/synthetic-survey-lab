@@ -95,16 +95,17 @@ def load():
 
 
 def tiles(m: dict, rows: list[dict]) -> list[str]:
-    speed = m["gemini_mean_ms"] / m["drex_mean_ms"]
     gem_cost = gemini_cost_per_1k(rows) or 0.0
     drex_med = statistics.median(r["drex_ms"] for r in rows)
     gem_med = statistics.median(r["gemini_latency_ms"] for r in rows)
+    speed = gem_med / drex_med          # median ratio: the headline
+    mean_speed = m["gemini_mean_ms"] / m["drex_mean_ms"]
     return [
         '    <div class="stats3">',
         '      <div class="stat"><div class="k">Faster</div>'
         f'<div class="v good">{speed:.1f}×</div>'
-        f'<div class="num">{m["drex_mean_ms"]} ms vs {round(m["gemini_mean_ms"])} ms per answer<br>'
-        f"median {drex_med:.0f} vs {gem_med:.0f} ms</div></div>",
+        f'<div class="num">{drex_med:.0f} ms vs {gem_med:.0f} ms per answer, median<br>'
+        f"{mean_speed:.1f}× on averages; Gemini ran on its free tier, whose throttled calls inflate its mean</div></div>",
         '      <div class="stat"><div class="k">Cost</div>'
         f'<div class="v good">${m["drex_cost_per_1k"]:.4f}</div>'
         f"<div class=\"num\">Drex per 1,000 answers, against ${gem_cost:.4f} for Gemini at Google's "
