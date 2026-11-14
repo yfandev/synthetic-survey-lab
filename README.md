@@ -48,9 +48,9 @@ Distance is total variation: 0 identical, 1 no overlap.
 | Whole-country baseline | **0.051** | — |
 | Uniform baseline | 0.307 | — |
 
-**Drex is 3.1× faster than Gemini 3.1 Flash-Lite by median (248 ms against 773 ms) and loses on accuracy
-to both it and the naive whole-country guess.** The 5.5× figure you get from the means comes from Gemini's
-latency tail: it ran on the free tier, where throttled calls take seconds.
+**Drex is 3.1× faster than Gemini 3.1 Flash-Lite by median (250 ms against 766 ms on the 8 scored pairs)
+and loses on accuracy to both it and the naive whole-country guess.** The 5.7× you get from the means comes
+from Gemini's latency tail: it ran on the free tier, where throttled calls take seconds.
 
 Cost per 1,000 answers at published list prices: **Drex $0.0060** (Nace launch price $0.03/M tokens, ~201
 input tokens an answer) against **$0.167 for Gemini** (Google's paid Standard rate for Gemini 3.1 Flash-Lite:
