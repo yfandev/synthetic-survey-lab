@@ -112,5 +112,11 @@ Deploy: `deploy.json` describes the worker and `public/`; secrets go in through 
   options that are nobody's first choice.
 - The free Workers plan caps subrequests per invocation, so the panel is batched at 15 decisions per
   request; the browser stitches the batches together.
+- **Uploads run in the browser, not in the Worker.** `ndi-api.nace.ai` answers 403 to the upload POST
+  from Cloudflare's network, whatever header or body shape is used (grant minting still returns 201).
+  So the server mints a one-use upload grant and the page sends the bytes itself, which is the pattern
+  the Nace docs describe for browsers; the page then hands the returned `workspace_id`/`file_id` back
+  and the Worker runs extract on that file. Metadata must be a plain string: a JSON part is rejected
+  with 422.
 - GSS 2024 is a multi-mode study; mode effects are real and not modelled here.
 - The sample questionnaire is generated, not a scanned paper form.

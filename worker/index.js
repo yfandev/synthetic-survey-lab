@@ -79,14 +79,31 @@ async function ndiUpload(env, file, name, keyHint) {
   if (!grantRes.ok) throw new Error(`upload-grant ${grantRes.status}: ${grantText.slice(0, 400)}`);
   const grant = JSON.parse(grantText);
 
-  const form = new FormData();
-  form.append("file", file, name);
-  form.append("metadata", JSON.stringify({ path }));
+  // Built by hand instead of with FormData: the upload endpoint rejected the
+  // multipart body workerd produced (403) while accepting the identical Node
+  // request, and a hand-built body is byte-for-byte the same in both runtimes.
+  const boundary = `----surveylab${Math.random().toString(16).slice(2)}`;
+  const enc = new TextEncoder();
+  const head = enc.encode(
+    `--${boundary}\r\nContent-Disposition: form-data; name="metadata"\r\n\r\n` +
+      `${JSON.stringify({ path })}\r\n--${boundary}\r\n` +
+      `Content-Disposition: form-data; name="file"; filename="${name}"\r\n` +
+      `Content-Type: ${file.type || "application/pdf"}\r\n\r\n`
+  );
+  const tail = enc.encode(`\r\n--${boundary}--\r\n`);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const body = new Uint8Array(head.length + bytes.length + tail.length);
+  body.set(head, 0);
+  body.set(bytes, head.length);
+  body.set(tail, head.length + bytes.length);
 
   const up = await fetch(grant.upload_url, {
     method: "POST",
-    headers: { "X-Upload-Token": grant.token },
-    body: form,
+    headers: {
+      "X-Upload-Token": grant.token,
+      "Content-Type": `multipart/form-data; boundary=${boundary}`,
+    },
+    body: body.buffer,
   });
   const upText = await up.text();
   if (!up.ok) throw new Error(`upload ${up.status}: ${upText.slice(0, 400)}`);
@@ -258,35 +275,93 @@ async function handle(request, env) {
     });
   }
 
-  if (route === "/api/probe/drex") {
-    const persona = url.searchParams.get("persona") || "An American adult aged 18-29 with a bachelor's degree.";
-    const state = `Respondent: ${persona}\nQuestion: The survey asks about government spending and about general happiness.`;
+  if (route === "/api/upload-grant" && request.method === "POST") {
+    // The document service refuses uploads that come from a Worker's address, so the
+    // browser uploads the bytes itself with a short-lived one-use token minted here.
     try {
-      const out = await drexDecide(env, state, SAMPLE_QUESTIONS);
-      return json({
-        request: { model: "drex-latest", state, questions: SAMPLE_QUESTIONS },
-        ...out,
+      const body = await request.json().catch(() => ({}));
+      const safe = String(body.name || "upload.pdf").replace(/[^\w.\-]/g, "_").slice(-80);
+      const path = `survey-lab/${crypto.randomUUID()}-${safe}`;
+      const r = await fetch(`${NACE_BASE}/v1/documents/upload-grants`, {
+        method: "POST",
+        headers: naceHeaders(env),
+        body: JSON.stringify({ path, ttl_seconds: 900 }),
       });
+      const text = await r.text();
+      if (!r.ok) return json({ error: `upload-grant ${r.status}: ${text.slice(0, 300)}` }, 502);
+      const g = JSON.parse(text);
+      return json({ upload_url: g.upload_url, token: g.token, path, expires_at: g.expires_at });
     } catch (err) {
       return json({ error: String(err.message || err) }, 502);
     }
   }
 
-  if (route === "/api/probe/ndi" && request.method === "POST") {
+  if (route === "/api/parse" && request.method === "POST") {
+    // Parse a file the browser already uploaded, using the ids it handed back.
     try {
-      const form = await request.formData();
-      const file = form.get("file");
-      if (!file || typeof file === "string") return json({ error: "send a PDF as the `file` field" }, 400);
-      const name = file.name || "upload.pdf";
-      const upload = await ndiUpload(env, file, name);
-      const parsed = await ndiDocument(env, "parse", upload.source, {});
-      return json({ upload, ...parsed });
+      const body = await request.json();
+      if (!body.file_id || !body.workspace_id) {
+        return json({ error: "send workspace_id and file_id from the upload" }, 400);
+      }
+      const source = { type: "workspace_file", workspace_id: body.workspace_id, file_id: body.file_id };
+      const parsed = await ndiDocument(env, "parse", source, {});
+      return json({ upload: { source }, ...parsed });
     } catch (err) {
       return json({ error: String(err.message || err) }, 502);
     }
   }
 
   if (route === "/api/extract" && request.method === "POST") {
+    // Browser-uploaded file: the bytes already went up with a one-use grant, so this
+    // only runs extract on the workspace file the browser handed back.
+    if ((request.headers.get("content-type") || "").includes("application/json")) {
+      let stage = "read body";
+      try {
+        const body = await request.json();
+        if (!body.file_id || !body.workspace_id) {
+          return json({ error: "send workspace_id and file_id from the upload" }, 400);
+        }
+        const from = Math.max(1, Number(body.from || 1));
+        const to = Number(body.to || 0);
+        const key = `ws:${body.workspace_id}:${body.file_id}:${from}-${to || "end"}`;
+        if (INTAKE_CACHE.has(key)) return json({ cached: true, ...INTAKE_CACHE.get(key) });
+
+        stage = "extract";
+        const options = { schema: QUESTION_SCHEMA, instructions: QUESTION_INSTRUCTIONS };
+        if (to >= from && to > 0) options.page_ranges = [{ start: from, end: to }];
+        const source = { type: "workspace_file", workspace_id: body.workspace_id, file_id: body.file_id };
+        const out = await ndiDocument(env, "extract", source, options);
+        const job = out.response || {};
+        if (job.status !== "succeeded") {
+          return json(
+            {
+              error: `extract ${job.status || out.http_status}`,
+              stage,
+              job_error: job.error || null,
+              http_status: out.http_status,
+              request_id: job.request_id || null,
+            },
+            502,
+          );
+        }
+        const payload = {
+          hash: null,
+          file: body.name || "questionnaire.pdf",
+          page_range: options.page_ranges ? { from, to } : null,
+          questions: mapQuestions(job),
+          units: (job.result || {}).units ?? null,
+          job_id: job.job_id,
+          wall_ms: out.wall_ms,
+          ndi_ms: (job.timing && job.timing.total_ms) ?? null,
+          fields_without_citation: ((job.result || {}).fields || []).filter((f) => !(f.citations || []).length).length,
+        };
+        INTAKE_CACHE.set(key, payload);
+        return json({ cached: false, ...payload });
+      } catch (err) {
+        return json({ error: String((err && err.message) || err), stage }, 502);
+      }
+    }
+
     let stage = "read form";
     try {
       const form = await request.formData();

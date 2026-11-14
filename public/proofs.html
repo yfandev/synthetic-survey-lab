@@ -97,9 +97,25 @@ $("btn-ndi").onclick = async () => {
   $("out-ndi").textContent = "…";
   try {
     const pdf = await fetch("/samples/sample_survey.pdf").then(r => r.blob());
+    // The browser uploads the bytes; the document service refuses them from the worker.
+    const grant = await fetch("/api/upload-grant", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: "sample_survey.pdf" }),
+    }).then(r => r.json());
+    if (grant.error) throw new Error(grant.error);
     const form = new FormData();
+    form.append("metadata", JSON.stringify({ path: grant.path }));
     form.append("file", new File([pdf], "sample_survey.pdf", { type: "application/pdf" }));
-    const data = await fetch("/api/probe/ndi", { method: "POST", body: form }).then(r => r.json());
+    const up = await fetch(grant.upload_url, {
+      method: "POST", headers: { "X-Upload-Token": grant.token }, body: form,
+    }).then(r => r.text());
+    const upJob = JSON.parse(up);
+    const fileRef = (upJob.result && upJob.result.file) || {};
+    if (!fileRef.file_id) throw new Error(`upload: ${up.slice(0, 200)}`);
+    const data = await fetch("/api/parse", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ workspace_id: fileRef.workspace_id, file_id: fileRef.file_id }),
+    }).then(r => r.json());
     show($("out-ndi"), $("meta-ndi"), data);
   } catch (err) {
     $("out-ndi").textContent = String(err);

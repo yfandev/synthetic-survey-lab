@@ -326,17 +326,44 @@ $("qlist").addEventListener("click", (e) => {
   if (i != null) { questions.splice(Number(i), 1); renderQuestions(); }
 });
 
+/* The document service refuses uploads sent from the worker's address, so the
+   browser sends the bytes itself with a one-use token the server mints. The
+   metadata field has to be a plain string; a JSON blob is rejected with 422. */
+async function uploadToNdi(f) {
+  const grant = await fetch("/api/upload-grant", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ name: f.name || "questionnaire.pdf" }),
+  }).then(r => r.json());
+  if (grant.error) throw new Error(grant.error);
+  const fd = new FormData();
+  fd.append("metadata", JSON.stringify({ path: grant.path }));
+  fd.append("file", f, f.name || "questionnaire.pdf");
+  const res = await fetch(grant.upload_url, {
+    method: "POST",
+    headers: { "X-Upload-Token": grant.token },
+    body: fd,
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`upload ${res.status}: ${text.slice(0, 200)}`);
+  const job = JSON.parse(text);
+  const fileRef = (job.result && job.result.file) || {};
+  if (!fileRef.file_id) throw new Error(`upload returned no file_id: ${text.slice(0, 200)}`);
+  return { workspace_id: fileRef.workspace_id, file_id: fileRef.file_id, name: f.name };
+}
+
 $("go").onclick = async () => {
   if (!file) return;
   const btn = $("go");
   btn.disabled = true; btn.textContent = "Reading…";
   $("err").hidden = true; $("meta").innerHTML = "";
   try {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("from", $("from").value || "1");
-    form.append("to", $("to").value || "0");
-    const data = await fetch("/api/extract", { method: "POST", body: form }).then(r => r.json());
+    const uploaded = await uploadToNdi(file);
+    const data = await fetch("/api/extract", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...uploaded, from: $("from").value || "1", to: $("to").value || "0" }),
+    }).then(r => r.json());
     if (data.error) {
       $("err").hidden = false;
       $("err").textContent = `NDI did not return questions.\nstage: ${data.stage || "?"}\n${data.job_error ? JSON.stringify(data.job_error) : data.error}`;
