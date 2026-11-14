@@ -94,6 +94,11 @@ def detail(m: dict, rows: list[dict]) -> list[str]:
         )
         out.append("    </div>")
 
+    out.append(
+        '    <p class="num" style="margin-top:12px">Three ways to answer the same question, scored by the same '
+        "ruler: Drex's prediction, Gemini's prediction, and the all-respondents answer. The real answer for "
+        "that group is the referee.</p>"
+    )
     out.append('    <div class="tablewrap">')
     out.append(
         '    <table><thead><tr><th>Question</th><th>Group</th><th>Drex</th><th>Gemini</th>'
