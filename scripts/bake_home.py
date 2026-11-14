@@ -66,8 +66,9 @@ def tiles(m: dict, rows: list[dict]) -> list[str]:
         "so there is no frontier price to compare.</div></div>",
         '      <div class="stat"><div class="k">Accuracy</div>'
         f'<div class="v bad">{m["drex_mean_distance"]:.3f}</div>'
-        f'<div class="num">Drex, against Gemini {m["gemini_mean_distance"]:.3f} and the national '
-        f"average {m['whole_mean_distance']:.3f}. Lower is better.</div></div>",
+        f'<div class="num">{m["drex_mean_distance"] * 100:.0f}% of answers on the wrong option, against '
+        f"{m['gemini_mean_distance'] * 100:.0f}% for Gemini and {m['whole_mean_distance'] * 100:.0f}% for the "
+        "national average.</div></div>",
         "    </div>",
     ]
 
@@ -87,8 +88,9 @@ def detail(m: dict, rows: list[dict]) -> list[str]:
         out.append(f'      <div class="xl"><b>Real answer</b> {real_txt}</div>')
         out.append(
             '      <div class="xl" style="color:var(--warn)">'
-            f"Error {ex['distance']['drex']:.3f} · Gemini {ex['gemini_distance']:.3f} "
-            f"· national average {ex['distance']['whole_sample']:.3f}</div>"
+            f"Drex puts {ex['distance']['drex'] * 100:.0f}% of the answers on the wrong option · "
+            f"Gemini {ex['gemini_distance'] * 100:.0f}% · national average "
+            f"{ex['distance']['whole_sample'] * 100:.0f}%</div>"
         )
         out.append("    </div>")
 
@@ -112,8 +114,8 @@ def detail(m: dict, rows: list[dict]) -> list[str]:
         '    <p class="num" style="margin-top:14px">'
         f"{m['pairs_scored']} pairs have a real survey answer to score against. The other "
         f"{m['unverified']} are new questions: the survey has not asked them yet, so we mark them new and "
-        "leave them unscored. Error is the distance between the predicted shares and the real ones: "
-        "0 is a perfect match.</p>"
+        "leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every "
+        "answer matches the real survey, 0.27 means 27% of them are misplaced.</p>"
     )
     out.append(
         '    <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in '
