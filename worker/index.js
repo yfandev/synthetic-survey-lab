@@ -25,6 +25,11 @@ const NACE_BASE = "https://console.nace.ai";
 // $0.03 per million input tokens, Drex Max launch price (docs.nace.ai pricing).
 const DREX_USD_PER_TOKEN = 0.03 / 1e6;
 
+// Gemini 3.1 Flash-Lite, paid Standard tier, as published by Google:
+// https://ai.google.dev/gemini-api/docs/pricing — $0.25 per 1M input, $1.50 per 1M output.
+const GEMINI_USD_INPUT_TOKEN = 0.25 / 1e6;
+const GEMINI_USD_OUTPUT_TOKEN = 1.5 / 1e6;
+
 const CORS = {
   "content-type": "application/json; charset=utf-8",
   "cache-control": "no-store",
@@ -927,7 +932,18 @@ async function handle(request, env) {
       });
       const sum = shares.reduce((a, b) => a + b.p, 0);
       if (sum > 0) shares.forEach((d) => (d.p = d.p / sum));
-      return json({ shares, wall_ms: wall, model: "gemini-3.1-flash-lite", free_tier: true });
+      const usage = gBody.usageMetadata || {};
+      const inputTokens = Number(usage.promptTokenCount || 0);
+      const outputTokens = Number(usage.candidatesTokenCount || 0);
+      return json({
+        shares,
+        wall_ms: wall,
+        model: "gemini-3.1-flash-lite",
+        input_tokens: inputTokens,
+        output_tokens: outputTokens,
+        cost_usd: inputTokens * GEMINI_USD_INPUT_TOKEN + outputTokens * GEMINI_USD_OUTPUT_TOKEN,
+        pricing: "Google published paid rate: $0.25 per 1M input, $1.50 per 1M output",
+      });
     } catch (err) {
       return json({ error: String(err.message || err) }, 502);
     }

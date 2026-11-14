@@ -49,7 +49,12 @@ Distance is total variation: 0 identical, 1 no overlap.
 | Uniform baseline | 0.307 | — |
 
 **Drex is 5.7× faster than the recorded frontier model and loses on accuracy to both it and the naive
-whole-country guess.** We tested two rescues and are reporting both:
+whole-country guess.**
+
+Cost per 1,000 answers at published list prices: **Drex $0.0060** (Nace launch price $0.03/M tokens, ~201
+input tokens an answer) against **$0.167 for Gemini** (Google's paid Standard rate for Gemini 3.1 Flash-Lite:
+$0.25 per 1M input, $1.50 per 1M output; the recorded calls averaged 132 input and 89 output tokens). That
+makes Drex about **28× cheaper** per answer, measured rather than estimated from a headline price. We tested two rescues and are reporting both:
 
 - *Microsimulation* (one Drex decision per real demographic cell, weighted): helped `nateduc`
   (0.342 → 0.263) and hurt `happy` (0.039 → 0.126); not enough to overtake the baselines.

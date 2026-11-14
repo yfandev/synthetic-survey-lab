@@ -162,7 +162,7 @@
     <!--BAKE:START-->
     <div class="stats3">
       <div class="stat"><div class="k">Faster</div><div class="v good">5.7×</div><div class="num">260.9 ms vs 1486 ms per answer<br>median 250 vs 766 ms</div></div>
-      <div class="stat"><div class="k">Cost</div><div class="v good">$0.0060</div><div class="num">per 1,000 answers at Nace's list price. Gemini ran on a free tier, so there is no frontier price to compare.</div></div>
+      <div class="stat"><div class="k">Cost</div><div class="v good">$0.0060</div><div class="num">Drex per 1,000 answers, against $0.1674 for Gemini at Google's published paid rate ($0.25 in / $1.50 out per 1M tokens): 28× cheaper.</div></div>
       <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.223</div><div class="num">Across 8 pairs with a real answer: 22% of answers on the wrong option, against 12% for Gemini and 5% for guessing that every group answers like the whole country.</div></div>
     </div>
     <!--BAKE:END-->
@@ -789,6 +789,8 @@ async function scoreOne(q, i) {
     if (g.shares) {
       st.gemini = g.shares;
       st.geminiMs = g.wall_ms;
+      st.geminiCost = g.cost_usd ?? null;
+      st.geminiPricing = g.pricing || null;
     } else if (g.reason) {
       st.geminiNote = g.reason;
     }
@@ -850,6 +852,9 @@ const missing = rows.filter((s) => !s.gemini).length;
   const ratio = medD && medG ? medG / medD : null;
   const dMean = mean(drexErr), gMean = mean(gemErr);
   const costPerK = tokens ? (tokens * 0.03) / 1e6 * (1000 / rows.length) : null;
+  const gemCosts = rows.map((s) => s.geminiCost).filter((x) => x != null);
+  const gemCostPerK = gemCosts.length ? (gemCosts.reduce((a, b) => a + b, 0) / gemCosts.length) * 1000 : null;
+  const cheaper = costPerK != null && gemCostPerK ? gemCostPerK / costPerK : null;
   const tiles = `
     <div class="crit">
       <div class="crit-tile ${ratio && ratio > 1 ? "win" : "lose"}">
@@ -857,10 +862,12 @@ const missing = rows.filter((s) => !s.gemini).length;
         <div class="crit-v">${ratio ? ratio.toFixed(1) + "×" : "—"}</div>
         <div class="crit-n">${medD && medG ? `${Math.round(medD)} ms against ${Math.round(medG)} ms per question, median` : "waiting for timings"}</div>
       </div>
-      <div class="crit-tile ${costPerK != null ? "win" : "lose"}">
+      <div class="crit-tile ${cheaper && cheaper > 1 ? "win" : "lose"}">
         <div class="crit-k">Cheaper</div>
-        <div class="crit-v">${costPerK != null ? "$" + costPerK.toFixed(4) : "—"}</div>
-        <div class="crit-n">per 1,000 answers at Nace's list price; Gemini's free tier has no list price to compare</div>
+        <div class="crit-v">${cheaper ? cheaper.toFixed(0) + "×" : costPerK != null ? "$" + costPerK.toFixed(4) : "—"}</div>
+        <div class="crit-n">${costPerK != null
+          ? `per 1,000 answers: Drex $${costPerK.toFixed(4)} against Gemini $${gemCostPerK != null ? gemCostPerK.toFixed(4) : "—"}. Gemini priced at Google's published paid rate, $0.25 in / $1.50 out per 1M tokens.`
+          : "waiting for token counts"}</div>
       </div>
       <div class="crit-tile ${dMean != null && gMean != null ? (dMean <= gMean ? "win" : "lose") : "lose"}">
         <div class="crit-k">Accuracy</div>

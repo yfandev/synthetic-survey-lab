@@ -19,6 +19,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PAGE = ROOT / "public" / "index.html"
 SCORES = ROOT / "data" / "scoreboard.json"
+GEMINI_CACHE = ROOT / "public" / "data" / "gemini_cache.json"
+
+# Gemini 3.1 Flash-Lite, paid Standard tier, from Google's published pricing page:
+# $0.25 per 1M input tokens, $1.50 per 1M output tokens.
+GEMINI_IN = 0.25 / 1e6
+GEMINI_OUT = 1.5 / 1e6
+
+
+def gemini_cost_per_1k(rows: list[dict]) -> float | None:
+    """Price the recorded Gemini calls at Google's published paid rate."""
+    cache = json.loads(GEMINI_CACHE.read_text())
+    costs = []
+    for r in rows:
+        hit = None
+        for key, entry in cache.items():
+            if key.startswith(str(r.get("variable")) + "|") and entry.get("qid") == r.get("qid"):
+                hit = entry
+                break
+        if not hit:
+            continue
+        costs.append(hit["input_tokens"] * GEMINI_IN + hit["output_tokens"] * GEMINI_OUT)
+    return (sum(costs) / len(costs)) * 1000 if costs else None
 
 BLOCKS = {
     "BAKE": ("    <!--BAKE:START-->", "    <!--BAKE:END-->"),
@@ -74,6 +96,7 @@ def load():
 
 def tiles(m: dict, rows: list[dict]) -> list[str]:
     speed = m["gemini_mean_ms"] / m["drex_mean_ms"]
+    gem_cost = gemini_cost_per_1k(rows) or 0.0
     drex_med = statistics.median(r["drex_ms"] for r in rows)
     gem_med = statistics.median(r["gemini_latency_ms"] for r in rows)
     return [
@@ -84,8 +107,8 @@ def tiles(m: dict, rows: list[dict]) -> list[str]:
         f"median {drex_med:.0f} vs {gem_med:.0f} ms</div></div>",
         '      <div class="stat"><div class="k">Cost</div>'
         f'<div class="v good">${m["drex_cost_per_1k"]:.4f}</div>'
-        "<div class=\"num\">per 1,000 answers at Nace's list price. Gemini ran on a free tier, "
-        "so there is no frontier price to compare.</div></div>",
+        f"<div class=\"num\">Drex per 1,000 answers, against ${gem_cost:.4f} for Gemini at Google's "
+        f"published paid rate ($0.25 in / $1.50 out per 1M tokens): {m['drex_cost_per_1k'] and (gem_cost / m['drex_cost_per_1k']):.0f}× cheaper.</div></div>",
         '      <div class="stat"><div class="k">Accuracy</div>'
         f'<div class="v bad">{m["drex_mean_distance"]:.3f}</div>'
         f'<div class="num">Across {m["pairs_scored"]} pairs with a real answer: '
