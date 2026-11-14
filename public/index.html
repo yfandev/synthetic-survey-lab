@@ -59,6 +59,14 @@
   .sumtab tr:last-child td{border-bottom:0;font-weight:600}
   .sumline{font-size:17px;margin-top:12px;color:var(--muted)}
   @media (max-width:560px){.sumtab{font-size:15px;min-width:520px}}
+  .crit{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+  .crit-tile{border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .crit-k{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .crit-v{font-size:34px;font-weight:700;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums}
+  .crit-n{font-size:15px;color:var(--muted);margin-top:6px;line-height:1.35}
+  .crit-tile.win .crit-v{color:var(--real)}
+  .crit-tile.lose .crit-v{color:var(--warn)}
+  @media (max-width:760px){.crit{grid-template-columns:1fr}}
   .models{font-size:17px;color:var(--muted);line-height:1.6;background:var(--panel2);border:1px solid var(--line);
           border-radius:14px;padding:20px 22px;margin:8px 0 0}
   .models b{color:var(--ink)}
@@ -214,12 +222,13 @@
   </section>
 
   <section class="card">
-    <h2>Read a questionnaire</h2>
-    <p class="lead">NDI reads the PDF and returns every question with its options and the page it was printed
-      on, so you can check each one against the paper.</p>
+    <h2>Run a questionnaire</h2>
+    <p class="lead">Upload the PDF. NDI reads every page, Drex and Gemini each answer every question, and both
+      are scored against the real answer — the document's own printed numbers, or the matching national survey
+      question — then a wording check. One button, one run.</p>
     <div class="row">
       <label class="file" id="pick">Choose PDF<input id="file" type="file" accept="application/pdf" hidden /></label>
-      <button id="go" disabled>Read questions</button>
+      <button id="go" disabled>Run it</button>
     </div>
     <div id="err" class="err" hidden></div>
     <div id="meta" class="meta"></div>
@@ -386,7 +395,7 @@ async function uploadToNdi(f) {
 $("go").onclick = async () => {
   if (!file) return;
   const btn = $("go");
-  btn.disabled = true; btn.textContent = "Reading…";
+  btn.disabled = true; btn.textContent = "Reading the PDF…";
   $("err").hidden = true; $("meta").innerHTML = "";
   try {
     const uploaded = await uploadToNdi(file);
@@ -411,7 +420,7 @@ $("go").onclick = async () => {
   } catch (err) {
     $("err").hidden = false; $("err").textContent = String(err);
   }
-  btn.disabled = false; btn.textContent = "Read questions";
+  btn.disabled = false; btn.textContent = "Run it";
 };
 
 /* ------------------------------------------------------------ predict ---- */
@@ -826,24 +835,45 @@ function renderSummary() {
       </tr>
     </table>`;
 
-  const cost = tokens ? ` Drex used ${tokens} input tokens: $${((tokens * 0.03) / 1e6 * (1000 / rows.length)).toFixed(4)} per 1,000 answers at Nace's list price.` : "";
   // medians, so one throttled model call cannot flatter the ratio
   const median = (xs) => {
     if (!xs.length) return null;
     const s = [...xs].sort((a, b) => a - b);
     return s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
   };
-  const speed = median(drexMs) && median(gemMs)
-    ? ` On the median question Drex answered in ${Math.round(median(drexMs))} ms against ${Math.round(median(gemMs))} ms for Gemini, ${(median(gemMs) / median(drexMs)).toFixed(1)}× faster.`
-    : "";
-  const missing = rows.filter((s) => !s.gemini).length;
+const missing = rows.filter((s) => !s.gemini).length;
   const note = missing ? ` Gemini did not answer ${missing} of the questions (${esc((rows.find((s) => !s.gemini) || {}).geminiNote || "no reply")}).` : "";
+
+  const medD = median(drexMs), medG = median(gemMs);
+  const ratio = medD && medG ? medG / medD : null;
+  const dMean = mean(drexErr), gMean = mean(gemErr);
+  const costPerK = tokens ? (tokens * 0.03) / 1e6 * (1000 / rows.length) : null;
+  const tiles = `
+    <div class="crit">
+      <div class="crit-tile ${ratio && ratio > 1 ? "win" : "lose"}">
+        <div class="crit-k">Faster</div>
+        <div class="crit-v">${ratio ? ratio.toFixed(1) + "×" : "—"}</div>
+        <div class="crit-n">${medD && medG ? `${Math.round(medD)} ms against ${Math.round(medG)} ms per question, median` : "waiting for timings"}</div>
+      </div>
+      <div class="crit-tile ${costPerK != null ? "win" : "lose"}">
+        <div class="crit-k">Cheaper</div>
+        <div class="crit-v">${costPerK != null ? "$" + costPerK.toFixed(4) : "—"}</div>
+        <div class="crit-n">per 1,000 answers at Nace's list price; Gemini's free tier has no list price to compare</div>
+      </div>
+      <div class="crit-tile ${dMean != null && gMean != null ? (dMean <= gMean ? "win" : "lose") : "lose"}">
+        <div class="crit-k">Accuracy</div>
+        <div class="crit-v">${fmtPct(dMean)} vs ${fmtPct(gMean)}</div>
+        <div class="crit-n">${dMean == null || gMean == null ? "no real answer to score against" : dMean <= gMean ? "wrong answers, Drex against Gemini — Drex is closer" : "wrong answers, Drex against Gemini — Gemini is closer"}</div>
+      </div>
+    </div>`;
 
   $("runsummary").innerHTML = `
     <h3 style="font-size:22px;margin-top:6px">Measured on your questionnaire</h3>
+    <p class="sumline" style="margin-top:6px">The event scores speed, cost and accuracy. Here is each one, measured on your own questions.</p>
+    ${tiles}
     ${table}
     <p class="sumline">${withReal.length
-      ? `Error is the share of answers sitting on the wrong option, averaged over the ${withReal.length} questions with a real answer.${speed}${cost}`
+      ? `Error is the share of answers sitting on the wrong option, averaged over the ${withReal.length} questions with a real answer.`
       : "No question had a real answer, so there is no error to report. Drex's predictions are shown below."}${note}</p>
     <p class="sumline" id="wordingline">Wording check running…</p>`;
   $("runsummary").hidden = false;
