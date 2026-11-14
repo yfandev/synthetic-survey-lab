@@ -11,9 +11,12 @@ not all go our way — that is the point of the project.
 <https://site-ba3fbde9b79e4f648ede3e9028b48640.freebuff.page> — Freebuff Sites, run by the same worker
 code in this repo. Keys live only on the server.
 
+Slides (Adobe Express):
+<https://new.express.adobe.com/id/urn:aaid:sc:US:1b0d7604-c056-4eee-b2bd-10fed9ba85a2?accept=true&invite=true&promoid=Z2G1FQKR&mv=other>
+
 ## What it does
 
-1. **Read** — upload a questionnaire PDF (optionally a page range). NDI returns every question with its
+1. **Read** — upload a questionnaire PDF; every page is read. NDI returns every question with its
    answer options and the page each was printed on. Hash-cached: the same file is parsed once.
 2. **Match** — each question is matched to a GSS 2024 variable: five lexical candidates, then a Drex yes/no
    *"do these ask the same thing, with compatible options?"*, accepted at 0.80 or above.
