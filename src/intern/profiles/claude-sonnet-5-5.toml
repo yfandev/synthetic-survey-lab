@@ -1,0 +1,14 @@
+# Claude Sonnet 5.5, a reference model (not a small-model target). Window and output cap as the Models API reports
+# them (1M in, 128K out); the profile sets them so no request ever asks for more output than the model allows.
+
+match = ["anthropic/claude-sonnet-5-5*"]
+window = 1000000
+max_output_tokens = 128000
+vision = true
+# Thinks adaptively by default, hidden; high effort is what pi and Claude Code run it at, and summarized thinking
+# shows the reasoning in the journal at no extra cost.
+reasoning_effort = "high"
+
+[compat.extra_body.thinking]
+type = "adaptive"
+display = "summarized"

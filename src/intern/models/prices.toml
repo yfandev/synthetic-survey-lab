@@ -1,0 +1,319 @@
+# What a model costs, in US dollars per million tokens, for the providers whose replies give only token
+# counts: Anthropic's and OpenAI's own APIs, and Fireworks. OpenRouter and the Decisions API report each call's cost
+# themselves, so their models are not here.
+#
+# `cache_write` is the price of a token written to the prompt cache, `cache_read` of one read from it; a
+# model without one of them prices those tokens as input. `long` is what a prompt over `above` tokens,
+# cache reads and writes included, pays instead.
+#
+# Standard tier, default routing: the harness asks for no batch, priority, fast mode or regional processing,
+# which are priced otherwise. It writes Anthropic's 5-minute cache and OpenAI's default 30-minute one, so
+# those are the write prices here. A dated snapshot (claude-opus-4-5-20251101, gpt-5.5-2026-04-23) takes
+# its model's price. Check the prices against the pages below when a model is added or a price changes.
+
+# https://platform.claude.com/docs/en/about-claude/pricing, read 2026-11-09. Opus 5.5 and Sonnet 5.5 read
+# their cache at 0.05x input, Fable 5.2 and 5.1 at 0.025x, the rest at 0.1x.
+
+["anthropic/claude-fable-5-2"]
+input = 8.0
+cache_write = 10.0
+cache_read = 0.20
+output = 40.0
+
+["anthropic/claude-fable-5-1"]
+input = 10.0
+cache_write = 12.50
+cache_read = 0.25
+output = 50.0
+
+["anthropic/claude-fable-5"]
+input = 10.0
+cache_write = 12.50
+cache_read = 1.0
+output = 50.0
+
+["anthropic/claude-opus-5-5"]
+input = 4.0
+cache_write = 5.0
+cache_read = 0.20
+output = 20.0
+
+["anthropic/claude-opus-5"]
+input = 5.0
+cache_write = 6.25
+cache_read = 0.50
+output = 25.0
+
+["anthropic/claude-opus-4-8"]
+input = 5.0
+cache_write = 6.25
+cache_read = 0.50
+output = 25.0
+
+["anthropic/claude-opus-4-7"]
+input = 5.0
+cache_write = 6.25
+cache_read = 0.50
+output = 25.0
+
+["anthropic/claude-opus-4-6"]
+input = 5.0
+cache_write = 6.25
+cache_read = 0.50
+output = 25.0
+
+["anthropic/claude-opus-4-5"]
+input = 5.0
+cache_write = 6.25
+cache_read = 0.50
+output = 25.0
+
+["anthropic/claude-sonnet-5-5"]
+input = 2.0
+cache_write = 2.50
+cache_read = 0.10
+output = 10.0
+
+["anthropic/claude-sonnet-5"]
+input = 2.0
+cache_write = 2.50
+cache_read = 0.20
+output = 10.0
+
+["anthropic/claude-sonnet-4-6"]
+input = 3.0
+cache_write = 3.75
+cache_read = 0.30
+output = 15.0
+
+["anthropic/claude-sonnet-4-5"]
+input = 3.0
+cache_write = 3.75
+cache_read = 0.30
+output = 15.0
+
+["anthropic/claude-haiku-5-5"]
+input = 0.10
+cache_write = 0.125
+cache_read = 0.01
+output = 0.50
+long = { above = 100_000, input = 0.50, cache_write = 0.625, cache_read = 0.05, output = 2.50 }
+
+["anthropic/claude-haiku-4-5"]
+input = 1.0
+cache_write = 1.25
+cache_read = 0.10
+output = 5.0
+
+# https://developers.openai.com/api/docs/pricing, read 2026-11-09. Long context is over 272K input tokens.
+# GPT-5.6 Sol's price is promotional until 2026-11-30.
+
+["openai/gpt-6-astra"]
+input = 10.0
+cache_write = 12.50
+cache_read = 1.0
+output = 50.0
+long = { above = 272_000, input = 20.0, cache_write = 25.0, cache_read = 2.0, output = 75.0 }
+
+["openai/gpt-6.1-sol"]
+input = 2.0
+cache_write = 2.50
+cache_read = 0.10
+output = 10.0
+long = { above = 272_000, input = 4.0, cache_write = 5.0, cache_read = 0.20, output = 15.0 }
+
+["openai/gpt-6.1-terra"]
+input = 1.0
+cache_write = 1.25
+cache_read = 0.05
+output = 5.0
+long = { above = 272_000, input = 2.0, cache_write = 2.50, cache_read = 0.10, output = 7.50 }
+
+["openai/gpt-6-sol"]
+input = 2.0
+cache_write = 2.50
+cache_read = 0.20
+output = 10.0
+long = { above = 272_000, input = 4.0, cache_write = 5.0, cache_read = 0.40, output = 15.0 }
+
+["openai/gpt-6-luna"]
+input = 0.10
+cache_write = 0.125
+cache_read = 0.01
+output = 0.50
+long = { above = 272_000, input = 0.20, cache_write = 0.25, cache_read = 0.02, output = 0.75 }
+
+["openai/gpt-5.6-sol"]
+input = 4.0
+cache_write = 5.0
+cache_read = 0.40
+output = 20.0
+long = { above = 272_000, input = 8.0, cache_write = 10.0, cache_read = 0.80, output = 30.0 }
+
+["openai/gpt-5.6-terra"]
+input = 2.0
+cache_write = 2.50
+cache_read = 0.20
+output = 12.0
+long = { above = 272_000, input = 4.0, cache_write = 5.0, cache_read = 0.40, output = 18.0 }
+
+["openai/gpt-5.6-luna"]
+input = 0.20
+cache_write = 0.25
+cache_read = 0.02
+output = 1.20
+long = { above = 272_000, input = 0.40, cache_write = 0.50, cache_read = 0.04, output = 1.80 }
+
+["openai/gpt-5.5"]
+input = 5.0
+cache_read = 0.50
+output = 30.0
+long = { above = 272_000, input = 10.0, cache_read = 1.0, output = 45.0 }
+
+["openai/gpt-5.5-pro"]
+input = 30.0
+output = 180.0
+long = { above = 272_000, input = 60.0, output = 270.0 }
+
+["openai/gpt-5.4"]
+input = 2.50
+cache_read = 0.25
+output = 15.0
+long = { above = 272_000, input = 5.0, cache_read = 0.50, output = 22.50 }
+
+["openai/gpt-5.4-pro"]
+input = 30.0
+output = 180.0
+long = { above = 272_000, input = 60.0, output = 270.0 }
+
+["openai/gpt-5.4-mini"]
+input = 0.75
+cache_read = 0.075
+output = 4.50
+
+["openai/gpt-5.4-nano"]
+input = 0.20
+cache_read = 0.02
+output = 1.25
+
+["openai/gpt-5.3-codex"]
+input = 1.75
+cache_read = 0.175
+output = 14.0
+
+["openai/gpt-5.2"]
+input = 1.75
+cache_read = 0.175
+output = 14.0
+
+["openai/gpt-5.2-pro"]
+input = 21.0
+output = 168.0
+
+["openai/gpt-5.1"]
+input = 1.25
+cache_read = 0.125
+output = 10.0
+
+["openai/gpt-5"]
+input = 1.25
+cache_read = 0.125
+output = 10.0
+
+["openai/gpt-5-mini"]
+input = 0.25
+cache_read = 0.025
+output = 2.0
+
+["openai/gpt-5-nano"]
+input = 0.05
+cache_read = 0.005
+output = 0.40
+
+["openai/gpt-5-pro"]
+input = 15.0
+output = 120.0
+
+# https://docs.fireworks.ai/serverless/pricing, read 2026-11-10: Standard serverless, input / cached input /
+# output. A dedicated deployment (accounts/<you>/deployments/...) is billed per GPU-second, not per token, so it
+# has no price here; nor do the US-capacity variants, which have no model ID of their own, or the spot routers.
+
+["fireworks/accounts/fireworks/models/ember-1"]
+input = 3.0
+cache_read = 0.3
+output = 15.0
+
+["fireworks/accounts/fireworks/models/muse-spark-open"]
+input = 1.25
+cache_read = 0.15
+output = 4.25
+
+["fireworks/accounts/fireworks/models/kimi-k3p1-pro"]
+input = 2.0
+cache_read = 0.2
+output = 10.0
+
+["fireworks/accounts/fireworks/models/kimi-k3"]
+input = 3.0
+cache_read = 0.3
+output = 15.0
+
+["fireworks/accounts/fireworks/routers/kimi-k3-fast"]
+input = 4.5
+cache_read = 0.45
+output = 22.5
+
+["fireworks/accounts/fireworks/models/deepseek-v4p1-flash"]
+input = 0.3
+cache_read = 0.006
+output = 1.2
+
+["fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017"]
+input = 0.3
+cache_read = 0.006
+output = 1.2
+
+["fireworks/accounts/fireworks/routers/deepseek-v4p1-flash-1017-ultrafast"]
+input = 2.4
+cache_read = 0.048
+output = 9.6
+
+["fireworks/accounts/fireworks/models/glm-5p3-flash"]
+input = 0.15
+cache_read = 0.03
+output = 0.5
+
+["fireworks/accounts/fireworks/models/glm-5p3"]
+input = 1.4
+cache_read = 0.26
+output = 4.4
+
+["fireworks/accounts/fireworks/routers/glm-5p3-fast"]
+input = 2.1
+cache_read = 0.39
+output = 6.6
+
+["fireworks/accounts/fireworks/models/qwen3p8-max"]
+input = 2.0
+cache_read = 0.25
+output = 6.0
+
+["fireworks/accounts/fireworks/models/minimax-m3"]
+input = 0.3
+cache_read = 0.06
+output = 1.2
+
+["fireworks/accounts/fireworks/models/gpt-oss-120b"]
+input = 0.15
+cache_read = 0.015
+output = 0.6
+
+["fireworks/accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b"]
+input = 0.05
+cache_read = 0.01
+output = 0.2
+
+["fireworks/accounts/fireworks/models/nemotron-3-ultra-nvfp4"]
+input = 0.6
+cache_read = 0.12
+output = 2.4

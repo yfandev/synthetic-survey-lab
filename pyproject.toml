@@ -1,0 +1,96 @@
+[project]
+name = "intern-agent"
+version = "0.30.1"
+description = "An agent harness for models of 35B parameters or less, with a second model watching every turn"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+authors = [{ name = "Nace AI" }]
+dependencies = [
+    "httpcore>=1.0,<2",
+    "httpx>=0.27",
+    "pillow>=10",
+    "pydantic>=2.8",
+    "textual>=8,<9",
+    "tomlkit>=0.13",
+]
+
+[project.scripts]
+intern = "intern.cli:main"
+
+[project.optional-dependencies]
+browser = [
+    "playwright>=1.58,<2",
+]
+code-search = [
+    "networkx>=3.2",
+    "numpy>=1.26",
+    "scipy>=1.11",
+]
+mcp = [
+    "jsonschema>=4.23",
+    "mcp>=1.30,<2",
+]
+acp = [
+    "agent-client-protocol>=0.9,<0.10",
+]
+opensandbox = [
+    "opensandbox>=1.2,<2",
+]
+workspace = [
+    "duckdb>=1.1",
+    "networkx>=3.2",
+    "numpy>=1.26",
+    "openpyxl>=3.1",
+    "pymupdf>=1.24",
+    "python-docx>=1.1",
+    "xlrd>=2.0",
+]
+ocr = [
+    "opencv-python-headless>=4.9",
+    "rapidocr-onnxruntime>=1.4",
+]
+
+[project.entry-points."intern.runners"]
+opensandbox = "intern.runners.opensandbox:OpenSandboxRunner"
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/intern"]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.390",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "ASYNC", "PTH", "RET"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011"]
+
+[tool.pyright]
+include = ["src", "tests", "evals"]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = ["live: calls a real model API; skipped unless INTERN_LIVE_MODEL is set"]

@@ -1,0 +1,8 @@
+# Qwen3.8 27B as Cerebras serves it: its public model list caps the context at 65,536 tokens and
+# the reply at 32,768, half the window of a Fireworks deployment (qwen3.8-27b.toml).
+
+match = ["cerebras/qwen-3.8-27b*"]
+name = "Qwen3.8 27B (Cerebras)"
+window = 65536
+max_output_tokens = 32768
+reasoning_effort = "medium"

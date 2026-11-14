@@ -1,0 +1,25 @@
+name: Feature
+description: A change to what the harness does.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What goes wrong or takes too long today, with an example task or session.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: The change
+      description: What you would like the harness to do instead.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: How we would know it helps
+      description: >-
+        A changed default needs a paired comparison: same tasks and models, at least two repeats, pass rate,
+        tokens, cost and wall time (see CONTRIBUTING.md). Say what you would measure, or what you measured.

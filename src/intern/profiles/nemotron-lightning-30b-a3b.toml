@@ -1,0 +1,6 @@
+# NVIDIA Nemotron 3.5 Lightning 30B-A3B (MoE, about 3B active).
+# Window: 262,144 on Fireworks serverless (fireworks.ai/models/fireworks/nemotron-lightning-3p5-30b-a3b).
+# effective_window is not measured yet; until it is, the advertised window is the working window.
+
+match = ["*nemotron-lightning-3p5-30b-a3b*", "*nemotron-3.5-lightning*"]
+window = 262144

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/nace-ai/intern/security/advisories/new
+    about: Report it privately, not as an issue.
+  - name: Documentation
+    url: https://github.com/nace-ai/intern/blob/main/docs/usage.md
+    about: Every flag, model provider and setting.

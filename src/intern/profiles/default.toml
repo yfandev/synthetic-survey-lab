@@ -1,0 +1,37 @@
+# Base profile. Every other profile is merged over this one, so a model profile lists only what
+# differs. Fields and their meaning: intern/models/profile.py.
+
+match = ["*"]
+max_turns = 150
+max_continuations = 3
+# Reasoning models (DeepSeek V3.2+, Qwen3, GLM-4.5+, Kimi K2, gpt-oss) are trained to keep the reasoning
+# of the assistant turns since the last user message between tool calls; without it they re-derive their
+# plan on every call. A chat template that does not use it drops it. Reasoning goes back only to the
+# model that wrote it.
+reasoning_replay = true
+tool_packs = ["base"]
+extensions = []
+
+[sampling]
+
+# What 0.15 of a 128K window gives one tool result. On a 1M window the share alone would let one result hold
+# hundreds of thousands of characters, re-sent every turn.
+max_tool_result_tokens = 20000
+
+# Fractions of the working window: what shares it out (compaction, the reply reserve, kept history).
+[thresholds]
+compact_at = 0.75
+keep_recent = 0.35
+tool_result = 0.15
+output_reserve = 0.15
+memory = 0.08
+# The user's last three requests, kept as written in the State (about Codex's 20K tokens of a 272K window).
+requests = 0.08
+
+[compat]
+stream = true
+stream_usage = true
+max_tokens_field = "max_tokens"
+send_tool_choice = true
+think_tags = true
+text_tool_calls = true

@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get install -y ripgrep
+      - run: uv sync --locked --all-extras
+      - name: Version is consistent and documented
+        run: |
+          version=$(uv run python -c "import intern; print(intern.__version__)")
+          grep -qx "version = \"$version\"" pyproject.toml \
+            || { echo "::error::__version__ $version differs from pyproject.toml"; exit 1; }
+          grep -qx "### $version" docs/acp.md \
+            || { echo "::error::docs/acp.md has no '### $version' section"; exit 1; }
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+      - run: uv run pyright
+      - run: uv run pytest -q
+
+  # Clients install tags, so a version bump on main is a release.
+  tag:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency: tag
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag a new version
+        run: |
+          tag="v$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' src/intern/__init__.py)"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "$tag already exists"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "$tag" "$GITHUB_SHA"
+          git push origin "$tag"
+          echo "Tagged $tag on $GITHUB_SHA"
