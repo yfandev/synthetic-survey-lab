@@ -44,6 +44,7 @@
   .tag.gss{color:var(--real);border-color:#1d4d3f}
   .track.one{grid-template-columns:1fr;height:22px}
   .fill.pdf{background:var(--warn)}
+  .fill.gemini{background:var(--real)}
   .resline{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;margin-top:6px}
   .resfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
   .resfoot select{font-size:16px;padding:8px 10px}
@@ -731,7 +732,7 @@ function paintResult(i) {
     <div class="reshead"><span class="qid">${esc(q.id)}</span><span class="qtext">${esc(q.text)}</span></div>
     ${st.pred ? `<div><span class="tag">Drex · live</span></div>${barBlock(st.pred.shares, "drex")}` : ""}
     ${primary && st.pred ? `<div class="num">${(tvd(st.pred.shares, primary) * 100).toFixed(0)}% of answers on the wrong option</div>` : ""}
-    ${st.gemini ? `<div><span class="tag">Gemini 3.1 Flash-Lite · live</span></div>${barBlock(st.gemini, "gss")}` : ""}
+    ${st.gemini ? `<div><span class="tag">Gemini 3.1 Flash-Lite · live</span></div>${barBlock(st.gemini, "gemini")}` : ""}
     ${primary && st.gemini ? `<div class="num">${(tvd(st.gemini, primary) * 100).toFixed(0)}% of answers on the wrong option</div>` : ""}
     ${blocks.map((b) => `
       <div><span class="tag ${b.kind}">${esc(b.tag)}</span> <span class="num">${esc(b.note)}</span></div>
