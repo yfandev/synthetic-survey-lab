@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: If you use Intern in your research, please cite it as below.
+title: "Intern: an agent harness for small language models"
+type: software
+authors:
+  - name: Nace AI
+repository-code: https://github.com/nace-ai/intern
+license: Apache-2.0
+keywords:
+  - agent harness
+  - small language models
+  - coding agent
+  - llm agents

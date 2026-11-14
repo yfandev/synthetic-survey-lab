@@ -1,0 +1,55 @@
+name: Bug
+description: Something does not work as the docs say.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: The command and the task. A session journal (`~/.intern/sessions/*.jsonl`) helps; check it for anything private first.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The output of `intern --version`.
+    validations:
+      required: true
+  - type: input
+    id: system2
+    attributes:
+      label: System 2
+      description: The agent model and provider, e.g. `openrouter/qwen/qwen3.8-27b`.
+    validations:
+      required: true
+  - type: input
+    id: system1
+    attributes:
+      label: System 1
+      description: The decision model, e.g. `drex-latest` or `decisions:nace-ai/drex-max`.
+  - type: dropdown
+    id: client
+    attributes:
+      label: Client
+      options:
+        - Terminal UI
+        - Headless (-p)
+        - ACP (T3 Code, Zed, ...)
+        - JSON-RPC
+        - Python API
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: e.g. macOS 15.4 on Apple silicon, Ubuntu 24.04.

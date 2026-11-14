@@ -1,0 +1,17 @@
+# Qwen3.8 27B (dense). Window and output cap as served on a Fireworks dedicated deployment.
+# effective_window is not measured yet; until it is, the advertised window is the working window.
+
+# Fireworks does not list dedicated deployments: to put yours in the model catalog, add its concrete id to the
+# `match` list of a profile in ~/.intern/profiles.
+match = [
+  "*qwen3p8-27b*",
+  "*qwen3.8-27b*",
+]
+name = "Qwen3.8 27B (Fireworks)"
+window = 131072
+max_output_tokens = 32768
+# Medium is also pi's default level.
+reasoning_effort = "medium"
+# Qwen3.8 is natively multimodal: OpenRouter lists image input for qwen/qwen3.8-27b, and a Fireworks
+# deployment read a PNG's text back exactly. With vision, `read` shows the model image files.
+vision = true

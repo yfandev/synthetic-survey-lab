@@ -1,0 +1,5 @@
+# OpenAI's GPT-5 and GPT-6 chat models take images. OpenAI's own model listing does not say so (it gives
+# no modalities and no window), so the profile does; through OpenRouter the listing says it.
+
+match = ["openai/gpt-5*", "openai/gpt-6*"]
+vision = true

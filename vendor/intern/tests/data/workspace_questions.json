@@ -1,0 +1,173 @@
+[
+ {
+  "id": "q01",
+  "question": "Where does the harness recover a tool call that the model wrote out as plain text in its reply instead of a structured call?",
+  "files": [
+   "src/intern/providers/repair.py"
+  ],
+  "symbols": [
+   "extract_text_tool_calls",
+   "_parse_block"
+  ]
+ },
+ {
+  "id": "q02",
+  "question": "Where are broken tool arguments fixed up, e.g. trailing commas, markdown fences, or Python-style True/None instead of JSON?",
+  "files": [
+   "src/intern/providers/repair.py"
+  ],
+  "symbols": [
+   "parse_arguments",
+   "_fix_outside_strings",
+   "_candidates"
+  ]
+ },
+ {
+  "id": "q03",
+  "question": "When the agent runs out of its turn allowance, where does it get one last chance to tell the user what it finished and what it didn't?",
+  "files": [
+   "src/intern/loop.py"
+  ],
+  "symbols": [
+   "Run._wrap_up"
+  ]
+ },
+ {
+  "id": "q04",
+  "question": "When an edit's search text isn't found, where does the harness tell the model that the text would match if indentation were ignored?",
+  "files": [
+   "src/intern/tools/files.py"
+  ],
+  "symbols": [
+   "EditTool._near_miss",
+   "EditTool.run"
+  ]
+ },
+ {
+  "id": "q05",
+  "question": "Where does the harness stop the agent's shell commands from picking up the harness's own Python virtual environment?",
+  "files": [
+   "src/intern/executor.py"
+  ],
+  "symbols": [
+   "shell_env"
+  ]
+ },
+ {
+  "id": "q06",
+  "question": "Where is a long command output trimmed while streaming so only the beginning and end are kept in memory?",
+  "files": [
+   "src/intern/executor.py"
+  ],
+  "symbols": [
+   "_HeadTail",
+   "_HeadTail.add",
+   "_HeadTail.text"
+  ]
+ },
+ {
+  "id": "q07",
+  "question": "After the agent says it's done, where can it be sent back to double-check its work before the run really ends?",
+  "files": [
+   "src/intern/loop.py"
+  ],
+  "symbols": [
+   "Run._run_with_finish_gate"
+  ]
+ },
+ {
+  "id": "q08",
+  "question": "How does the harness figure out how big the model's context is when the model config doesn't say?",
+  "files": [
+   "src/intern/models/window.py"
+  ],
+  "symbols": [
+   "advertised_window",
+   "_from_models_listing",
+   "_from_llamacpp_props"
+  ]
+ },
+ {
+  "id": "q09",
+  "question": "Where is the --no-context-files CLI flag handled, i.e. what actually skips loading AGENTS.md and SYSTEM.md?",
+  "files": [
+   "src/intern/instructions.py",
+   "src/intern/cli.py"
+  ],
+  "symbols": [
+   "FileInstructions.load",
+   "FileInstructions",
+   "_options"
+  ]
+ },
+ {
+  "id": "q10",
+  "question": "Where is the text_tool_calls compat setting checked?",
+  "files": [
+   "src/intern/providers/openai_compat.py"
+  ],
+  "symbols": [
+   "OpenAICompatProvider._finish"
+  ]
+ },
+ {
+  "id": "q11",
+  "question": "What builds the state text that System 1 (the decision model) is asked about?",
+  "files": [
+   "src/intern/session_cut.py"
+  ],
+  "symbols": [
+   "session_cut"
+  ]
+ },
+ {
+  "id": "q12",
+  "question": "Where is the --system1 spec like 'decisions:<model>,<fallback>' parsed into a decision backend?",
+  "files": [
+   "src/intern/config.py"
+  ],
+  "symbols": [
+   "Bootstrap._system1"
+  ]
+ },
+ {
+  "id": "q13",
+  "question": "Where does the harness wait and retry when the model provider fails or the connection breaks?",
+  "files": [
+   "src/intern/providers/openai_compat.py",
+   "src/intern/providers/anthropic.py",
+   "src/intern/loop.py"
+  ],
+  "symbols": [
+   "OpenAICompatProvider.stream",
+   "AnthropicProvider.stream",
+   "Run._call_model_with_retries"
+  ]
+ },
+ {
+  "id": "q14",
+  "question": "Where is the decision made to shrink old conversation history because the prompt is getting too large for the context?",
+  "files": [
+   "src/intern/context.py",
+   "src/intern/loop.py"
+  ],
+  "symbols": [
+   "plan_compaction",
+   "squeeze",
+   "Run._prepare_request",
+   "Run._compact"
+  ]
+ },
+ {
+  "id": "q15",
+  "question": "When a tool's output is too big to put in the conversation, where is it cut down and where is the full version kept for later?",
+  "files": [
+   "src/intern/loop.py",
+   "src/intern/context.py"
+  ],
+  "symbols": [
+   "Run._run_tool",
+   "bound_output"
+  ]
+ }
+]

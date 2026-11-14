@@ -1,0 +1,15 @@
+# Claude Haiku 5.5.
+# Window and output cap; the Messages API does not report
+# context length.
+
+match = ["anthropic/claude-haiku-5-5*"]
+window = 1000000
+max_output_tokens = 128000
+vision = true
+# Haiku 5.5 thinks adaptively by default at medium effort, with its thinking hidden. High effort is what
+# pi and Claude Code run it at; summarized thinking shows the reasoning in the journal at no extra cost.
+reasoning_effort = "high"
+
+[compat.extra_body.thinking]
+type = "adaptive"
+display = "summarized"

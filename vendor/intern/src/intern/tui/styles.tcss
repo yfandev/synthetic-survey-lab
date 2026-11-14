@@ -1,0 +1,269 @@
+/* Paper, ink and the mascot's violet: see theme.py for the colours. */
+
+Screen {
+    layout: vertical;
+    background: $background;
+    color: $foreground;
+}
+
+#status {
+    dock: top;
+    height: auto;
+    padding: 0 1;
+    background: $surface;
+    border-bottom: solid $rule;
+}
+
+#body {
+    height: 1fr;
+}
+
+#transcript {
+    width: 1fr;
+    height: 1fr;
+    padding: 0 2;
+}
+
+#side {
+    width: 32%;
+    min-width: 56;
+    max-width: 88;
+    height: 1fr;
+    border-left: solid $rule;
+}
+
+#ledger {
+    height: 2fr;
+    padding: 0 1;
+    border-bottom: solid $rule;
+}
+
+#state {
+    height: 3fr;
+    padding: 0 1;
+}
+
+#prompt {
+    dock: bottom;
+    height: auto;
+    max-height: 10;
+    margin: 0 1 0 1;
+    background: $surface;
+    border: solid $rule;
+}
+
+#prompt:focus {
+    border: solid $brand;
+}
+
+#transcript-header, #state-header, #ledger-header {
+    dock: top;
+    height: 1;
+    background: $select;
+}
+
+/* The State panel (state_panel.py): the strip and the goal stay put, the history scrolls. */
+#cut-top {
+    height: auto;
+    margin-top: 1;
+}
+
+#cut-strip, #cut-legend, #cut-goal, #cut-running {
+    height: auto;
+}
+
+/* What runs as System 1 reads it, under the goal. */
+#cut-running {
+    margin-top: 1;
+    padding: 0 1;
+}
+
+/* The goal, a line per request: as the transcript shows the user's message, a purple bar on a shade. */
+#cut-goal {
+    margin-top: 1;
+    padding: 0 1;
+    background: $select;
+    border-left: outer $brand;
+}
+
+#cut-history {
+    height: 1fr;
+    margin-top: 1;
+    scrollbar-size-vertical: 1;
+}
+
+#ledger-chart {
+    margin-top: 1;
+}
+
+.section {
+    margin-top: 1;
+}
+
+.section.first {
+    margin-top: 0;
+}
+
+.line {
+    height: auto;
+}
+
+.quote {
+    height: auto;
+    margin-top: 1;
+    padding: 0 1;
+    background: $wash;
+}
+
+.line .mark {
+    width: 2;
+}
+
+.line .body {
+    width: 1fr;
+}
+
+/* The user's message: a purple bar and a deeper shade, so it stands apart from the harness's blocks when scrolling. */
+.user {
+    margin: 1 0 1 0;
+    padding: 0 1;
+    background: $select;
+    border-left: outer $brand;
+    color: $foreground;
+}
+
+.reply {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.marker {
+    color: $muted;
+}
+
+.decision {
+    height: auto;
+    background: $surface;
+    border-left: wide $muted;
+    padding: 0 2;
+    margin: 0 0 1 0;
+}
+
+.decision.refused {
+    border-left: wide $error;
+}
+
+/* A compaction's card, open: the summary System 2 continues from, under what the card says. */
+.compaction-summary {
+    height: auto;
+    margin-top: 1;
+}
+
+.tool .decision {
+    margin: 0;
+    padding: 0 1;
+    background: $wash;
+    border-left: none;
+}
+
+.notice.warn {
+    color: $warning;
+}
+
+.notice.error {
+    color: $error;
+}
+
+.notice.ok {
+    color: $success;
+}
+
+.notice.info {
+    color: $muted;
+}
+
+.thinking {
+    color: $muted;
+    text-style: italic;
+    margin: 0 0 1 0;
+}
+
+.tool {
+    height: auto;
+    margin: 0 0 1 0;
+}
+
+/* A tool call, the harness's: a lighter shade, softer ink, no bar. */
+.tool .head {
+    background: $wash;
+    color: $primary;
+    padding: 0 1;
+}
+
+.tool.failed .head {
+    color: $error;
+}
+
+.tool .out {
+    padding: 0 1;
+}
+
+.reply MarkdownBlock > .code_inline {
+    background: $wash !important;
+    color: $foreground !important;
+    text-style: none !important;
+}
+
+ModelPicker, StateScreen {
+    align: center middle;
+    background: $background 60%;
+}
+
+#picker {
+    width: 112;
+    max-width: 96%;
+    height: 80%;
+    border: round $rule;
+    background: $surface;
+    padding: 0 1;
+}
+
+#picker-filter {
+    margin: 0 0 1 0;
+    background: $surface;
+    border: solid $rule;
+}
+
+#picker-filter:focus {
+    border: solid $brand;
+}
+
+#picker-title, #picker-hint, #picker-thinking {
+    height: auto;
+}
+
+#picker-options {
+    height: 1fr;
+    background: $surface;
+    border: none;
+}
+
+#state-full {
+    width: 90%;
+    height: 90%;
+    border: round $rule;
+    background: $surface;
+    padding: 1 1 0 1;
+}
+
+#state-cut {
+    height: 1fr;
+    border: none;
+    background: $surface;
+}
+
+.state-note {
+    height: auto;
+    margin-bottom: 1;
+}
