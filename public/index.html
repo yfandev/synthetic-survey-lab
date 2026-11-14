@@ -147,7 +147,6 @@
 <body>
 <header>
   <h1>Synthetic Survey Lab</h1>
-  <div class="steps"><span class="on">1 Read</span><span id="step2">2 Predict</span><span>3 Panel</span><span>4 Wording</span></div>
   <div class="grow"></div>
   <a class="pill" href="/proofs">API proofs</a>
 </header>
@@ -156,21 +155,22 @@
   <section class="card hero">
     <div class="kicker">Apex Predator · Drex vs. the giants</div>
     <h1 class="thesis">Ask it any survey question about any group of Americans.</h1>
-    <p class="lead">It answers with the likely split in 275 ms for $0.000006. Democrats' happiness, for
+    <p class="lead">It answers with the likely split in 253 ms for $0.000006. Democrats' happiness, for
       example: Drex said 14% very happy, 43% pretty, 43% not too, and the national survey's real answer is
       21%, 59%, 20%.</p>
     <!--BAKE:START-->
     <div class="stats3">
       <div class="stat"><div class="k">Faster</div><div class="v good">5.7×</div><div class="num">260.9 ms vs 1486 ms per answer<br>median 250 vs 766 ms</div></div>
       <div class="stat"><div class="k">Cost</div><div class="v good">$0.0060</div><div class="num">per 1,000 answers at Nace's list price. Gemini ran on a free tier, so there is no frontier price to compare.</div></div>
-      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.223</div><div class="num">22% of answers on the wrong option, against 12% for Gemini and 5% for guessing that every group answers like the whole country.</div></div>
+      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.223</div><div class="num">Across 8 pairs with a real answer: 22% of answers on the wrong option, against 12% for Gemini and 5% for guessing that every group answers like the whole country.</div></div>
     </div>
     <!--BAKE:END-->
     <p class="models"><b>Three things run here.</b> <b>Drex</b> answers the survey questions, live.
-      <b>Gemini 3.1 Flash-Lite</b> is a top general-purpose AI we measure against: we asked it the same 8
-      pairs once each and saved the answers, so its scores stay fixed. <b>Nace NDI</b> reads the questionnaire
-      PDF you upload — a survey, a ballot, a feedback form — and pulls out every question with its options and
-      the page it came from, live. In the wording test Gemini runs live again to write alternative phrasings.</p>
+      <b>Gemini 3.1 Flash-Lite</b> answers the same questions in the same run, live, so the two are compared
+      like for like; the numbers above come from 8 recorded pairs. <b>Nace NDI</b> reads every page of the
+      questionnaire PDF you upload — a survey, a ballot, a feedback form — and returns each question with its
+      options and the page it came from, live. A wording check closes each run: Gemini writes other phrasings
+      and Drex decides which ones still ask the same thing.</p>
 
     <h2 class="sec">Why a team runs this before paying for a survey</h2>
     <p class="lead" style="margin-bottom:16px">Fieldwork costs thousands of dollars and takes weeks, and by
@@ -213,7 +213,7 @@
       <tr><td>Trust in people (Q4)</td><td>Democrats</td><td>0.466</td><td>0.376</td><td>0.040</td></tr>
     </tbody></table>
     </div>
-    <p class="num" style="margin-top:14px">8 pairs have a real survey answer to score against. The other 5 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every answer matches the real survey, 0.27 means 27% of them are misplaced. The whole-country guess column is the same survey asked of all 3,986 respondents, weighted, then used as the answer for every group.</p>
+    <p class="num" style="margin-top:14px">8 pairs have a real survey answer to score against. The other 5 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every answer matches the real survey, 0.27 means 27% of them are misplaced. The national average column is the same survey asked of all 3,986 respondents, weighted, then used as the answer for every group.</p>
     <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a real answer.</p>
     <p class="num">Each call was timed end to end on the same machine, with Gemini on its free tier: a real measurement of both models side by side. The Gemini answers come from one pass, one question at a time, saved as they arrived.</p>
     <!--BAKE2:END-->
