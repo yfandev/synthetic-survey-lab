@@ -8,7 +8,7 @@ not all go our way — that is the point of the project.
 
 ## Live
 
-<https://site-9744494842a94abab91693c343f61169.freebuff.page> — Freebuff Sites, run by the same worker
+<https://site-ba3fbde9b79e4f648ede3e9028b48640.freebuff.page> — Freebuff Sites, run by the same worker
 code in this repo. Keys live only on the server.
 
 ## What it does

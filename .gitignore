@@ -12,3 +12,4 @@ data/gss/
 dist/
 node_modules/
 results/
+.secrets/
