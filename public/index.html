@@ -84,8 +84,9 @@
     <p class="lead" style="font-size:20px">The numbers below are already measured, so nothing here needs a click.</p>
     <p style="font-size:20px;color:var(--ink);background:#0f131c;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
       <b>What runs here:</b> <b>Drex</b> makes every prediction (live). <b>Gemini 3.1 Flash-Lite</b> is the
-      frontier model we compare against; its scores are saved from one run, and the only place it runs live is
-      the wording test. <b>Nace NDI</b> reads your PDF (live).</p>
+      frontier model we compare against. We asked it the same 11 questions once each, in a fixed order, and saved
+      the answers; it never runs on the scoreboard, and the only place it runs live is the wording test.
+      <b>Nace NDI</b> reads your PDF (live).</p>
     <div class="stats3" id="hero"><div class="empty">Loading the saved results…</div></div>
     <p class="lead" id="heroline" style="margin-top:12px;font-size:22px"></p>
     <p class="num" id="heronote"></p>
@@ -525,13 +526,14 @@ fetch("/data/scoreboard.json").then(r => r.json()).then(s => {
     <div class="stat"><div class="k">Cheaper</div><div class="v good">$${m.drex_cost_per_1k.toFixed(4)}</div>
       <div class="num">per 1,000 answers · Nace's list price, not a subsidy</div></div>
     <div class="stat"><div class="k">Accuracy — Drex loses</div><div class="v bad">${m.drex_mean_distance.toFixed(3)}</div>
-      <div class="num">Gemini ${m.gemini_mean_distance.toFixed(3)} (one saved run) · national average ${m.whole_mean_distance.toFixed(3)}</div></div>`;
+      <div class="num">Gemini ${m.gemini_mean_distance.toFixed(3)} (saved answers) · national average ${m.whole_mean_distance.toFixed(3)}</div></div>`;
   $("heroline").innerHTML = `Drex is much faster and much cheaper. It is also <b>less accurate</b> than the
     frontier model and than the simple national average, and we are showing that instead of hiding it. Lower
     is better below: 0 means the answer matched exactly, 1 means it had nothing in common.`;
   $("heronote").textContent = `We could check ${m.pairs_scored} questions against real answers. The other
     ${m.unverified} could not be checked, because the survey never asked them, so they say unverified rather
-    than guess. The Gemini scores were saved from one run and were never re-run to look better.`;
+    than guess. The Gemini answers were collected in one pass, one question at a time, and were never re-asked when they
+    came out badly.`;
 }).catch(e => { $("hero").innerHTML = `<div class="err">Recorded run unavailable: ${esc(String(e))}</div>`; });
 </script>
 </body>
