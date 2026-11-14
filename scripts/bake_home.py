@@ -115,8 +115,8 @@ def tiles(m: dict, rows: list[dict]) -> list[str]:
         f'{m["drex_mean_distance"]:.3f}</div>'
         f'<div class="num">Across {m["pairs_scored"]} pairs with a real answer: '
         f'{m["drex_mean_distance"] * 100:.0f}% of answers on the wrong option, against '
-        f"{m['gemini_mean_distance'] * 100:.0f}% for Gemini and {m['whole_mean_distance'] * 100:.0f}% for "
-        "guessing that every group answers like the whole country.</div></div>",
+        f"{m['gemini_mean_distance'] * 100:.0f}% for Gemini and {m['whole_mean_distance'] * 100:.0f}% for a "
+        "straight whole-country split.</div></div>",
         "    </div>",
     ]
 
