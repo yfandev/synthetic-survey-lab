@@ -76,11 +76,14 @@
 <main>
   <section class="card">
     <h2>Drex vs. the giants, measured</h2>
-    <p class="lead">The task is a group of Americans' answer to a survey question — normally done by a frontier
-      LLM. These numbers are the recorded run and load without a click. The same comparison is re-run live
-      further down.</p>
-    <div class="stats3" id="hero"><div class="empty">Loading the recorded run…</div></div>
-    <p class="lead" id="heroline" style="margin-top:12px"></p>
+    <p class="lead">The job is guessing how a group of Americans answers a survey question. A frontier AI
+      chatbot normally does that job. These numbers are already measured, so nothing here needs a click.</p>
+    <p style="font-size:20px;color:var(--ink);background:#0f131c;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
+      <b>What runs here:</b> <b>Drex</b> makes every prediction (live). <b>Gemini 3.1 Flash-Lite</b> is the
+      frontier model we compare against; its scores are saved from one run, and the only place it runs live is
+      the wording test. <b>Nace NDI</b> reads your PDF (live).</p>
+    <div class="stats3" id="hero"><div class="empty">Loading the saved results…</div></div>
+    <p class="lead" id="heroline" style="margin-top:12px;font-size:22px"></p>
     <p class="num" id="heronote"></p>
   </section>
 
@@ -121,8 +124,9 @@
 
   <section class="card">
     <h2>Scoreboard</h2>
-    <p class="lead">Every verified question × group pair, once. Distance is total variation: 0 is identical,
-      1 is no overlap. Bigger distance is worse. The whole-sample baseline answers the same for everyone.</p>
+    <p class="lead">Every question we could check, scored once. Lower is better: 0 means the answer matched
+      the real survey exactly, 1 means it had nothing in common. The national average column gives every group
+      the same answer, which is the thing to beat.</p>
     <div class="row">
       <button id="runall">Re-run live now</button>
       <span id="runmeta" class="meta"></span>
@@ -151,7 +155,8 @@
 
   <section class="card">
     <h2>Reword test</h2>
-    <p class="lead">Gemini writes four rewordings, Drex keeps only those it judges identical in meaning, then the split is recomputed for each.</p>
+    <p class="lead">Gemini 3.1 Flash-Lite writes four other ways to ask the question. Drex keeps only the ones
+      it judges to mean the same thing, then we recompute the answer for each.</p>
     <div class="row">
       <select id="rwq"></select>
       <button id="rwrun">Run reword test</button>
@@ -336,7 +341,7 @@ function render(d, match, q) {
   const dist = (v) => v == null ? "—" : v.toFixed(3);
   $("dstats").innerHTML = `
     <div class="stat"><div class="k">Drex distance</div><div class="v ${d.distance.drex < 0.2 ? "good" : "warnc"}">${dist(d.distance.drex)}</div>
-      <div class="num">total variation · 0 is identical</div></div>
+      <div class="num">0 = matched exactly, 1 = nothing in common</div></div>
     <div class="stat"><div class="k">Whole-sample baseline</div><div class="v">${dist(d.distance.whole_sample)}</div>
       <div class="num">same answer for everyone</div></div>
     <div class="stat"><div class="k">Uniform baseline</div><div class="v">${dist(d.distance.uniform)}</div>
@@ -410,9 +415,9 @@ $("runall").onclick = async () => {
       (worst.length ? worst.map(r => `<div class="num" style="margin:4px 0">
         <b style="color:var(--ink)">${r.dist.drex.toFixed(3)}</b> · ${r.qid} ${esc(r.group)} · <code>${esc(r.variable)}</code>
         · real n=${r.real_n} · Drex said ${r.probs.map(p => `${esc(p.option)} ${(p.p * 100).toFixed(0)}%`).join(", ")}</div>`).join("")
-        : `<div class="num">No verified pairs to score.</div>`);
+        : `<div class="num">No questions could be checked against real answers.</div>`);
 
-    $("runmeta").textContent = `${usable.length} scored · ${rows.filter(r => r.unverified).length} unverified`;
+    $("runmeta").textContent = `${usable.length} checked against real answers · ${rows.filter(r => r.unverified).length} could not be`;
   } catch (err) {
     $("serr").hidden = false; $("serr").textContent = String(err);
   }
@@ -512,17 +517,17 @@ fetch("/data/scoreboard.json").then(r => r.json()).then(s => {
   const speed = (m.gemini_mean_ms / m.drex_mean_ms).toFixed(1);
   $("hero").innerHTML = `
     <div class="stat"><div class="k">Faster</div><div class="v good">${speed}×</div>
-      <div class="num">${m.drex_mean_ms} ms vs ${Math.round(m.gemini_mean_ms)} ms per decision</div></div>
+      <div class="num">${m.drex_mean_ms} ms vs ${Math.round(m.gemini_mean_ms)} ms per answer</div></div>
     <div class="stat"><div class="k">Cheaper</div><div class="v good">$${m.drex_cost_per_1k.toFixed(4)}</div>
-      <div class="num">per 1,000 decisions · ${m.drex_mean_tokens} input tokens each</div></div>
+      <div class="num">per 1,000 answers · Nace's list price, not a subsidy</div></div>
     <div class="stat"><div class="k">Accuracy — Drex loses</div><div class="v bad">${m.drex_mean_distance.toFixed(3)}</div>
-      <div class="num">frontier ${m.gemini_mean_distance.toFixed(3)} (recorded) · national average ${m.whole_mean_distance.toFixed(3)}</div></div>`;
-  $("heroline").innerHTML = `Drex wins on speed and cost by a wide margin and loses on accuracy. Distance is
-    total variation: 0 is identical, 1 is no overlap, lower is better. We report it for every pair rather than
-    showing a best case.`;
-  $("heronote").textContent = `${m.pairs_scored} verified pairs · ${m.unverified} questions had no GSS counterpart
-    and are shown as unverified · the frontier column is stored from one sequential run, not retried until it
-    looked good.`;
+      <div class="num">Gemini ${m.gemini_mean_distance.toFixed(3)} (one saved run) · national average ${m.whole_mean_distance.toFixed(3)}</div></div>`;
+  $("heroline").innerHTML = `Drex is much faster and much cheaper. It is also <b>less accurate</b> than the
+    frontier model and than the simple national average, and we are showing that instead of hiding it. Lower
+    is better below: 0 means the answer matched exactly, 1 means it had nothing in common.`;
+  $("heronote").textContent = `We could check ${m.pairs_scored} questions against real answers. The other
+    ${m.unverified} could not be checked, because the survey never asked them, so they say unverified rather
+    than guess. The Gemini scores were saved from one run and were never re-run to look better.`;
 }).catch(e => { $("hero").innerHTML = `<div class="err">Recorded run unavailable: ${esc(String(e))}</div>`; });
 </script>
 </body>
