@@ -166,6 +166,11 @@ async function ndiDocument(env, kind, source, options = {}) {
 // "recorded".
 let GEMINI_CACHE = null;
 
+// Phase 4 config: flag a prediction as fragile when any two wording splits
+// differ by more than this total-variation distance.
+const REWORD_TVD_LIMIT = 0.1;
+const REWORD_CACHE = new Map();
+
 async function loadGeminiCache(request, env) {
   if (GEMINI_CACHE) return GEMINI_CACHE;
   try {
@@ -779,12 +784,18 @@ async function handle(request, env) {
       const selection = body.selection || {};
       const who = persona(selection, gss.groups);
 
+      const cacheKey = `${text}|${JSON.stringify(variable.options)}`;
+      const cached = REWORD_CACHE.get(cacheKey);
+      const started = Date.now();
+      if (cached) {
+        return json({ ...cached, cached: true, gemini_ms: 0 });
+      }
+
       const prompt =
         `Rewrite this survey question four ways that keep exactly the same meaning and the same answer options. ` +
         `Question: "${text}" Options: ${JSON.stringify(variable.options)}. ` +
         `Reply with JSON only: {"rewordings": ["...", "...", "...", "..."]}`;
 
-      const started = Date.now();
       const gRes = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent`,
         {
@@ -850,7 +861,7 @@ async function handle(request, env) {
         }
       }
 
-      return json({
+      const payload = {
         question: text,
         persona: who,
         model: "gemini-3.1-flash-lite",
@@ -859,11 +870,13 @@ async function handle(request, env) {
         dropped: rewordings.filter((r) => !kept.some((k) => k.text === r)).length,
         variants,
         max_distance: worst ? worst.distance : 0,
-        unstable: Boolean(worst && worst.distance > 0.1),
-        threshold: 0.1,
+        unstable: Boolean(worst && worst.distance > REWORD_TVD_LIMIT),
+        threshold: REWORD_TVD_LIMIT,
         gemini_ms: Date.now() - started,
-        note: "Question text was sent to Gemini (free tier) to write rewordings.",
-      });
+        note: "Question text is sent to Gemini (free tier) to write rewordings.",
+      };
+      REWORD_CACHE.set(cacheKey, payload);
+      return json(payload);
     } catch (err) {
       return json({ error: String(err.message || err) }, 502);
     }

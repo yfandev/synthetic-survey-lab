@@ -896,7 +896,26 @@ async function wordingCheck() {
     line.textContent = `Wording check: ${r.error}.`;
     return;
   }
-  line.innerHTML = `<b>Wording check (${esc(target.q.id)}):</b> Gemini wrote ${r.proposed} other ways to ask it; Drex kept ${r.kept.length} as the same question. The answer moved by ${(r.max_distance * 100).toFixed(0)} points at most, so the prediction ${r.unstable ? "changes when the words change — treat it as fragile." : "holds when the words change."}`;
+
+  const short = (t) => (t.length > 74 ? t.slice(0, 72).trim() + "…" : t);
+  const original = r.variants[0];
+  const options = original.probabilities.map((o) => o.option);
+  const cells = (shares) => shares.map((o) => `${(o.p * 100).toFixed(0)}%`).join(" · ");
+
+  line.innerHTML = `
+    <b>Wording check (${esc(target.q.id)}):</b> Gemini wrote ${r.proposed} other ways to ask it; Drex kept
+    ${r.kept.length} as the same question (0.90 or higher). The answer moved by
+    ${(r.max_distance * 100).toFixed(0)} points at most, so the prediction
+    ${r.unstable ? "changes when the words change — treat it as fragile." : "holds when the words change."}
+    <table class="sumtab wtab" style="margin-top:12px">
+      <tr><th>Wording</th><th>${options.map(esc).join(" · ")}</th><th>Moved</th></tr>
+      ${r.variants.map((v, i) => `<tr>
+        <td>${v.original ? "<b>Original</b>" : esc(short(v.text))}</td>
+        <td>${cells(v.probabilities)}</td>
+        <td>${i === 0 ? "—" : `${(tvd(v.probabilities, original.probabilities) * 100).toFixed(0)} pts`}</td>
+      </tr>`).join("")}
+    </table>
+    <div class="num" style="margin-top:8px">${esc(r.note)}</div>`;
 }
 
 async function scoreAll() {
