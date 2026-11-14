@@ -232,8 +232,12 @@
       question — then a wording check. One button, one run.</p>
     <div class="row">
       <label class="file" id="pick">Choose PDF<input id="file" type="file" accept="application/pdf" hidden /></label>
+      <button id="demo" class="ghost">Try the example questionnaire</button>
       <button id="go" disabled>Run it</button>
     </div>
+    <p class="num" style="margin-top:10px">Example: Pew Research Center, May 2026, “Americans See Health Care Costs,
+      Deficit, Inflation as Big Problems Facing the Nation” — topline, 5,103 U.S. adults.
+      <a href="https://www.pewresearch.org/politics/2026/05/11/americans-see-health-care-costs-deficit-inflation-as-big-problems-facing-the-nation/" target="_blank" rel="noopener">Source</a>.</p>
     <div id="err" class="err" hidden></div>
     <div id="meta" class="meta"></div>
     <div id="qlist" class="qlist"><div class="empty">Choose a PDF to begin.</div></div>
@@ -327,15 +331,36 @@ let file = null;
 let lastMatch = null;
 
 /* ------------------------------------------------------------- intake ---- */
-$("file").onchange = (e) => {
-  file = e.target.files[0] || null;
+function useFile(f) {
+  file = f || null;
   $("pick").classList.toggle("has", !!file);
   $("pick").firstChild.textContent = file ? file.name : "Choose PDF";
   $("go").disabled = !file;
+}
+
+$("file").onchange = (e) => useFile(e.target.files[0]);
+
+$("demo").onclick = async (e) => {
+  e.preventDefault();
+  const btn = $("demo");
+  btn.disabled = true;
+  btn.textContent = "Loading example…";
+  try {
+    const res = await fetch("/samples/pew-national-problems-2026.pdf");
+    if (!res.ok) throw new Error(`example ${res.status}`);
+    const blob = await res.blob();
+    useFile(new File([blob], "pew-national-problems-2026.pdf", { type: "application/pdf" }));
+  } catch (err) {
+    $("err").hidden = false;
+    $("err").textContent = `Could not load the example: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Try the example questionnaire";
+  }
 };
 
 function renderQuestions() {
-  if (!questions.length) { $("qlist").innerHTML = '<div class="empty">Nothing extracted.</div>'; }
+  if (!questions.length) { $("qlist").innerHTML = '<div class="empty">Choose a PDF to begin.</div>'; }
   else {
     $("qlist").innerHTML = questions.map((q, i) => `
       <div class="q" data-i="${i}">
