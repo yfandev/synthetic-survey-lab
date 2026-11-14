@@ -75,6 +75,16 @@
 
 <main>
   <section class="card">
+    <h2>Drex vs. the giants, measured</h2>
+    <p class="lead">The task is a group of Americans' answer to a survey question — normally done by a frontier
+      LLM. These numbers are the recorded run and load without a click. The same comparison is re-run live
+      further down.</p>
+    <div class="stats3" id="hero"><div class="empty">Loading the recorded run…</div></div>
+    <p class="lead" id="heroline" style="margin-top:12px"></p>
+    <p class="num" id="heronote"></p>
+  </section>
+
+  <section class="card">
     <h2>Read a questionnaire</h2>
     <p class="lead">NDI reads the PDF and returns every question with its options and the page it was printed on.
       Nothing is invented: a question with no page says so.</p>
@@ -92,7 +102,10 @@
   <section class="card">
     <h2>Predict a group</h2>
     <p class="lead">Pick a question, describe the group, and Drex answers with a share for every option.
-      Where the GSS asked the same question, the weighted real result appears beside it.</p>
+      Where the <b>General Social Survey (GSS)</b> asked the same question, the real result appears beside it.</p>
+    <p class="num" style="margin:-6px 0 12px">The GSS is a national survey run by NORC at the University of Chicago
+      since 1972. It interviews about 4,000 Americans in person, asks them identical questions every year, and
+      publishes the answers. It is the closest thing to a referee for "what does America actually think".</p>
     <div class="row">
       <select id="qsel"></select>
       <div class="grid4">
@@ -111,7 +124,7 @@
     <p class="lead">Every verified question × group pair, once. Distance is total variation: 0 is identical,
       1 is no overlap. Bigger distance is worse. The whole-sample baseline answers the same for everyone.</p>
     <div class="row">
-      <button id="runall">Run all pairs</button>
+      <button id="runall">Re-run live now</button>
       <span id="runmeta" class="meta"></span>
     </div>
     <div id="serr" class="err" hidden></div>
@@ -122,7 +135,9 @@
 
   <section class="card">
     <h2>Panel run</h2>
-    <p class="lead">Drex answers as N real GSS respondents, one call each. The split it produces is compared with the real one.</p>
+    <p class="lead">One model, many people: Drex is asked the same question as N different real respondents and
+      answers each from that person's demographics and earlier answers. This measures throughput, not a race
+      between models — no other model is called here.</p>
     <div class="row">
       <select id="prunq"></select>
       <label class="range">respondents <input id="pn" type="number" value="100" min="20" max="2000" /></label>
@@ -489,6 +504,26 @@ $("rwrun").onclick = async () => {
 
 loadGroups().catch(e => { $("verr").hidden = false; $("verr").textContent = String(e); });
 renderQuestions();
+
+/* ------------------------------------------------- recorded headline ---- */
+
+fetch("/data/scoreboard.json").then(r => r.json()).then(s => {
+  const m = s.summary;
+  const speed = (m.gemini_mean_ms / m.drex_mean_ms).toFixed(1);
+  $("hero").innerHTML = `
+    <div class="stat"><div class="k">Faster</div><div class="v good">${speed}×</div>
+      <div class="num">${m.drex_mean_ms} ms vs ${Math.round(m.gemini_mean_ms)} ms per decision</div></div>
+    <div class="stat"><div class="k">Cheaper</div><div class="v good">$${m.drex_cost_per_1k.toFixed(4)}</div>
+      <div class="num">per 1,000 decisions · ${m.drex_mean_tokens} input tokens each</div></div>
+    <div class="stat"><div class="k">Accuracy — Drex loses</div><div class="v bad">${m.drex_mean_distance.toFixed(3)}</div>
+      <div class="num">frontier ${m.gemini_mean_distance.toFixed(3)} (recorded) · national average ${m.whole_mean_distance.toFixed(3)}</div></div>`;
+  $("heroline").innerHTML = `Drex wins on speed and cost by a wide margin and loses on accuracy. Distance is
+    total variation: 0 is identical, 1 is no overlap, lower is better. We report it for every pair rather than
+    showing a best case.`;
+  $("heronote").textContent = `${m.pairs_scored} verified pairs · ${m.unverified} questions had no GSS counterpart
+    and are shown as unverified · the frontier column is stored from one sequential run, not retried until it
+    looked good.`;
+}).catch(e => { $("hero").innerHTML = `<div class="err">Recorded run unavailable: ${esc(String(e))}</div>`; });
 </script>
 </body>
 </html>

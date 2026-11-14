@@ -1,0 +1,973 @@
+{
+ "summary": {
+  "pairs_scored": 11,
+  "unverified": 4,
+  "drex_mean_distance": 0.2667,
+  "gemini_mean_distance": 0.1801,
+  "whole_mean_distance": 0.073,
+  "uniform_mean_distance": 0.2789,
+  "drex_mean_ms": 275,
+  "gemini_mean_ms": 1303.8,
+  "drex_mean_tokens": 202.3,
+  "drex_cost_per_1k": 0.0061,
+  "biggest_misses": [
+   {
+    "qid": "Q5",
+    "status": "scored",
+    "group": "Democrats",
+    "variable": "helpnot",
+    "match": 0.929,
+    "persona": "An American adult who identifies as a Democrat.",
+    "n": 805,
+    "too_few": false,
+    "distance": {
+     "drex": 0.49048665505806177,
+     "whole_sample": 0.13955918275204354,
+     "uniform": 0.27918087282275006
+    },
+    "gemini_distance": 0.4715439420078533,
+    "gemini_model": "gemini-3.1-flash-lite",
+    "gemini_latency_ms": 767,
+    "drex_ms": 247,
+    "drex_tokens": 201,
+    "drex_cost_usd": 6.03e-06,
+    "drex_probs": [
+     {
+      "option": "government should do more",
+      "p": 0.7715684829024112
+     },
+     {
+      "option": "agree with both",
+      "p": 0.07690482643920799
+     },
+     {
+      "option": "government does too much",
+      "p": 0.15152669065838076
+     }
+    ],
+    "real": [
+     {
+      "option": "government should do more",
+      "p": 0.37845605799214693,
+      "weight": 261.0082000000002
+     },
+     {
+      "option": "agree with both",
+      "p": 0.56739148149727,
+      "weight": 391.3104999999997
+     },
+     {
+      "option": "government does too much",
+      "p": 0.05415246051058357,
+      "weight": 37.3471
+     }
+    ]
+   },
+   {
+    "qid": "Q4",
+    "status": "scored",
+    "group": "Democrats",
+    "variable": "trust",
+    "match": 0.996,
+    "persona": "An American adult who identifies as a Democrat.",
+    "n": 374,
+    "too_few": false,
+    "distance": {
+     "drex": 0.46639933426335084,
+     "whole_sample": 0.040312021099729235,
+     "uniform": 0.2922852408569291
+    },
+    "gemini_distance": 0.3756185741902624,
+    "gemini_model": "gemini-3.1-flash-lite",
+    "gemini_latency_ms": 748,
+    "drex_ms": 209,
+    "drex_tokens": 200,
+    "drex_cost_usd": 5.999999999999999e-06,
+    "drex_probs": [
+     {
+      "option": "most people can be trusted",
+      "p": 0.7079028698177001
+     },
+     {
+      "option": "can't be too careful",
+      "p": 0.1592192399269116
+     },
+     {
+      "option": "depends",
+      "p": 0.13287789025538832
+     }
+    ],
+    "real": [
+     {
+      "option": "most people can be trusted",
+      "p": 0.2898893267528293,
+      "weight": 100.90429999999996
+     },
+     {
+      "option": "can't be too careful",
+      "p": 0.6256185741902629,
+      "weight": 217.7645000000001
+     },
+     {
+      "option": "depends",
+      "p": 0.08449209905690876,
+      "weight": 29.409900000000004
+     }
+    ]
+   },
+   {
+    "qid": "Q5",
+    "status": "scored",
+    "group": "65+",
+    "variable": "helpnot",
+    "match": 0.929,
+    "persona": "An American adult aged 65+.",
+    "n": 457,
+    "too_few": false,
+    "distance": {
+     "drex": 0.4042408309313612,
+     "whole_sample": 0.07671541105484274,
+     "uniform": 0.1845949698474087
+    },
+    "gemini_distance": 0.3379283031807421,
+    "gemini_model": "gemini-3.1-flash-lite",
+    "gemini_latency_ms": 972,
+    "drex_ms": 243,
+    "drex_tokens": 199,
+    "drex_cost_usd": 5.97e-06,
+    "drex_probs": [
+     {
+      "option": "government should do more",
+      "p": 0.4031924069403471
+     },
+     {
+      "option": "agree with both",
+      "p": 0.11368747224938083
+     },
+     {
+      "option": "government does too much",
+      "p": 0.4831201208102721
+     }
+    ],
+    "real": [
+     {
+      "option": "government should do more",
+      "p": 0.21164464250178835,
+      "weight": 92.95419999999997
+     },
+     {
+      "option": "agree with both",
+      "p": 0.5179283031807418,
+      "weight": 227.47379999999995
+     },
+     {
+      "option": "government does too much",
+      "p": 0.27042705431746933,
+      "weight": 118.77139999999999
+     }
+    ]
+   },
+   {
+    "qid": "Q1",
+    "status": "scored",
+    "group": "65+",
+    "variable": "nateduc",
+    "match": 0.913,
+    "persona": "An American adult aged 65+.",
+    "n": 451,
+    "too_few": false,
+    "distance": {
+     "drex": 0.3415639328968396,
+     "whole_sample": 0.06175042214698758,
+     "uniform": 0.35985831588856787
+    },
+    "gemini_distance": 0.24319164922190117,
+    "gemini_model": "gemini-3.1-flash-lite",
+    "gemini_latency_ms": 6485,
+    "drex_ms": 262,
+    "drex_tokens": 187,
+    "drex_cost_usd": 5.61e-06,
+    "drex_probs": [
+     {
+      "option": "too little",
+      "p": 0.35162771632506157
+     },
+     {
+      "option": "about right",
+      "p": 0.28048164960851374
+     },
+     {
+      "option": "too much",
+      "p": 0.36789063406642475
+     }
+    ],
+    "real": [
+     {
+      "option": "too little",
+      "p": 0.6931916492219012,
+      "weight": 286.9297000000001
+     },
+     {
+      "option": "about right",
+      "p": 0.2377444733412171,
+      "weight": 98.40849999999996
+     },
+     {
+      "option": "too much",
+      "p": 0.06906387743688173,
+      "weight": 28.587299999999992
+     }
+    ]
+   },
+   {
+    "qid": "Q1",
+    "status": "scored",
+    "group": "18-29, bachelor's",
+    "variable": "nateduc",
+    "match": 0.913,
+    "persona": "An American adult aged 18-29 with a bachelor's degree or higher.",
+    "n": 79,
+    "too_few": false,
+    "distance": {
+     "drex": 0.27648300923242736,
+     "whole_sample": 0.05810161518388512,
+     "uniform": 0.3635071228516703
+    },
+    "gemini_distance": 0.06178429847520419,
+    "gemini_model": "gemini-3.1-flash-lite",
+    "gemini_latency_ms": 792,
+    "drex_ms": 191,
+    "drex_tokens": 207,
+    "drex_cost_usd": 6.21e-06,
+    "drex_probs": [
+     {
+      "option": "too little",
+      "p": 0.4203574469525763
+     },
+     {
+      "option": "about right",
+      "p": 0.3353050499273069
+     },
+     {
+      "option": "too much",
+      "p": 0.24433750312011676
+     }
+    ],
+    "real": [
+     {
+      "option": "too little",
+      "p": 0.6968404561850037,
+      "weight": 62.806299999999986
+     },
+     {
+      "option": "about right",
+      "p": 0.1882157015247958,
+      "weight": 16.963899999999995
+     },
+     {
+      "option": "too much",
+      "p": 0.11494384229020053,
+      "weight": 10.359900000000001
+     }
+    ]
+   }
+  ]
+ },
+ "rows": [
+  {
+   "qid": "Q1",
+   "status": "scored",
+   "group": "18-29, bachelor's",
+   "variable": "nateduc",
+   "match": 0.913,
+   "persona": "An American adult aged 18-29 with a bachelor's degree or higher.",
+   "n": 79,
+   "too_few": false,
+   "distance": {
+    "drex": 0.27648300923242736,
+    "whole_sample": 0.05810161518388512,
+    "uniform": 0.3635071228516703
+   },
+   "gemini_distance": 0.06178429847520419,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 792,
+   "drex_ms": 191,
+   "drex_tokens": 207,
+   "drex_cost_usd": 6.21e-06,
+   "drex_probs": [
+    {
+     "option": "too little",
+     "p": 0.4203574469525763
+    },
+    {
+     "option": "about right",
+     "p": 0.3353050499273069
+    },
+    {
+     "option": "too much",
+     "p": 0.24433750312011676
+    }
+   ],
+   "real": [
+    {
+     "option": "too little",
+     "p": 0.6968404561850037,
+     "weight": 62.806299999999986
+    },
+    {
+     "option": "about right",
+     "p": 0.1882157015247958,
+     "weight": 16.963899999999995
+    },
+    {
+     "option": "too much",
+     "p": 0.11494384229020053,
+     "weight": 10.359900000000001
+    }
+   ]
+  },
+  {
+   "qid": "Q1",
+   "status": "scored",
+   "group": "65+",
+   "variable": "nateduc",
+   "match": 0.913,
+   "persona": "An American adult aged 65+.",
+   "n": 451,
+   "too_few": false,
+   "distance": {
+    "drex": 0.3415639328968396,
+    "whole_sample": 0.06175042214698758,
+    "uniform": 0.35985831588856787
+   },
+   "gemini_distance": 0.24319164922190117,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 6485,
+   "drex_ms": 262,
+   "drex_tokens": 187,
+   "drex_cost_usd": 5.61e-06,
+   "drex_probs": [
+    {
+     "option": "too little",
+     "p": 0.35162771632506157
+    },
+    {
+     "option": "about right",
+     "p": 0.28048164960851374
+    },
+    {
+     "option": "too much",
+     "p": 0.36789063406642475
+    }
+   ],
+   "real": [
+    {
+     "option": "too little",
+     "p": 0.6931916492219012,
+     "weight": 286.9297000000001
+    },
+    {
+     "option": "about right",
+     "p": 0.2377444733412171,
+     "weight": 98.40849999999996
+    },
+    {
+     "option": "too much",
+     "p": 0.06906387743688173,
+     "weight": 28.587299999999992
+    }
+   ]
+  },
+  {
+   "qid": "Q1",
+   "status": "scored",
+   "group": "Democrats",
+   "variable": "nateduc",
+   "match": 0.913,
+   "persona": "An American adult who identifies as a Democrat.",
+   "n": 824,
+   "too_few": false,
+   "distance": {
+    "drex": 0.18910912543007674,
+    "whole_sample": 0.08370397294444318,
+    "uniform": 0.5053127109799986
+   },
+   "gemini_distance": 0.08864604431333198,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 759,
+   "drex_ms": 532,
+   "drex_tokens": 189,
+   "drex_cost_usd": 5.669999999999999e-06,
+   "drex_probs": [
+    {
+     "option": "too little",
+     "p": 0.6495369188832553
+    },
+    {
+     "option": "about right",
+     "p": 0.16731418912752055
+    },
+    {
+     "option": "too much",
+     "p": 0.1831488919892243
+    }
+   ],
+   "real": [
+    {
+     "option": "too little",
+     "p": 0.8386460443133316,
+     "weight": 583.1245999999998
+    },
+    {
+     "option": "about right",
+     "p": 0.15118750923140487,
+     "weight": 105.12320000000001
+    },
+    {
+     "option": "too much",
+     "p": 0.010166446455262755,
+     "weight": 7.068899999999999
+    }
+   ]
+  },
+  {
+   "qid": "Q2",
+   "status": "scored",
+   "group": "18-29, bachelor's",
+   "variable": "happy",
+   "match": 0.998,
+   "persona": "An American adult aged 18-29 with a bachelor's degree or higher.",
+   "n": 159,
+   "too_few": false,
+   "distance": {
+    "drex": 0.03863759862893139,
+    "whole_sample": 0.009128569772164058,
+    "uniform": 0.23015065960572845
+   },
+   "gemini_distance": 0.07566296552242739,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 773,
+   "drex_ms": 225,
+   "drex_tokens": 221,
+   "drex_cost_usd": 6.629999999999999e-06,
+   "drex_probs": [
+    {
+     "option": "very happy",
+     "p": 0.19444267451763153
+    },
+    {
+     "option": "pretty happy",
+     "p": 0.6021215915679932
+    },
+    {
+     "option": "not too happy",
+     "p": 0.2034357339143753
+    }
+   ],
+   "real": [
+    {
+     "option": "very happy",
+     "p": 0.22085304153851082,
+     "weight": 37.0083
+    },
+    {
+     "option": "pretty happy",
+     "p": 0.5634839929390612,
+     "weight": 94.42290000000001
+    },
+    {
+     "option": "not too happy",
+     "p": 0.21566296552242678,
+     "weight": 36.1386
+    }
+   ]
+  },
+  {
+   "qid": "Q2",
+   "status": "scored",
+   "group": "65+",
+   "variable": "happy",
+   "match": 0.998,
+   "persona": "An American adult aged 65+.",
+   "n": 906,
+   "too_few": false,
+   "distance": {
+    "drex": 0.12336205693189058,
+    "whole_sample": 0.04697870719217147,
+    "uniform": 0.20859814681799924
+   },
+   "gemini_distance": 0.04303968149715301,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 729,
+   "drex_ms": 286,
+   "drex_tokens": 201,
+   "drex_cost_usd": 6.03e-06,
+   "drex_probs": [
+    {
+     "option": "very happy",
+     "p": 0.15359826157095638
+    },
+    {
+     "option": "pretty happy",
+     "p": 0.5699302469204329
+    },
+    {
+     "option": "not too happy",
+     "p": 0.27647149150861067
+    }
+   ],
+   "real": [
+    {
+     "option": "very happy",
+     "p": 0.27696031850284625,
+     "weight": 237.83070000000006
+    },
+    {
+     "option": "pretty happy",
+     "p": 0.5419314801513319,
+     "weight": 465.3661
+    },
+    {
+     "option": "not too happy",
+     "p": 0.18110820134582045,
+     "weight": 155.52079999999995
+    }
+   ]
+  },
+  {
+   "qid": "Q2",
+   "status": "scored",
+   "group": "Democrats",
+   "variable": "happy",
+   "match": 0.998,
+   "persona": "An American adult who identifies as a Democrat.",
+   "n": 1612,
+   "too_few": false,
+   "distance": {
+    "drex": 0.2318779372338773,
+    "whole_sample": 0.0336902050543961,
+    "uniform": 0.2609802902243945
+   },
+   "gemini_distance": 0.044313623557727846,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 917,
+   "drex_ms": 421,
+   "drex_tokens": 203,
+   "drex_cost_usd": 6.089999999999999e-06,
+   "drex_probs": [
+    {
+     "option": "very happy",
+     "p": 0.13901807160648597
+    },
+    {
+     "option": "pretty happy",
+     "p": 0.43049096419675703
+    },
+    {
+     "option": "not too happy",
+     "p": 0.43049096419675703
+    }
+   ],
+   "real": [
+    {
+     "option": "very happy",
+     "p": 0.20707334947939243,
+     "weight": 297.4718
+    },
+    {
+     "option": "pretty happy",
+     "p": 0.5943136235577272,
+     "weight": 853.7628999999996
+    },
+    {
+     "option": "not too happy",
+     "p": 0.19861302696287905,
+     "weight": 285.3180999999996
+    }
+   ]
+  },
+  {
+   "qid": "Q3",
+   "status": "unverified",
+   "best": {
+    "variable": "acpttg",
+    "label": "Accepting people",
+    "options": [
+     "too far",
+     "about far enough",
+     "not far enough"
+    ],
+    "ordinal": false,
+    "lexical": 0.173,
+    "option_overlap": 0,
+    "same_thing": 0.0009671618881726108,
+    "options_compatible": false
+   }
+  },
+  {
+   "qid": "Q4",
+   "status": "scored",
+   "group": "18-29, bachelor's",
+   "variable": "trust",
+   "match": 0.996,
+   "persona": "An American adult aged 18-29 with a bachelor's degree or higher.",
+   "n": 14,
+   "too_few": true,
+   "distance": {
+    "drex": 0.5772172384624852,
+    "whole_sample": 0.24957730565309966,
+    "uniform": 0.42769206072842003
+   },
+   "gemini_distance": 0.4610253940617533,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 886,
+   "drex_ms": 271,
+   "drex_tokens": 218,
+   "drex_cost_usd": 6.539999999999999e-06,
+   "drex_probs": [
+    {
+     "option": "most people can be trusted",
+     "p": 0.5772172384624851
+    },
+    {
+     "option": "can't be too careful",
+     "p": 0.2929569272088089
+    },
+    {
+     "option": "depends",
+     "p": 0.1298258343287061
+    }
+   ],
+   "real": [
+    {
+     "option": "most people can be trusted",
+     "p": 0,
+     "weight": 0
+    },
+    {
+     "option": "can't be too careful",
+     "p": 0.7610253940617534,
+     "weight": 8.2174
+    },
+    {
+     "option": "depends",
+     "p": 0.2389746059382467,
+     "weight": 2.5804
+    }
+   ]
+  },
+  {
+   "qid": "Q4",
+   "status": "scored",
+   "group": "65+",
+   "variable": "trust",
+   "match": 0.996,
+   "persona": "An American adult aged 65+.",
+   "n": 282,
+   "too_few": false,
+   "distance": {
+    "drex": 0.12014985575840229,
+    "whole_sample": 0.07527089401499115,
+    "uniform": 0.23619459262325143
+   },
+   "gemini_distance": 0.02515180033190923,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 684,
+   "drex_ms": 192,
+   "drex_tokens": 198,
+   "drex_cost_usd": 5.94e-06,
+   "drex_probs": [
+    {
+     "option": "most people can be trusted",
+     "p": 0.4295129137940951
+    },
+    {
+     "option": "can't be too careful",
+     "p": 0.4493780701981825
+    },
+    {
+     "option": "depends",
+     "p": 0.12110901600772238
+    }
+   ],
+   "real": [
+    {
+     "option": "most people can be trusted",
+     "p": 0.3248481996680906,
+     "weight": 90.0232
+    },
+    {
+     "option": "can't be too careful",
+     "p": 0.5695279259565846,
+     "weight": 157.82980000000003
+    },
+    {
+     "option": "depends",
+     "p": 0.10562387437532449,
+     "weight": 29.270899999999997
+    }
+   ]
+  },
+  {
+   "qid": "Q4",
+   "status": "scored",
+   "group": "Democrats",
+   "variable": "trust",
+   "match": 0.996,
+   "persona": "An American adult who identifies as a Democrat.",
+   "n": 374,
+   "too_few": false,
+   "distance": {
+    "drex": 0.46639933426335084,
+    "whole_sample": 0.040312021099729235,
+    "uniform": 0.2922852408569291
+   },
+   "gemini_distance": 0.3756185741902624,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 748,
+   "drex_ms": 209,
+   "drex_tokens": 200,
+   "drex_cost_usd": 5.999999999999999e-06,
+   "drex_probs": [
+    {
+     "option": "most people can be trusted",
+     "p": 0.7079028698177001
+    },
+    {
+     "option": "can't be too careful",
+     "p": 0.1592192399269116
+    },
+    {
+     "option": "depends",
+     "p": 0.13287789025538832
+    }
+   ],
+   "real": [
+    {
+     "option": "most people can be trusted",
+     "p": 0.2898893267528293,
+     "weight": 100.90429999999996
+    },
+    {
+     "option": "can't be too careful",
+     "p": 0.6256185741902629,
+     "weight": 217.7645000000001
+    },
+    {
+     "option": "depends",
+     "p": 0.08449209905690876,
+     "weight": 29.409900000000004
+    }
+   ]
+  },
+  {
+   "qid": "Q5",
+   "status": "scored",
+   "group": "18-29, bachelor's",
+   "variable": "helpnot",
+   "match": 0.929,
+   "persona": "An American adult aged 18-29 with a bachelor's degree or higher.",
+   "n": 61,
+   "too_few": false,
+   "distance": {
+    "drex": 0.25111545159209936,
+    "whole_sample": 0.1781664890499467,
+    "uniform": 0.14747962203344236
+   },
+   "gemini_distance": 0.21436053816136522,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 716,
+   "drex_ms": 217,
+   "drex_tokens": 219,
+   "drex_cost_usd": 6.57e-06,
+   "drex_probs": [
+    {
+     "option": "government should do more",
+     "p": 0.631213078367905
+    },
+    {
+     "option": "agree with both",
+     "p": 0.11324508656926582
+    },
+    {
+     "option": "government does too much",
+     "p": 0.2555418350628292
+    }
+   ],
+   "real": [
+    {
+     "option": "government should do more",
+     "p": 0.4497857505387438,
+     "weight": 27.029199999999996
+    },
+    {
+     "option": "agree with both",
+     "p": 0.36436053816136527,
+     "weight": 21.895699999999998
+    },
+    {
+     "option": "government does too much",
+     "p": 0.18585371129989103,
+     "weight": 11.1686
+    }
+   ]
+  },
+  {
+   "qid": "Q5",
+   "status": "scored",
+   "group": "65+",
+   "variable": "helpnot",
+   "match": 0.929,
+   "persona": "An American adult aged 65+.",
+   "n": 457,
+   "too_few": false,
+   "distance": {
+    "drex": 0.4042408309313612,
+    "whole_sample": 0.07671541105484274,
+    "uniform": 0.1845949698474087
+   },
+   "gemini_distance": 0.3379283031807421,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 972,
+   "drex_ms": 243,
+   "drex_tokens": 199,
+   "drex_cost_usd": 5.97e-06,
+   "drex_probs": [
+    {
+     "option": "government should do more",
+     "p": 0.4031924069403471
+    },
+    {
+     "option": "agree with both",
+     "p": 0.11368747224938083
+    },
+    {
+     "option": "government does too much",
+     "p": 0.4831201208102721
+    }
+   ],
+   "real": [
+    {
+     "option": "government should do more",
+     "p": 0.21164464250178835,
+     "weight": 92.95419999999997
+    },
+    {
+     "option": "agree with both",
+     "p": 0.5179283031807418,
+     "weight": 227.47379999999995
+    },
+    {
+     "option": "government does too much",
+     "p": 0.27042705431746933,
+     "weight": 118.77139999999999
+    }
+   ]
+  },
+  {
+   "qid": "Q5",
+   "status": "scored",
+   "group": "Democrats",
+   "variable": "helpnot",
+   "match": 0.929,
+   "persona": "An American adult who identifies as a Democrat.",
+   "n": 805,
+   "too_few": false,
+   "distance": {
+    "drex": 0.49048665505806177,
+    "whole_sample": 0.13955918275204354,
+    "uniform": 0.27918087282275006
+   },
+   "gemini_distance": 0.4715439420078533,
+   "gemini_model": "gemini-3.1-flash-lite",
+   "gemini_latency_ms": 767,
+   "drex_ms": 247,
+   "drex_tokens": 201,
+   "drex_cost_usd": 6.03e-06,
+   "drex_probs": [
+    {
+     "option": "government should do more",
+     "p": 0.7715684829024112
+    },
+    {
+     "option": "agree with both",
+     "p": 0.07690482643920799
+    },
+    {
+     "option": "government does too much",
+     "p": 0.15152669065838076
+    }
+   ],
+   "real": [
+    {
+     "option": "government should do more",
+     "p": 0.37845605799214693,
+     "weight": 261.0082000000002
+    },
+    {
+     "option": "agree with both",
+     "p": 0.56739148149727,
+     "weight": 391.3104999999997
+    },
+    {
+     "option": "government does too much",
+     "p": 0.05415246051058357,
+     "weight": 37.3471
+    }
+   ]
+  },
+  {
+   "qid": "Q6",
+   "status": "unverified",
+   "best": {
+    "variable": "intbhlf",
+    "label": "Frequency R was asked to use internet for someone else",
+    "options": [
+     "not at all",
+     "once or twice",
+     "more often"
+    ],
+    "ordinal": true,
+    "lexical": 0.2,
+    "option_overlap": 0.5,
+    "same_thing": 0.0007543888396496784,
+    "options_compatible": false
+   }
+  },
+  {
+   "qid": "Q7",
+   "status": "unverified",
+   "best": {
+    "variable": "grncon",
+    "label": "Concerned about environment",
+    "options": [
+     "1 - not at all concerned",
+     "5 - very concerned"
+    ],
+    "ordinal": false,
+    "lexical": 0.317,
+    "option_overlap": 0.33,
+    "same_thing": 0.16415066772474843,
+    "options_compatible": true
+   }
+  },
+  {
+   "qid": "Q8",
+   "status": "unverified",
+   "best": {
+    "variable": "pres_ts",
+    "label": "Vote for Democratic or Republican candidate in most recent election",
+    "options": [
+     "democratic candidate",
+     "republican candidate",
+     "third-party candidate"
+    ],
+    "ordinal": false,
+    "lexical": 0.25,
+    "option_overlap": 0.29,
+    "same_thing": 0.17693719795159096,
+    "options_compatible": false
+   }
+  }
+ ]
+}
