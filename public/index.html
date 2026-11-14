@@ -131,7 +131,7 @@
     <div class="stats3">
       <div class="stat"><div class="k">Faster</div><div class="v good">4.7×</div><div class="num">275 ms vs 1304 ms per answer<br>median 243 vs 767 ms</div></div>
       <div class="stat"><div class="k">Cost</div><div class="v good">$0.0061</div><div class="num">per 1,000 answers at Nace's list price. Gemini ran on a free tier, so there is no frontier price to compare.</div></div>
-      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.267</div><div class="num">27% of answers on the wrong option, against 18% for Gemini and 7% for the national average.</div></div>
+      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.267</div><div class="num">27% of answers on the wrong option, against 18% for Gemini and 7% for guessing that every group answers like the whole country.</div></div>
     </div>
     <!--BAKE:END-->
     <p class="models"><b>Three things run here.</b> <b>Drex</b> answers the survey questions, live.
@@ -168,9 +168,9 @@
       <div class="xl"><b>Real answer</b> very happy 21% · pretty happy 59% · not too happy 20%</div>
       <div class="xl" style="color:var(--warn)">Drex puts 23% of the answers on the wrong option · Gemini 4% · national average 3%</div>
     </div>
-    <p class="num" style="margin-top:12px">Three ways to answer the same question, scored by the same ruler: Drex's prediction, Gemini's prediction, and the all-respondents answer. The real answer for that group is the referee.</p>
+    <p class="num" style="margin-top:12px">Worked through: the Democrats' real answer is very happy 21% · pretty happy 59% · not too happy 20%. The whole-country answer to the same survey question, over all 3,986 respondents, is not too happy 21% · pretty happy 56% · very happy 23%; using that for Democrats is the whole-country guess column. The real answer is what both predictions are scored against.</p>
     <div class="tablewrap">
-    <table><thead><tr><th>Question</th><th>Group</th><th>Drex</th><th>Gemini</th><th>National avg</th></tr></thead><tbody>
+    <table><thead><tr><th>Question</th><th>Group</th><th>Drex</th><th>Gemini</th><th>Whole-country guess</th></tr></thead><tbody>
       <tr><td>Spending on education (Q1)</td><td>18-29, bachelor&#x27;s</td><td>0.276</td><td>0.062</td><td>0.058</td></tr>
       <tr><td>Spending on education (Q1)</td><td>65+</td><td>0.342</td><td>0.243</td><td>0.062</td></tr>
       <tr><td>Spending on education (Q1)</td><td>Democrats</td><td>0.189</td><td>0.089</td><td>0.084</td></tr>
@@ -184,7 +184,7 @@
       <tr><td>Government&#x27;s role (Q5)</td><td>Democrats</td><td>0.490</td><td>0.472</td><td>0.140</td></tr>
     </tbody></table>
     </div>
-    <p class="num" style="margin-top:14px">11 pairs have a real survey answer to score against. The other 4 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every answer matches the real survey, 0.27 means 27% of them are misplaced. The national average column is the same question answered by all 3,986 respondents together, weighted, and applied to every group as one answer.</p>
+    <p class="num" style="margin-top:14px">11 pairs have a real survey answer to score against. The other 4 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every answer matches the real survey, 0.27 means 27% of them are misplaced. The national average column is the same survey asked of all 3,986 respondents, weighted, then used as the answer for every group.</p>
     <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a real answer.</p>
     <p class="num">Each call was timed end to end on the same machine, with Gemini on its free tier: a real measurement of both models side by side. The Gemini answers come from one pass, one question at a time, saved as they arrived.</p>
     <!--BAKE2:END-->
@@ -230,9 +230,9 @@
   <section class="card">
     <h2>Scoreboard</h2>
     <p class="lead">Every pair we checked, scored once. Error is the share of answers sitting on the wrong
-      option: 0 is perfect, 0.27 means 27% misplaced. The national average column is the same question answered
-      by all 3,986 respondents together, weighted, then handed to every group as one answer — the score to
-      beat.</p>
+      option: 0 is perfect, 0.27 means 27% misplaced. The whole-country guess column uses the same survey
+      question answered by all 3,986 respondents, weighted, then assumes every group answers that way — the
+      score to beat.</p>
     <div class="row">
       <button id="runall">Score it live now</button>
       <span id="runmeta" class="meta"></span>

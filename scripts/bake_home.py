@@ -37,6 +37,28 @@ def esc(text: object) -> str:
     return html.escape(str(text), quote=True)
 
 
+def whole_country(variable: str) -> dict[str, float]:
+    """The same survey question answered by every respondent, weighted."""
+    gss = json.loads((ROOT / "public" / "data" / "gss_2024.json").read_text())
+    var = next(v for v in gss["variables"] if v["name"] == variable)
+    totals: dict[str, float] = {}
+    weight_sum = 0.0
+    for i, row in enumerate(gss["rows"]):
+        code = var["values"][i]
+        if code is None or code == 255 or code >= len(var["options"]):
+            continue
+        w = row[4] or 0
+        totals[var["options"][code]] = totals.get(var["options"][code], 0.0) + w
+        weight_sum += w
+    if not weight_sum:
+        return {}
+    # keep the option order the question uses, not the order rows happened to appear
+    return {opt: totals[opt] / weight_sum * 100 for opt in var["options"] if opt in totals}
+
+
+WHOLE_HAPPY = whole_country("happy")
+
+
 def load():
     data = json.loads(SCORES.read_text())
     rows = [
@@ -67,8 +89,8 @@ def tiles(m: dict, rows: list[dict]) -> list[str]:
         '      <div class="stat"><div class="k">Accuracy</div>'
         f'<div class="v bad">{m["drex_mean_distance"]:.3f}</div>'
         f'<div class="num">{m["drex_mean_distance"] * 100:.0f}% of answers on the wrong option, against '
-        f"{m['gemini_mean_distance'] * 100:.0f}% for Gemini and {m['whole_mean_distance'] * 100:.0f}% for the "
-        "national average.</div></div>",
+        f"{m['gemini_mean_distance'] * 100:.0f}% for Gemini and {m['whole_mean_distance'] * 100:.0f}% for "
+        "guessing that every group answers like the whole country.</div></div>",
         "    </div>",
     ]
 
@@ -94,15 +116,21 @@ def detail(m: dict, rows: list[dict]) -> list[str]:
         )
         out.append("    </div>")
 
-    out.append(
-        '    <p class="num" style="margin-top:12px">Three ways to answer the same question, scored by the same '
-        "ruler: Drex's prediction, Gemini's prediction, and the all-respondents answer. The real answer for "
-        "that group is the referee.</p>"
-    )
+    whole = WHOLE_HAPPY
+    if ex and whole:
+        r = {o["option"]: o["p"] * 100 for o in ex["real"]}
+        w = whole
+        fmt = lambda d: " · ".join(f"{esc(k)} {v:.0f}%" for k, v in d.items())
+        out.append(
+            '    <p class="num" style="margin-top:12px">Worked through: the Democrats\' real answer is '
+            f"{fmt(r)}. The whole-country answer to the same survey question, over all 3,986 respondents, is "
+            f"{fmt(w)}; using that for Democrats is the whole-country guess column. The real answer is what "
+            "both predictions are scored against.</p>"
+        )
     out.append('    <div class="tablewrap">')
     out.append(
         '    <table><thead><tr><th>Question</th><th>Group</th><th>Drex</th><th>Gemini</th>'
-        "<th>National avg</th></tr></thead><tbody>"
+        "<th>Whole-country guess</th></tr></thead><tbody>"
     )
     for r in rows:
         out.append(
@@ -121,8 +149,8 @@ def detail(m: dict, rows: list[dict]) -> list[str]:
         f"{m['unverified']} are new questions: the survey has not asked them yet, so we mark them new and "
         "leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every "
         "answer matches the real survey, 0.27 means 27% of them are misplaced. The national average column "
-        "is the same question answered by all 3,986 respondents together, weighted, and applied to every "
-        "group as one answer.</p>"
+        "is the same survey asked of all 3,986 respondents, weighted, then used as the answer for every "
+        "group.</p>"
     )
     out.append(
         '    <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in '
