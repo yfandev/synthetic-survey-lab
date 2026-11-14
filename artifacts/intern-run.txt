@@ -1,0 +1,10 @@
+Intern verification run — 2026-11-14T21:36:59Z
+harness: intern 0.30.1  (github.com/nace-ai/intern)
+system 1: drex-latest   system 2: deepinfra/Qwen/Qwen3.8-27B
+
+
+> read {"path": "worker/index.js"}
+
+
+/api/health, /api/upload-grant, /api/resolve, /api/parse, /api/extract, /api/gss, /api/match, /api/panel, /api/panel-run, /api/reword, /api/gemini-predict, /api/predict-options, /api/split, /api/predict
+[2 turns, 16399 in / 193 out tokens; System 1: 2 asks, 1069 in / 338 out]

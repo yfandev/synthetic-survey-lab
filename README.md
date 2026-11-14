@@ -67,6 +67,15 @@ many subrequests"), so the browser sends batches of 15 and sums the counts: a 10
 seven requests, not one. Reword test: 4 rewordings, 4 kept at 0.92–0.97, worst split movement
 0.089 → stable.
 
+## Built with
+
+- **Nace Drex** — every decision: the predicted split for a group, the yes/no gate that accepts a survey
+  question as the same question, and the same-meaning gate in the wording check, all live (`.03/M` input).
+- **Nace NDI** — reads every page of the uploaded PDF and returns each question with its options and page.
+- **Intern** (`intern-agent`, `github.com/nace-ai/intern`) — Nace's agent harness, installed with
+  `uv tool install`, run with Drex as its System 1 decision layer (`--system1 drex-latest`). Used to inspect
+  the deployed worker and verify its route surface; the run is recorded in `artifacts/intern-run.txt`.
+
 ## Where each API is called
 
 | Call | Where | Live or recorded |
