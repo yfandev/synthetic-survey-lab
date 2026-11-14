@@ -5,64 +5,111 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Synthetic Survey Lab</title>
 <style>
-  :root { --bg:#0a0c10; --panel:#121620; --line:#222a38; --ink:#eef2f8; --muted:#93a0b5;
-          --accent:#7c5cff; --real:#2fd4a7; --bad:#ff5d73; --warn:#ffb84d; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font:20px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Inter,sans-serif; }
-  header { padding:20px 34px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:22px; flex-wrap:wrap; position:sticky; top:0; background:#0b0e14; z-index:6; }
-  h1 { font-size:24px; margin:0; letter-spacing:-0.4px; }
-  .steps { display:flex; gap:8px; }
-  .steps span { font-size:14px; color:var(--muted); border:1px solid var(--line); padding:3px 11px; border-radius:999px; }
-  .steps span.on { color:#fff; border-color:var(--accent); background:#1b1533; }
-  .grow { flex:1; }
-  a.pill { font-size:14px; color:var(--muted); border:1px solid var(--line); padding:3px 11px; border-radius:999px; text-decoration:none; }
-  main { padding:24px 34px 90px; display:grid; gap:18px; max-width:1240px; }
-  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 24px; }
-  h2 { font-size:21px; margin:0 0 4px; }
-  .card p.lead { color:var(--muted); margin:0 0 16px; font-size:17px; max-width:74ch; }
-  .row { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
-  .file { font-size:17px; font-weight:600; border:1px dashed #35405a; border-radius:10px; padding:11px 18px; cursor:pointer; }
-  .file.has { border-style:solid; border-color:var(--real); color:var(--real); }
-  input[type=number] { width:84px; font:inherit; font-size:17px; background:#0a0d14; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
-  select { font:inherit; font-size:17px; background:#0a0d14; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:9px 12px; }
-  .range { color:var(--muted); font-size:16px; display:flex; gap:8px; align-items:center; }
-  button { font:inherit; font-size:17px; font-weight:600; background:var(--accent); color:#fff; border:0; padding:12px 22px; border-radius:10px; cursor:pointer; }
-  button.ghost { background:transparent; border:1px solid var(--line); color:var(--ink); font-weight:500; }
-  button:disabled { opacity:.45; cursor:default; }
-  .err { margin-top:14px; color:var(--bad); font-size:16px; border:1px solid #4d1d28; background:#1e0d12; border-radius:10px; padding:12px 14px; white-space:pre-wrap; }
-  .meta { margin-top:12px; color:var(--muted); font-size:15px; display:flex; gap:18px; flex-wrap:wrap; }
-  .meta b { color:var(--ink); }
-  .qlist { display:grid; gap:10px; margin-top:14px; }
-  .q { background:#0f131c; border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
-  .q.sel { border-color:var(--accent); }
-  .qhead { display:flex; align-items:center; gap:10px; }
-  .qid { font:600 14px ui-monospace,Menlo,monospace; color:var(--muted); }
-  .page { font-size:13px; color:var(--accent); border:1px solid #322a55; background:#171331; padding:1px 9px; border-radius:999px; }
-  .page.none { color:var(--warn); border-color:#4d3a1d; background:#241c0e; }
-  .unverified { font-size:13px; color:var(--warn); border:1px solid #4d3a1d; padding:1px 9px; border-radius:999px; }
-  .del { margin-left:auto; background:transparent; border:1px solid var(--line); color:var(--muted); padding:3px 11px; font-size:15px; font-weight:400; }
-  .qtext { margin:8px 0; font-size:19px; line-height:1.4; outline:none; }
-  .opts { display:flex; gap:7px; flex-wrap:wrap; }
-  .opt { font-size:15px; color:#c9d4e6; background:#0a0d14; border:1px solid var(--line); border-radius:8px; padding:3px 10px; }
-  .chart { display:grid; gap:14px; margin-top:8px; }
-  .pair { display:grid; gap:6px; }
-  .pair .lbl { font-size:18px; font-weight:600; }
-  .track { height:26px; background:#0a0d14; border:1px solid var(--line); border-radius:7px; overflow:hidden; display:grid; grid-template-columns:1fr 1fr; gap:2px; }
-  .fill { height:100%; }
-  .fill.drex { background:var(--accent); }
-  .fill.real { background:var(--real); }
-  .num { font-size:15px; color:var(--muted); font-variant-numeric:tabular-nums; }
-  .legend2 { display:flex; gap:20px; font-size:15px; color:var(--muted); margin-top:6px; }
-  .sw { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; }
-  .stats3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
-  .stat { background:#0f131c; border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
-  .stat .k { font-size:14px; color:var(--muted); }
-  .stat .v { font-size:26px; font-weight:650; font-variant-numeric:tabular-nums; }
-  .bad { color:var(--bad); } .good { color:var(--real); } .warnc { color:var(--warn); }
-  .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-  footer { padding:0 34px 40px; color:var(--muted); font-size:14px; }
-  code { color:var(--ink); background:#0a0d14; padding:1px 5px; border-radius:4px; font-size:14px; }
-  .empty { color:var(--muted); font-size:17px; }
+  :root{--bg:#07080c;--panel:#10131b;--panel2:#0b0e15;--line:#1f2632;--ink:#f0f3f9;--muted:#a3b0c4;
+        --accent:#7c5cff;--accent2:#9b82ff;--real:#2fd4a7;--bad:#ff6b7f;--warn:#ffc061;}
+  *{box-sizing:border-box}
+  html,body{overflow-x:hidden}
+  body{margin:0;background:radial-gradient(1100px 560px at 18% -12%,#191338 0%,transparent 62%),var(--bg);
+       color:var(--ink);font:20px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Inter,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  header{position:sticky;top:0;z-index:9;display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+         padding:16px max(24px,calc((100vw - 1060px)/2 + 24px));background:rgba(7,8,12,.84);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  header h1{font-size:20px;margin:0;letter-spacing:-.2px}
+  .steps{display:flex;gap:6px}
+  .steps span{font-size:14px;color:var(--muted);padding:6px 12px;border-radius:999px;border:1px solid transparent}
+  .steps span.on{color:#fff;background:#1d1740;border-color:#3a2f70}
+  .grow{flex:1}
+  a.pill{font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:7px 13px;border-radius:999px}
+  a.pill:hover{color:#fff;border-color:#3a3f52}
+  main{max-width:1060px;margin:0 auto;padding:52px 24px 120px;display:grid;gap:24px;grid-template-columns:minmax(0,1fr)}
+  .card{background:linear-gradient(180deg,#12151e,#0f121a);border:1px solid var(--line);border-radius:20px;padding:36px;min-width:0}
+  .hero{padding:52px 44px}
+  .kicker{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);margin-bottom:18px}
+  .thesis{font-size:clamp(30px,4.4vw,44px);line-height:1.1;letter-spacing:-1.2px;margin:0 0 18px;font-weight:700;max-width:26ch;overflow-wrap:break-word}
+  h2{font-size:28px;letter-spacing:-.5px;margin:0 0 10px}
+  .sec{font-size:22px;margin:44px 0 14px}
+  .card p.lead{color:var(--muted);font-size:21px;line-height:1.6;margin:0 0 18px;max-width:60ch}
+  .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0 4px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .stat .k{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-size:42px;line-height:1.1;font-weight:700;margin:10px 0 8px;font-variant-numeric:tabular-nums}
+  .stat .num{font-size:15px;color:var(--muted);line-height:1.45}
+  .models{font-size:17px;color:var(--muted);line-height:1.6;background:var(--panel2);border:1px solid var(--line);
+          border-radius:14px;padding:20px 22px;margin:8px 0 0}
+  .models b{color:var(--ink)}
+  .usecases{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+  .uc{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .uc span{font-size:13px;color:var(--accent2);letter-spacing:.16em}
+  .uc h3{font-size:20px;margin:10px 0 8px}
+  .uc p{font-size:17px;color:var(--muted);margin:0;line-height:1.5}
+  details{margin-top:34px;border-top:1px solid var(--line);padding-top:24px}
+  summary{font-size:19px;cursor:pointer;font-weight:600}
+  summary::marker{color:var(--accent2)}
+  .detailbody{padding-top:6px}
+  .ex{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:18px 0}
+  .ex .xlbl{font-size:15px;color:var(--muted)}
+  .ex .xl{font-size:19px;margin-top:9px}
+  .tablewrap{overflow-x:auto;margin:14px 0 6px;-webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;font-size:19px;margin:0}
+  th{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;
+     padding:10px;font-weight:600}
+  td{padding:13px 10px;border-top:1px solid var(--line)}
+  tbody tr:hover td{background:#141824}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  select,input[type=number]{font:inherit;font-size:19px;background:#0a0d15;color:var(--ink);
+    border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  input[type=number]{width:96px}
+  button{font:inherit;font-size:19px;font-weight:600;background:var(--accent);color:#fff;border:0;
+    padding:14px 26px;border-radius:12px;cursor:pointer;box-shadow:0 6px 20px rgba(124,92,255,.25);
+    transition:background .15s,transform .06s}
+  button:hover:not(:disabled){background:var(--accent2)}
+  button:active:not(:disabled){transform:translateY(1px)}
+  button:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);box-shadow:none}
+  .file{font-size:18px;font-weight:600;border:1px dashed #3a4358;border-radius:12px;padding:13px 20px;cursor:pointer}
+  .file.has{border-style:solid;border-color:var(--real);color:var(--real)}
+  .range{font-size:18px;color:var(--muted);display:flex;gap:10px;align-items:center}
+  .meta{margin-top:16px;color:var(--muted);font-size:16px;display:flex;gap:18px;flex-wrap:wrap}
+  .meta b{color:var(--ink)}
+  .err{margin-top:16px;color:var(--bad);font-size:17px;border:1px solid #4a1d26;background:#1b0d11;
+       border-radius:12px;padding:14px 16px;white-space:pre-wrap}
+  .empty{color:var(--muted);font-size:18px;border:1px dashed var(--line);border-radius:12px;padding:24px;text-align:center}
+  .qlist{display:grid;gap:12px;margin-top:18px}
+  .q{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+  .q.sel{border-color:var(--accent)}
+  .qhead{display:flex;align-items:center;gap:10px}
+  .qid{font:600 14px ui-monospace,Menlo,monospace;color:var(--muted)}
+  .page{font-size:13px;color:var(--accent2);border:1px solid #342a5e;background:#171331;padding:2px 10px;border-radius:999px}
+  .page.none{color:var(--warn);border-color:#4d3a1d;background:#241c0e}
+  .unverified{font-size:13px;color:var(--warn);border:1px solid #4d3a1d;padding:2px 10px;border-radius:999px}
+  .del{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--muted);
+       padding:4px 12px;font-size:15px;font-weight:400;box-shadow:none}
+  .qtext{margin:10px 0;font-size:21px;line-height:1.45;outline:none}
+  .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{font-size:16px;color:#ccd6e6;background:#0a0d15;border:1px solid var(--line);border-radius:10px;padding:5px 12px}
+  .chart{display:grid;gap:18px;margin-top:20px}
+  .pair{display:grid;gap:8px}
+  .pair .lbl{font-size:20px;font-weight:600}
+  .track{height:34px;background:#0a0d15;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+         display:grid;grid-template-columns:1fr 1fr;gap:2px}
+  .fill{height:100%}
+  .fill.drex{background:var(--accent)}
+  .fill.real{background:var(--real)}
+  .legend2{display:flex;gap:22px;font-size:16px;color:var(--muted);margin-top:10px}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:8px}
+  .num{font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .good{color:var(--real)}.bad{color:var(--bad)}.warnc{color:var(--warn)}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  footer{max-width:1060px;margin:0 auto;padding:0 24px 60px;color:var(--muted);font-size:15px}
+  code{background:#0a0d15;color:#dfe6f2;padding:2px 6px;border-radius:6px;font-size:16px}
+  @media (max-width:860px){
+    main{padding:32px 16px 80px}.card{padding:26px 20px}.hero{padding:34px 20px}
+    .thesis{font-size:30px;max-width:none;letter-spacing:-.8px}.stats3{grid-template-columns:1fr}
+    .usecases{grid-template-columns:1fr}.stat .v{font-size:36px}header h1{font-size:18px}
+    .card p.lead{font-size:19px}.steps span{font-size:13px;padding:5px 9px}
+    .grid4{grid-template-columns:1fr 1fr}table{font-size:16px;min-width:620px}th,td{padding:8px 6px}
+    .wrap{display:block}
+  }
 </style>
 </head>
 <body>
@@ -74,69 +121,73 @@
 </header>
 
 <main>
-  <section class="card">
-    <h2>Drex vs. the giants, measured</h2>
-    <p class="lead">Ask it a survey question about any group of Americans and it answers with the likely split,
-      in 275 ms, for $0.000006 a time. Democrats' happiness, for example: it said <b>14% very happy, 43% pretty,
-      43% not too</b>, and the national survey's real answer is <b>21%, 59%, 20%</b>.</p>
-    <p class="lead">The point is saving money and time before a real survey. Fieldwork costs thousands of dollars
-      and takes weeks, and by then a bad question is already in the field. A simulated panel shows you what you
-      would get first.</p>
-    <ul style="font-size:20px;color:var(--ink);margin:0 0 16px;padding-left:22px;line-height:1.5;max-width:78ch">
-      <li><b>Fix the questionnaire.</b> See which questions nearly everyone answers the same way, and which flip
-        when reworded — the sign of a confusing or leading question.</li>
-      <li><b>Narrow the options.</b> With 40 product names, prices or messages, find the handful worth paying real
-        people to answer.</li>
-      <li><b>Plan the sample.</b> When groups answer very differently, the real survey needs more people from each
-        group; when they answer alike, a smaller sample is enough.</li>
-      <li><b>A first look for small teams.</b> A startup without a research budget gets a rough preview instead of
-        a guess.</li>
-    </ul>
-    <p class="lead">Every prediction is scored against the real survey answer, so you can see the size of the
-      error before you use the tool on a question nobody has surveyed. On accuracy it finishes behind a frontier
-      model and behind a plain national average. All three scores are below.</p>
-    <p class="lead" style="font-size:20px">These numbers come from a saved run of 11 real survey questions.</p>
-    <p style="font-size:20px;color:var(--ink);background:#0f131c;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
-      <b>Three things run here.</b> <b>Drex</b> answers the survey questions, live. <b>Gemini 3.1 Flash-Lite</b>
-      is a top general-purpose AI we measure against: we asked it the same 11 pairs once each and saved the
-      answers, so its scores stay fixed. <b>Nace NDI</b>, a document parser, reads the PDF, live. In the wording
-      test Gemini runs live again to write alternative phrasings.</p>
+  <section class="card hero">
+    <div class="kicker">Apex Predator · Drex vs. the giants</div>
+    <h1 class="thesis">Ask it any survey question about any group of Americans.</h1>
+    <p class="lead">It answers with the likely split in 275 ms for $0.000006. Democrats' happiness, for
+      example: Drex said 14% very happy, 43% pretty, 43% not too, and the national survey's real answer is
+      21%, 59%, 20%.</p>
     <!--BAKE:START-->
     <div class="stats3">
-      <div class="stat"><div class="k">Faster</div><div class="v good">4.7×</div><div class="num">275 ms vs 1304 ms mean per answer · median 243 ms vs 767 ms</div></div>
-      <div class="stat"><div class="k">Cost</div><div class="v good">$0.0061</div><div class="num">per 1,000 answers at Nace's list price. Gemini ran on a free tier, so we have no frontier price to compare.</div></div>
-      <div class="stat"><div class="k">Accuracy — Drex loses</div><div class="v bad">0.267</div><div class="num">Gemini 0.180 (saved answers) · national average 0.073</div></div>
+      <div class="stat"><div class="k">Faster</div><div class="v good">4.7×</div><div class="num">275 ms vs 1304 ms per answer<br>median 243 vs 767 ms</div></div>
+      <div class="stat"><div class="k">Cost</div><div class="v good">$0.0061</div><div class="num">per 1,000 answers at Nace's list price. Gemini ran on a free tier, so there is no frontier price to compare.</div></div>
+      <div class="stat"><div class="k">Accuracy</div><div class="v bad">0.267</div><div class="num">Drex, against Gemini 0.180 and the national average 0.073. Lower is better.</div></div>
     </div>
-    <p class="lead" style="margin-top:12px;font-size:22px">Drex is about 4.7× faster than the frontier model. It is also <b>less accurate</b> than that model and than the simple national average, and we are showing that instead of hiding it.</p>
-    <div style="margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
-      <div style="font-size:17px;color:var(--muted)">Worked example · Democrats, “taken all together, how happy are you these days?”</div>
-      <div style="font-size:20px;margin-top:8px"><b>Drex said</b> very happy 14% · pretty happy 43% · not too happy 43%</div>
-      <div style="font-size:20px"><b>Real answer</b> very happy 21% · pretty happy 59% · not too happy 20%</div>
-      <div style="font-size:20px;color:var(--warn);margin-top:6px">Error 0.232 · Gemini 0.044 · national average 0.034</div>
-    </div>
-    <p class="num" style="margin-top:12px">11 pairs have a real survey answer to score against. The other 4 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. The Gemini answers come from one pass, one question at a time, saved as they arrived.</p>
-    <div style="margin-top:12px">
-      <div style="font-size:17px;color:var(--muted);margin-bottom:6px">Every question we could check. Error is how far the predicted shares sit from the real ones: the gaps added up, then halved. 0 is a perfect match.</div>
-      <table style="width:100%;border-collapse:collapse;font-size:19px">
-        <thead><tr style="text-align:left;color:var(--muted);font-size:15px"><th style="padding:4px 8px">Question</th><th>Group</th><th>Drex</th><th>Gemini</th><th>National avg</th></tr></thead>
-        <tbody>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Spending on education (Q1)</td><td>18-29, bachelor&#x27;s</td><td>0.276</td><td>0.062</td><td>0.058</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Spending on education (Q1)</td><td>65+</td><td>0.342</td><td>0.243</td><td>0.062</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Spending on education (Q1)</td><td>Democrats</td><td>0.189</td><td>0.089</td><td>0.084</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Happiness (Q2)</td><td>18-29, bachelor&#x27;s</td><td>0.039</td><td>0.076</td><td>0.009</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Happiness (Q2)</td><td>65+</td><td>0.123</td><td>0.043</td><td>0.047</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Happiness (Q2)</td><td>Democrats</td><td>0.232</td><td>0.044</td><td>0.034</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Trust in people (Q4)</td><td>65+</td><td>0.120</td><td>0.025</td><td>0.075</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Trust in people (Q4)</td><td>Democrats</td><td>0.466</td><td>0.376</td><td>0.040</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Government&#x27;s role (Q5)</td><td>18-29, bachelor&#x27;s</td><td>0.251</td><td>0.214</td><td>0.178</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Government&#x27;s role (Q5)</td><td>65+</td><td>0.404</td><td>0.338</td><td>0.077</td></tr>
-          <tr style="border-top:1px solid var(--line)"><td style="padding:4px 8px">Government&#x27;s role (Q5)</td><td>Democrats</td><td>0.490</td><td>0.472</td><td>0.140</td></tr>
-        </tbody>
-      </table>
-      <div style="font-size:17px;color:var(--muted);margin-top:8px">Four survey questions — spending on education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a real answer.</div>
-    </div>
-    <p class="num" style="margin-top:12px">Each call was timed end to end on the same machine, with Gemini on its free tier: a real measurement of both models side by side.</p>
     <!--BAKE:END-->
+    <p class="models"><b>Three things run here.</b> <b>Drex</b> answers the survey questions, live.
+      <b>Gemini 3.1 Flash-Lite</b> is a top general-purpose AI we measure against: we asked it the same 11
+      pairs once each and saved the answers, so its scores stay fixed. <b>Nace NDI</b>, a document parser,
+      reads the PDF, live. In the wording test Gemini runs live again to write alternative phrasings.</p>
+
+    <h2 class="sec">Why a team runs this before paying for a survey</h2>
+    <p class="lead" style="margin-bottom:16px">Fieldwork costs thousands of dollars and takes weeks, and by
+      then a bad question is already in the field. A simulated panel shows you what you would get first.</p>
+    <div class="usecases">
+      <div class="uc"><span>01</span><h3>Fix the questionnaire</h3><p>See which questions everyone answers
+        the same way, and which flip when reworded — a confusing or leading question.</p></div>
+      <div class="uc"><span>02</span><h3>Narrow the options</h3><p>With 40 names, prices or messages to
+        test, find the handful worth paying real people to answer.</p></div>
+      <div class="uc"><span>03</span><h3>Plan the sample</h3><p>When groups answer very differently the
+        real survey needs more people from each group; when they answer alike, a smaller sample is
+        enough.</p></div>
+      <div class="uc"><span>04</span><h3>A first look for small teams</h3><p>A startup without a research
+        budget gets a rough preview instead of a guess.</p></div>
+    </div>
+
+    <details>
+      <summary>How this is measured, and all 11 checks</summary>
+      <div class="detailbody">
+        <p class="lead" style="font-size:19px;margin:18px 0 6px">Every prediction is scored against the real
+          survey answer. On accuracy Drex finishes behind the frontier model and behind a plain national
+          average, and both are printed next to its own.</p>
+        <!--BAKE2:START-->
+    <div class="ex">
+      <div class="xlbl">Worked example · Democrats, “taken all together, how happy are you these days?”</div>
+      <div class="xl"><b>Drex said</b> very happy 14% · pretty happy 43% · not too happy 43%</div>
+      <div class="xl"><b>Real answer</b> very happy 21% · pretty happy 59% · not too happy 20%</div>
+      <div class="xl" style="color:var(--warn)">Error 0.232 · Gemini 0.044 · national average 0.034</div>
+    </div>
+    <div class="tablewrap">
+    <table><thead><tr><th>Question</th><th>Group</th><th>Drex</th><th>Gemini</th><th>National avg</th></tr></thead><tbody>
+      <tr><td>Spending on education (Q1)</td><td>18-29, bachelor&#x27;s</td><td>0.276</td><td>0.062</td><td>0.058</td></tr>
+      <tr><td>Spending on education (Q1)</td><td>65+</td><td>0.342</td><td>0.243</td><td>0.062</td></tr>
+      <tr><td>Spending on education (Q1)</td><td>Democrats</td><td>0.189</td><td>0.089</td><td>0.084</td></tr>
+      <tr><td>Happiness (Q2)</td><td>18-29, bachelor&#x27;s</td><td>0.039</td><td>0.076</td><td>0.009</td></tr>
+      <tr><td>Happiness (Q2)</td><td>65+</td><td>0.123</td><td>0.043</td><td>0.047</td></tr>
+      <tr><td>Happiness (Q2)</td><td>Democrats</td><td>0.232</td><td>0.044</td><td>0.034</td></tr>
+      <tr><td>Trust in people (Q4)</td><td>65+</td><td>0.120</td><td>0.025</td><td>0.075</td></tr>
+      <tr><td>Trust in people (Q4)</td><td>Democrats</td><td>0.466</td><td>0.376</td><td>0.040</td></tr>
+      <tr><td>Government&#x27;s role (Q5)</td><td>18-29, bachelor&#x27;s</td><td>0.251</td><td>0.214</td><td>0.178</td></tr>
+      <tr><td>Government&#x27;s role (Q5)</td><td>65+</td><td>0.404</td><td>0.338</td><td>0.077</td></tr>
+      <tr><td>Government&#x27;s role (Q5)</td><td>Democrats</td><td>0.490</td><td>0.472</td><td>0.140</td></tr>
+    </tbody></table>
+    </div>
+    <p class="num" style="margin-top:14px">11 pairs have a real survey answer to score against. The other 4 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. Error is the distance between the predicted shares and the real ones: 0 is a perfect match.</p>
+    <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a real answer.</p>
+    <p class="num">Each call was timed end to end on the same machine, with Gemini on its free tier: a real measurement of both models side by side. The Gemini answers come from one pass, one question at a time, saved as they arrived.</p>
+    <!--BAKE2:END-->
+      </div>
+    </details>
   </section>
 
   <section class="card">

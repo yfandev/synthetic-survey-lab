@@ -1,10 +1,10 @@
 """Bake the recorded results into the home page as plain HTML.
 
-The first version drew the headline stats, the worked example and the per-question
-table with JavaScript from data/scoreboard.json. A reader with scripts blocked — a
-crawler, a locked-down phone, a reviewer fetching the page — saw an empty box. This
-script writes the same markup into public/index.html between the BAKE markers so
-the numbers are in the HTML a judge actually receives.
+Everything here is written into public/index.html at build time, so a reader with
+scripts blocked still sees the numbers. Two blocks:
+
+    BAKE   the three headline tiles
+    BAKE2  worked example, the eleven checks and the timing note
 
     python scripts/bake_home.py
 """
@@ -19,11 +19,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PAGE = ROOT / "public" / "index.html"
 SCORES = ROOT / "data" / "scoreboard.json"
-START = "    <!--BAKE:START-->"
-END = "    <!--BAKE:END-->"
 
-# The page numbers its questions Q1..Q8 like the sample ballot. A judge should not
-# have to hold that map in their head, so the table says what each one asked.
+BLOCKS = {
+    "BAKE": ("    <!--BAKE:START-->", "    <!--BAKE:END-->"),
+    "BAKE2": ("    <!--BAKE2:START-->", "    <!--BAKE2:END-->"),
+}
+
 LABELS = {
     "Q1": "Spending on education",
     "Q2": "Happiness",
@@ -32,13 +33,12 @@ LABELS = {
 }
 
 
-def esc(text: str) -> str:
+def esc(text: object) -> str:
     return html.escape(str(text), quote=True)
 
 
-def main() -> None:
+def load():
     data = json.loads(SCORES.read_text())
-    m = data["summary"]
     rows = [
         r
         for r in data["rows"]
@@ -47,108 +47,104 @@ def main() -> None:
         and not r.get("unverified")
         and not r.get("too_few")
     ]
+    return data["summary"], rows
+
+
+def tiles(m: dict, rows: list[dict]) -> list[str]:
     speed = m["gemini_mean_ms"] / m["drex_mean_ms"]
     drex_med = statistics.median(r["drex_ms"] for r in rows)
     gem_med = statistics.median(r["gemini_latency_ms"] for r in rows)
-
-    parts: list[str] = []
-    parts.append(START)
-    parts.append('    <div class="stats3">')
-    parts.append(
+    return [
+        '    <div class="stats3">',
         '      <div class="stat"><div class="k">Faster</div>'
         f'<div class="v good">{speed:.1f}×</div>'
-        f'<div class="num">{m["drex_mean_ms"]} ms vs {round(m["gemini_mean_ms"])} ms mean per answer'
-        f" · median {drex_med:.0f} ms vs {gem_med:.0f} ms</div></div>"
-    )
-    parts.append(
+        f'<div class="num">{m["drex_mean_ms"]} ms vs {round(m["gemini_mean_ms"])} ms per answer<br>'
+        f"median {drex_med:.0f} vs {gem_med:.0f} ms</div></div>",
         '      <div class="stat"><div class="k">Cost</div>'
         f'<div class="v good">${m["drex_cost_per_1k"]:.4f}</div>'
         "<div class=\"num\">per 1,000 answers at Nace's list price. Gemini ran on a free tier, "
-        "so we have no frontier price to compare.</div></div>"
-    )
-    parts.append(
-        '      <div class="stat"><div class="k">Accuracy — Drex loses</div>'
+        "so there is no frontier price to compare.</div></div>",
+        '      <div class="stat"><div class="k">Accuracy</div>'
         f'<div class="v bad">{m["drex_mean_distance"]:.3f}</div>'
-        f'<div class="num">Gemini {m["gemini_mean_distance"]:.3f} (saved answers) '
-        f'· national average {m["whole_mean_distance"]:.3f}</div></div>'
-    )
-    parts.append("    </div>")
+        f'<div class="num">Drex, against Gemini {m["gemini_mean_distance"]:.3f} and the national '
+        f"average {m['whole_mean_distance']:.3f}. Lower is better.</div></div>",
+        "    </div>",
+    ]
 
-    parts.append(
-        '    <p class="lead" style="margin-top:12px;font-size:22px">'
-        f"Drex is about {speed:.1f}× faster than the frontier model. It is also <b>less accurate</b> than "
-        "that model and than the simple national average, and we are showing that instead of hiding it.</p>"
-    )
 
+def detail(m: dict, rows: list[dict]) -> list[str]:
+    out: list[str] = []
     ex = next((r for r in rows if r["variable"] == "happy" and r["group"] == "Democrats"), None)
     if ex:
         drex_txt = " · ".join(f"{esc(p['option'])} {p['p'] * 100:.0f}%" for p in ex["drex_probs"])
         real_txt = " · ".join(f"{esc(o['option'])} {o['p'] * 100:.0f}%" for o in ex["real"])
-        parts.append('    <div style="margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:14px 16px">')
-        parts.append(
-            '      <div style="font-size:17px;color:var(--muted)">Worked example · Democrats, '
+        out.append('    <div class="ex">')
+        out.append(
+            '      <div class="xlbl">Worked example · Democrats, '
             "“taken all together, how happy are you these days?”</div>"
         )
-        parts.append(f'      <div style="font-size:20px;margin-top:8px"><b>Drex said</b> {drex_txt}</div>')
-        parts.append(f'      <div style="font-size:20px"><b>Real answer</b> {real_txt}</div>')
-        parts.append(
-            '      <div style="font-size:20px;color:var(--warn);margin-top:6px">'
+        out.append(f'      <div class="xl"><b>Drex said</b> {drex_txt}</div>')
+        out.append(f'      <div class="xl"><b>Real answer</b> {real_txt}</div>')
+        out.append(
+            '      <div class="xl" style="color:var(--warn)">'
             f"Error {ex['distance']['drex']:.3f} · Gemini {ex['gemini_distance']:.3f} "
             f"· national average {ex['distance']['whole_sample']:.3f}</div>"
         )
-        parts.append("    </div>")
+        out.append("    </div>")
 
-    parts.append(
-        '    <p class="num" style="margin-top:12px">'
-        f"{m['pairs_scored']} pairs have a real survey answer to score against. The other {m['unverified']} are "
-        "new questions: the survey has not asked them yet, so we mark them new and leave them unscored. The "
-        "Gemini answers come from one pass, one question at a time, saved as they arrived.</p>"
+    out.append('    <div class="tablewrap">')
+    out.append(
+        '    <table><thead><tr><th>Question</th><th>Group</th><th>Drex</th><th>Gemini</th>'
+        "<th>National avg</th></tr></thead><tbody>"
     )
-
-    parts.append('    <div style="margin-top:12px">')
-    parts.append(
-        '      <div style="font-size:17px;color:var(--muted);margin-bottom:6px">Every question we could check. '
-        "Error is how far the predicted shares sit from the real ones: the gaps added up, then halved. "
-        "0 is a perfect match.</div>"
-    )
-    parts.append('      <table style="width:100%;border-collapse:collapse;font-size:19px">')
-    parts.append(
-        '        <thead><tr style="text-align:left;color:var(--muted);font-size:15px">'
-        '<th style="padding:4px 8px">Question</th><th>Group</th><th>Drex</th><th>Gemini</th>'
-        "<th>National avg</th></tr></thead>"
-    )
-    parts.append("        <tbody>")
     for r in rows:
-        parts.append(
-            '          <tr style="border-top:1px solid var(--line)">'
-            f'<td style="padding:4px 8px">{esc(LABELS.get(r["qid"], r["qid"]))} ({esc(r["qid"])})</td>'
+        out.append(
+            "      <tr>"
+            f'<td>{esc(LABELS.get(r["qid"], r["qid"]))} ({esc(r["qid"])})</td>'
             f'<td>{esc(r["group"])}</td>'
             f'<td>{r["distance"]["drex"]:.3f}</td><td>{r["gemini_distance"]:.3f}</td>'
             f'<td>{r["distance"]["whole_sample"]:.3f}</td></tr>'
         )
-    parts.append("        </tbody>")
-    parts.append("      </table>")
-    parts.append(
-        '      <div style="font-size:17px;color:var(--muted);margin-top:8px">Four survey questions — spending on '
-        "education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked "
-        "of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 "
-        "combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, "
-        "which is too few to call a real answer.</div>"
-    )
-    parts.append("    </div>")
+    out.append("    </tbody></table>")
+    out.append("    </div>")
 
-    parts.append(
-        '    <p class="num" style="margin-top:12px">Each call was timed end to end on the same machine, with '
-        "Gemini on its free tier: a real measurement of both models side by side.</p>"
+    out.append(
+        '    <p class="num" style="margin-top:14px">'
+        f"{m['pairs_scored']} pairs have a real survey answer to score against. The other "
+        f"{m['unverified']} are new questions: the survey has not asked them yet, so we mark them new and "
+        "leave them unscored. Error is the distance between the predicted shares and the real ones: "
+        "0 is a perfect match.</p>"
     )
-    parts.append(END)
+    out.append(
+        '    <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in '
+        "people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a "
+        "bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question "
+        "for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a "
+        "real answer.</p>"
+    )
+    out.append(
+        '    <p class="num">Each call was timed end to end on the same machine, with Gemini on its free '
+        "tier: a real measurement of both models side by side. The Gemini answers come from one pass, one "
+        "question at a time, saved as they arrived.</p>"
+    )
+    return out
 
+
+def inject(page: str, key: str, body: list[str]) -> str:
+    start, end = BLOCKS[key]
+    if start not in page or end not in page:
+        raise SystemExit(f"{key} markers missing from public/index.html")
+    head, rest = page.split(start, 1)
+    _, tail = rest.split(end, 1)
+    return head + start + "\n" + "\n".join(body) + "\n" + end + tail
+
+
+def main() -> None:
+    m, rows = load()
     page = PAGE.read_text()
-    if START not in page or END not in page:
-        raise SystemExit("BAKE markers missing from public/index.html")
-    head, rest = page.split(START, 1)
-    _, tail = rest.split(END, 1)
-    PAGE.write_text(head + "\n".join(parts) + tail)
+    page = inject(page, "BAKE", tiles(m, rows))
+    page = inject(page, "BAKE2", detail(m, rows))
+    PAGE.write_text(page)
     print(f"baked {len(rows)} rows into {PAGE.relative_to(ROOT)}")
 
 
