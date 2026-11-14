@@ -115,7 +115,9 @@ def detail(m: dict, rows: list[dict]) -> list[str]:
         f"{m['pairs_scored']} pairs have a real survey answer to score against. The other "
         f"{m['unverified']} are new questions: the survey has not asked them yet, so we mark them new and "
         "leave them unscored. Error is the share of answers sitting on the wrong option: 0 means every "
-        "answer matches the real survey, 0.27 means 27% of them are misplaced.</p>"
+        "answer matches the real survey, 0.27 means 27% of them are misplaced. The national average column "
+        "is the same question answered by all 3,986 respondents together, weighted, and applied to every "
+        "group as one answer.</p>"
     )
     out.append(
         '    <p class="num">Four survey questions — spending on education (Q1), happiness (Q2), trust in '
