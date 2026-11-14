@@ -68,7 +68,7 @@
 <body>
 <header>
   <h1>Synthetic Survey Lab</h1>
-  <div class="steps"><span class="on">1 Read</span><span id="step2">2 Predict</span><span>3 Panel</span><span>4 Reword</span></div>
+  <div class="steps"><span class="on">1 Read</span><span id="step2">2 Predict</span><span>3 Panel</span><span>4 Wording</span></div>
   <div class="grow"></div>
   <a class="pill" href="/proofs">API proofs</a>
 </header>
@@ -76,18 +76,18 @@
 <main>
   <section class="card">
     <h2>Drex vs. the giants, measured</h2>
-    <p class="lead">Give it a survey question and a group of Americans and it returns the likely split of answers
-      in 275 ms, for $0.000006 a time. Asked how Democrats rate their happiness, it said <b>14% very happy,
-      43% pretty, 43% not too</b>. The real answer is <b>21%, 59%, 20%</b>.</p>
-    <p class="lead">That is the point: you can see the error on a question whose answer is known before you
-      use it on one nobody has asked. It is <b>less accurate</b> than a frontier model and than simply quoting
-      the national average — both numbers are below, next to its own.</p>
-    <p class="lead" style="font-size:20px">The numbers below are already measured, so nothing here needs a click.</p>
+    <p class="lead">Ask it a survey question about any group of Americans and it answers with the likely split,
+      in 275 ms, for $0.000006 a time. Democrats' happiness, for example: it said <b>14% very happy, 43% pretty,
+      43% not too</b>, and the national survey's real answer is <b>21%, 59%, 20%</b>.</p>
+    <p class="lead">Every prediction is scored against the real survey answer, so you can see the size of the
+      error before you use the tool on a question nobody has surveyed. On accuracy it finishes behind a frontier
+      model and behind a plain national average. All three scores are below.</p>
+    <p class="lead" style="font-size:20px">These numbers come from a saved run of 11 real survey questions.</p>
     <p style="font-size:20px;color:var(--ink);background:#0f131c;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
-      <b>What runs here:</b> <b>Drex</b> makes every prediction (live). <b>Gemini 3.1 Flash-Lite</b> is the
-      frontier model we compare against. We asked it the same 11 question-and-group pairs once each, in a fixed order, and saved
-      the answers; it never runs on the scoreboard, and the only place it runs live is the wording test.
-      <b>Nace NDI</b>, Nace's document parser, reads your PDF (live).</p>
+      <b>Three things run here.</b> <b>Drex</b> answers the survey questions, live. <b>Gemini 3.1 Flash-Lite</b>
+      is a top general-purpose AI we measure against: we asked it the same 11 pairs once each and saved the
+      answers, so its scores stay fixed. <b>Nace NDI</b>, a document parser, reads the PDF, live. In the wording
+      test Gemini runs live again to write alternative phrasings.</p>
     <!--BAKE:START-->
     <div class="stats3">
       <div class="stat"><div class="k">Faster</div><div class="v good">4.7×</div><div class="num">275 ms vs 1304 ms mean per answer · median 243 ms vs 767 ms</div></div>
@@ -101,7 +101,7 @@
       <div style="font-size:20px"><b>Real answer</b> very happy 21% · pretty happy 59% · not too happy 20%</div>
       <div style="font-size:20px;color:var(--warn);margin-top:6px">Error 0.232 · Gemini 0.044 · national average 0.034</div>
     </div>
-    <p class="num" style="margin-top:12px">We could check 11 questions against real answers. The other 4 could not be checked, because the survey never asked them, so they say unverified rather than guess. The Gemini answers were collected in one pass, one question at a time, and were never re-asked when they came out badly.</p>
+    <p class="num" style="margin-top:12px">11 pairs have a real survey answer to score against. The other 4 are new questions: the survey has not asked them yet, so we mark them new and leave them unscored. The Gemini answers come from one pass, one question at a time, saved as they arrived.</p>
     <div style="margin-top:12px">
       <div style="font-size:17px;color:var(--muted);margin-bottom:6px">Every question we could check. Error is how far the predicted shares sit from the real ones: the gaps added up, then halved. 0 is a perfect match.</div>
       <table style="width:100%;border-collapse:collapse;font-size:19px">
@@ -122,14 +122,14 @@
       </table>
       <div style="font-size:17px;color:var(--muted);margin-top:8px">Four survey questions — spending on education (Q1), happiness (Q2), trust in people (Q4), and whether government should do more (Q5) — asked of three groups: 18–29 with a bachelor's degree, people 65 and over, and Democrats. That is 12 combinations; the trust question for 18–29 is dropped because only 14 respondents fall in that cell, which is too few to call a real answer.</div>
     </div>
-    <p class="num" style="margin-top:12px">Timing was taken per call, end to end, on the same machine, with Gemini on its free tier — a real measurement, not a benchmark harness.</p>
+    <p class="num" style="margin-top:12px">Each call was timed end to end on the same machine, with Gemini on its free tier: a real measurement of both models side by side.</p>
     <!--BAKE:END-->
   </section>
 
   <section class="card">
     <h2>Read a questionnaire</h2>
-    <p class="lead">NDI reads the PDF and returns every question with its options and the page it was printed on.
-      Nothing is invented: a question with no page says so.</p>
+    <p class="lead">NDI reads the PDF and returns every question with its options and the page it was printed
+      on, so you can check each one against the paper.</p>
     <div class="row">
       <label class="file" id="pick">Choose PDF<input id="file" type="file" accept="application/pdf" hidden /></label>
       <div class="range">Pages <input id="from" type="number" value="1" min="1" /> to
@@ -138,17 +138,16 @@
     </div>
     <div id="err" class="err" hidden></div>
     <div id="meta" class="meta"></div>
-    <div id="qlist" class="qlist"><div class="empty">No file read yet.</div></div>
+    <div id="qlist" class="qlist"><div class="empty">Choose a PDF to begin.</div></div>
   </section>
 
   <section class="card">
     <h2>Predict a group</h2>
-    <p class="lead">Pick a question, describe the group, and Drex answers with a share for every option.
-      Where the <b>General Social Survey (GSS)</b> asked the same question, the real result appears beside it.</p>
-    <p class="num" style="margin:-6px 0 12px">The GSS is a national survey run by NORC at the University of Chicago since 1972. Each round asks a few
-      thousand Americans a long list of questions, and many of those questions come back every round. The 2024
-      round used in-person, web and phone interviews and has 3,986 respondents. We use its answers as the real
-      result.</p>
+    <p class="lead">Pick a question and a group. Drex answers with a share for every option, and the real
+      survey answer appears beside it.</p>
+    <p class="num" style="margin:-6px 0 12px">The real answers come from the <b>General Social Survey</b>, which has
+      interviewed a few thousand Americans a year since 1972 and publishes what they said. The 2024 round covered
+      3,986 people by interview, web and phone, and we score against those answers.</p>
     <div class="row">
       <select id="qsel"></select>
       <div class="grid4">
@@ -164,11 +163,11 @@
 
   <section class="card">
     <h2>Scoreboard</h2>
-    <p class="lead">Every question we could check, scored once. Lower is better: 0 means the answer matched
-      the real survey exactly, 1 means it had nothing in common. The national average column gives every group
-      the same answer, which is the thing to beat.</p>
+    <p class="lead">Every pair we checked, scored once. A lower number is better: 0 means the answer matched the
+      real survey, 1 means it had nothing in common. The national average column gives every group one answer,
+      and that is the score to beat.</p>
     <div class="row">
-      <button id="runall">Re-run live now</button>
+      <button id="runall">Score it live now</button>
       <span id="runmeta" class="meta"></span>
     </div>
     <div id="serr" class="err" hidden></div>
@@ -179,9 +178,9 @@
 
   <section class="card">
     <h2>Panel run</h2>
-    <p class="lead">One model, many people: Drex is asked the same question as N different real respondents,
-      using only each person's recorded demographics, and the answers are added up. This measures throughput,
-      not a race between models — no other model is called here.</p>
+    <p class="lead">Ask the same question as 100 different real respondents, one call each, with each person's
+      recorded demographics as the only input, then add up the answers. It shows how fast Drex works through a
+      panel.</p>
     <div class="row">
       <select id="prunq"></select>
       <label class="range">respondents <input id="pn" type="number" value="100" min="20" max="2000" /></label>
@@ -194,12 +193,13 @@
   </section>
 
   <section class="card">
-    <h2>Reword test</h2>
-    <p class="lead">Gemini 3.1 Flash-Lite writes four other ways to ask the question. Drex keeps only the ones
-      it scores as the same question (0.90 or higher), then we recompute the answer for each.</p>
+    <h2>Wording test</h2>
+    <p class="lead">A prediction is useful when it survives a change of words. Gemini 3.1 Flash-Lite writes four
+      other ways to ask the same question. Drex checks that each one means the same thing (score 0.90 or higher),
+      then we recompute the answer for each wording. If the answer moves, the prediction is fragile.</p>
     <div class="row">
       <select id="rwq"></select>
-      <button id="rwrun">Run reword test</button>
+      <button id="rwrun">Run wording test</button>
     </div>
     <div id="rwerr" class="err" hidden></div>
     <div id="rwout" style="margin-top:14px"></div>
@@ -330,7 +330,7 @@ $("predict").onclick = async () => {
     const badge = document.querySelector(`[data-badge="${i}"]`);
     if (badge) badge.hidden = !!match.accepted;
     if (!match.accepted) {
-      $("vmeta").innerHTML = `<span class="warnc"><b>Unverified prediction</b> — no GSS question matched at 0.80.</span>
+      $("vmeta").innerHTML = `<span class="warnc"><b>New question.</b> The survey has not asked this one, so there is no real answer to score against yet.</span>
         <span>best: ${match.candidates[0] ? esc(match.candidates[0].label) + " · " + (match.candidates[0].same_thing ?? 0).toFixed(2) : "—"}</span>`;
       return;
     }
@@ -442,7 +442,7 @@ $("runall").onclick = async () => {
       <thead><tr style="text-align:left;color:var(--muted);font-size:14px">
         <th style="padding:6px 8px">Question</th><th>Group</th><th>GSS</th><th>n</th><th>Drex</th><th>Gemini</th><th>Whole</th></tr></thead>
       <tbody>${rows.map(r => {
-        if (r.unverified) return `<tr style="border-top:1px solid var(--line)"><td style="padding:6px 8px">${r.qid}</td><td colspan="6" class="warnc">Unverified prediction — no GSS match</td></tr>`;
+        if (r.unverified) return `<tr style="border-top:1px solid var(--line)"><td style="padding:6px 8px">${r.qid}</td><td colspan="6" class="warnc">New question: no survey answer to compare with</td></tr>`;
         if (r.error) return `<tr><td style="padding:6px 8px">${r.qid}</td><td colspan="6" class="bad">${esc(r.error)}</td></tr>`;
         const g = r.gemini && r.gemini.distance_to_real;
         return `<tr style="border-top:1px solid var(--line)">
@@ -451,7 +451,7 @@ $("runall").onclick = async () => {
       }).join("")}</tbody></table>`;
 
     const worst = usable.slice().sort((a, b) => b.dist.drex - a.dist.drex).slice(0, 5);
-    $("misses").innerHTML = `<h3 style="font-size:18px;margin:0 0 8px">Biggest misses</h3>` +
+    $("misses").innerHTML = `<h3 style="font-size:18px;margin:0 0 8px">Furthest from the real answer</h3>` +
       (worst.length ? worst.map(r => `<div class="num" style="margin:4px 0">
         <b style="color:var(--ink)">${r.dist.drex.toFixed(3)}</b> · ${r.qid} ${esc(r.group)} · <code>${esc(r.variable)}</code>
         · real n=${r.real_n} · Drex said ${r.probs.map(p => `${esc(p.option)} ${(p.p * 100).toFixed(0)}%`).join(", ")}</div>`).join("")
@@ -481,7 +481,7 @@ $("prun").onclick = async () => {
   const tick = setInterval(() => { $("pstatus").textContent = `running · ${((Date.now() - t0) / 1000).toFixed(1)} s`; }, 100);
   try {
     const match = await ensureMatched(q);
-    if (!match.accepted) { $("perr").hidden = false; $("perr").textContent = "Unverified prediction — no GSS question matched at 0.80."; return; }
+    if (!match.accepted) { $("perr").hidden = false; $("perr").textContent = "New question: the survey has not asked this one, so there is no answer to score against."; return; }
     // The deployed free plan allows ~50 subrequests per invocation, so the
     // panel runs in batches of 40 and the counts are summed here.
     const wanted = Number($("pn").value || 100);
@@ -489,7 +489,7 @@ $("prun").onclick = async () => {
     const batches = Math.max(1, Math.ceil(wanted / batch));
     let counts = null, calls = 0, failures = 0, tokens = 0, cost = 0, elapsed = 0, real = null, variable = null, lastErr = null;
     for (let b = 0; b < batches; b++) {
-      $("pstatus").textContent = `batch ${b + 1}/${batches} · ${((Date.now() - t0) / 1000).toFixed(1)} s`;
+      $("pstatus").textContent = `part ${b + 1} of ${batches} · ${((Date.now() - t0) / 1000).toFixed(1)} s`;
       const part = await post("/api/panel-run", { variable: match.accepted.variable, text: q.text, n: Math.min(batch, wanted - b * batch) || batch });
       if (part.error) throw new Error(part.error);
       real = part.real; variable = part.variable;
@@ -505,14 +505,14 @@ $("prun").onclick = async () => {
     const d = { counters: { calls, failures, elapsed_ms: elapsed, cost_usd: cost, input_tokens: tokens, calls_per_second: Number((calls / Math.max(0.001, elapsed / 1000)).toFixed(2)), last_error: lastErr }, simulated: sim, real, distance: dist, variable };
     $("pcounter").innerHTML = `
       <div class="stat"><div class="k">Decisions made</div><div class="v">${d.counters.calls}</div><div class="num">${d.counters.calls_per_second}/s · ${(d.counters.elapsed_ms / 1000).toFixed(1)} s</div></div>
-      <div class="stat"><div class="k">Estimated cost</div><div class="v">$${d.counters.cost_usd.toFixed(4)}</div><div class="num">${d.counters.input_tokens} tokens · $0.03/M launch price</div></div>
+      <div class="stat"><div class="k">Estimated cost</div><div class="v">$${d.counters.cost_usd.toFixed(4)}</div><div class="num">at Nace's $0.03 per million token launch price</div></div>
       <div class="stat"><div class="k">Distance to real</div><div class="v ${d.distance < 0.2 ? "good" : "warnc"}">${d.distance == null ? "—" : d.distance.toFixed(3)}</div><div class="num">${d.variable} · n=${d.real.n}</div></div>`;
     const realBy = new Map(d.real.shares.map(s => [s.option, s.p]));
     $("pchart").innerHTML = d.simulated.map(s => `<div class="pair">
       <div class="lbl">${esc(s.option)}</div>
       <div class="track"><div class="fill drex" style="width:${(s.p * 100).toFixed(1)}%"></div><div class="fill real" style="width:${((realBy.get(s.option) || 0) * 100).toFixed(1)}%"></div></div>
       <div class="num">simulated ${(s.p * 100).toFixed(1)}% · real ${((realBy.get(s.option) || 0) * 100).toFixed(1)}%</div></div>`).join("");
-    $("pstatus").textContent = `${d.counters.calls} calls · ${d.counters.failures} failed`;
+    $("pstatus").textContent = `${d.counters.calls} answers · ${d.counters.failures} failed`;
   } catch (err) {
     $("perr").hidden = false; $("perr").textContent = String(err);
   }
@@ -529,7 +529,7 @@ $("rwrun").onclick = async () => {
   btn.disabled = true; $("rwerr").hidden = true; $("rwout").innerHTML = "working…";
   try {
     const match = await ensureMatched(q);
-    if (!match.accepted) { $("rwout").innerHTML = `<div class="warnc">Unverified prediction — no GSS question matched.</div>`; btn.disabled = false; return; }
+    if (!match.accepted) { $("rwout").innerHTML = `<div class="warnc">New question: no survey answer to compare with.</div>`; btn.disabled = false; return; }
     const d = await post("/api/reword", { variable: match.accepted.variable, text: q.text, selection: selection() });
     if (d.skipped) { $("rwout").innerHTML = `<div class="warnc">Skipped: ${esc(d.reason)}</div>`; btn.disabled = false; return; }
     if (d.error) throw new Error(d.error);

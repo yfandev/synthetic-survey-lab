@@ -100,10 +100,9 @@ def main() -> None:
 
     parts.append(
         '    <p class="num" style="margin-top:12px">'
-        f"We could check {m['pairs_scored']} questions against real answers. The other {m['unverified']} "
-        "could not be checked, because the survey never asked them, so they say unverified rather than guess. "
-        "The Gemini answers were collected in one pass, one question at a time, and were never re-asked when "
-        "they came out badly.</p>"
+        f"{m['pairs_scored']} pairs have a real survey answer to score against. The other {m['unverified']} are "
+        "new questions: the survey has not asked them yet, so we mark them new and leave them unscored. The "
+        "Gemini answers come from one pass, one question at a time, saved as they arrived.</p>"
     )
 
     parts.append('    <div style="margin-top:12px">')
@@ -139,8 +138,8 @@ def main() -> None:
     parts.append("    </div>")
 
     parts.append(
-        '    <p class="num" style="margin-top:12px">Timing was taken per call, end to end, on the same machine, '
-        "with Gemini on its free tier — a real measurement, not a benchmark harness.</p>"
+        '    <p class="num" style="margin-top:12px">Each call was timed end to end on the same machine, with '
+        "Gemini on its free tier: a real measurement of both models side by side.</p>"
     )
     parts.append(END)
 

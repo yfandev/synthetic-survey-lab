@@ -31,7 +31,7 @@
 <body>
 <header>
   <h1>Synthetic Survey Lab</h1>
-  <span class="sub">Phase 0 · live proofs</span>
+  <span class="sub">Live API checks</span>
   <span style="flex:1"></span>
   <span id="pill-nace" class="pill">Nace key …</span>
   <span id="pill-gem" class="pill">Gemini key …</span>
@@ -39,18 +39,18 @@
 
 <main>
   <section class="card">
-    <h2>1 · One real Drex decision</h2>
-    <p>Two typed questions in one call: a choice over answer options for each of two GSS-style survey
-       items. The response below is the API's own JSON, not a reshaping of it.</p>
+    <h2>1 · Drex, live: one call</h2>
+    <p>One call, two survey questions, each answered as a choice over its options. The JSON below is the
+API's own reply, printed as it arrived.</p>
     <button id="btn-drex">Run Drex call</button>
     <div class="meta" id="meta-drex"></div>
     <pre id="out-drex">—</pre>
   </section>
 
   <section class="card">
-    <h2>2 · One real NDI parse</h2>
-    <p>Uploads <a href="/samples/sample_survey.pdf" target="_blank" style="color:var(--accent)">the sample questionnaire</a>
-       through an upload grant, then runs Parse and returns the job. Blocks carry page locations.</p>
+    <h2>2 · NDI, live: one PDF</h2>
+    <p>Sends <a href="/samples/sample_survey.pdf" target="_blank" style="color:var(--accent)">the sample questionnaire</a>
+       through an upload grant, runs Parse, and returns the job. Every block carries the page it came from.</p>
     <button id="btn-ndi">Parse sample PDF</button>
     <div class="meta" id="meta-ndi"></div>
     <pre id="out-ndi">—</pre>
