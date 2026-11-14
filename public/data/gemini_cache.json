@@ -1,0 +1,290 @@
+{
+ "nateduc|age_group=0,education=3": {
+  "probabilities": [
+   {
+    "option": "too little",
+    "p": 0.65
+   },
+   {
+    "option": "about right",
+    "p": 0.25
+   },
+   {
+    "option": "too much",
+    "p": 0.1
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 792,
+  "input_tokens": 130,
+  "output_tokens": 86,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:44:29Z",
+  "qid": "Q1",
+  "group": "18-29, bachelor's"
+ },
+ "nateduc|age_group=3": {
+  "probabilities": [
+   {
+    "option": "too little",
+    "p": 0.45
+   },
+   {
+    "option": "about right",
+    "p": 0.35
+   },
+   {
+    "option": "too much",
+    "p": 0.2
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 6485,
+  "input_tokens": 119,
+  "output_tokens": 87,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:44:42Z",
+  "qid": "Q1",
+  "group": "65+"
+ },
+ "nateduc|party_id=0": {
+  "probabilities": [
+   {
+    "option": "too little",
+    "p": 0.75
+   },
+   {
+    "option": "about right",
+    "p": 0.2
+   },
+   {
+    "option": "too much",
+    "p": 0.05
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 759,
+  "input_tokens": 120,
+  "output_tokens": 87,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:44:49Z",
+  "qid": "Q1",
+  "group": "Democrats"
+ },
+ "happy|age_group=0,education=3": {
+  "probabilities": [
+   {
+    "option": "very happy",
+    "p": 0.28
+   },
+   {
+    "option": "pretty happy",
+    "p": 0.58
+   },
+   {
+    "option": "not too happy",
+    "p": 0.14
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 773,
+  "input_tokens": 144,
+  "output_tokens": 88,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:44:55Z",
+  "qid": "Q2",
+  "group": "18-29, bachelor's"
+ },
+ "happy|age_group=3": {
+  "probabilities": [
+   {
+    "option": "very happy",
+    "p": 0.32
+   },
+   {
+    "option": "pretty happy",
+    "p": 0.54
+   },
+   {
+    "option": "not too happy",
+    "p": 0.14
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 729,
+  "input_tokens": 133,
+  "output_tokens": 88,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:02Z",
+  "qid": "Q2",
+  "group": "65+"
+ },
+ "happy|party_id=0": {
+  "probabilities": [
+   {
+    "option": "very happy",
+    "p": 0.25
+   },
+   {
+    "option": "pretty happy",
+    "p": 0.55
+   },
+   {
+    "option": "not too happy",
+    "p": 0.2
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 917,
+  "input_tokens": 134,
+  "output_tokens": 87,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:09Z",
+  "qid": "Q2",
+  "group": "Democrats"
+ },
+ "trust|age_group=0,education=3": {
+  "probabilities": [
+   {
+    "option": "most people can be trusted",
+    "p": 0.35
+   },
+   {
+    "option": "can't be too careful",
+    "p": 0.3
+   },
+   {
+    "option": "depends",
+    "p": 0.35
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 886,
+  "input_tokens": 143,
+  "output_tokens": 93,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:16Z",
+  "qid": "Q4",
+  "group": "18-29, bachelor's"
+ },
+ "trust|age_group=3": {
+  "probabilities": [
+   {
+    "option": "most people can be trusted",
+    "p": 0.35
+   },
+   {
+    "option": "can't be too careful",
+    "p": 0.55
+   },
+   {
+    "option": "depends",
+    "p": 0.1
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 684,
+  "input_tokens": 132,
+  "output_tokens": 92,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:23Z",
+  "qid": "Q4",
+  "group": "65+"
+ },
+ "trust|party_id=0": {
+  "probabilities": [
+   {
+    "option": "most people can be trusted",
+    "p": 0.45
+   },
+   {
+    "option": "can't be too careful",
+    "p": 0.25
+   },
+   {
+    "option": "depends",
+    "p": 0.3
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 748,
+  "input_tokens": 133,
+  "output_tokens": 92,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:29Z",
+  "qid": "Q4",
+  "group": "Democrats"
+ },
+ "helpnot|age_group=0,education=3": {
+  "probabilities": [
+   {
+    "option": "government should do more",
+    "p": 0.65
+   },
+   {
+    "option": "agree with both",
+    "p": 0.15
+   },
+   {
+    "option": "government does too much",
+    "p": 0.2
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 716,
+  "input_tokens": 143,
+  "output_tokens": 91,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:36Z",
+  "qid": "Q5",
+  "group": "18-29, bachelor's"
+ },
+ "helpnot|age_group=3": {
+  "probabilities": [
+   {
+    "option": "government should do more",
+    "p": 0.42
+   },
+   {
+    "option": "agree with both",
+    "p": 0.18
+   },
+   {
+    "option": "government does too much",
+    "p": 0.4
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 972,
+  "input_tokens": 132,
+  "output_tokens": 92,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:43Z",
+  "qid": "Q5",
+  "group": "65+"
+ },
+ "helpnot|party_id=0": {
+  "probabilities": [
+   {
+    "option": "government should do more",
+    "p": 0.85
+   },
+   {
+    "option": "agree with both",
+    "p": 0.1
+   },
+   {
+    "option": "government does too much",
+    "p": 0.05
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "latency_ms": 767,
+  "input_tokens": 133,
+  "output_tokens": 92,
+  "cost_usd": 0.0,
+  "recorded_at": "2026-11-14T19:45:50Z",
+  "qid": "Q5",
+  "group": "Democrats"
+ }
+}

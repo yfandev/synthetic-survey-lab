@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Synthetic Survey Lab · Phase 0</title>
+<style>
+  :root { --bg:#0a0c10; --panel:#121620; --line:#222a38; --ink:#eef2f8; --muted:#93a0b5; --accent:#7c5cff; --good:#2fd4a7; --bad:#ff5d73; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:20px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Inter,sans-serif; }
+  header { padding:26px 36px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; }
+  h1 { font-size:26px; margin:0; letter-spacing:-0.4px; }
+  .sub { color:var(--muted); font-size:17px; }
+  .pill { font-size:14px; padding:4px 12px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+  .pill.on { color:var(--good); border-color:#1d4d40; background:#0e2620; }
+  .pill.off { color:var(--bad); border-color:#4d1d28; background:#260e13; }
+  main { padding:28px 36px 70px; display:grid; gap:22px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:24px; }
+  .card h2 { font-size:21px; margin:0 0 6px; }
+  .card p { color:var(--muted); font-size:17px; margin:0 0 18px; max-width:70ch; }
+  button { font:inherit; font-size:18px; font-weight:600; background:var(--accent); color:#fff; border:0; padding:14px 24px; border-radius:10px; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:default; }
+  button.ghost { background:transparent; border:1px solid var(--line); color:var(--ink); font-weight:500; margin-left:10px; }
+  .meta { margin-top:16px; font-size:16px; color:var(--muted); font-variant-numeric:tabular-nums; display:flex; gap:22px; flex-wrap:wrap; }
+  .meta b { color:var(--ink); font-weight:600; }
+  pre { margin:16px 0 0; background:#0a0d14; border:1px solid var(--line); border-radius:10px; padding:16px; max-height:460px; overflow:auto; font:15px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; color:#c9d4e6; white-space:pre-wrap; }
+  .err { color:var(--bad); }
+  footer { padding:0 36px 40px; color:var(--muted); font-size:15px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Synthetic Survey Lab</h1>
+  <span class="sub">Phase 0 · live proofs</span>
+  <span style="flex:1"></span>
+  <span id="pill-nace" class="pill">Nace key …</span>
+  <span id="pill-gem" class="pill">Gemini key …</span>
+</header>
+
+<main>
+  <section class="card">
+    <h2>1 · One real Drex decision</h2>
+    <p>Two typed questions in one call: a choice over answer options for each of two GSS-style survey
+       items. The response below is the API's own JSON, not a reshaping of it.</p>
+    <button id="btn-drex">Run Drex call</button>
+    <div class="meta" id="meta-drex"></div>
+    <pre id="out-drex">—</pre>
+  </section>
+
+  <section class="card">
+    <h2>2 · One real NDI parse</h2>
+    <p>Uploads <a href="/samples/sample_survey.pdf" target="_blank" style="color:var(--accent)">the sample questionnaire</a>
+       through an upload grant, then runs Parse and returns the job. Blocks carry page locations.</p>
+    <button id="btn-ndi">Parse sample PDF</button>
+    <div class="meta" id="meta-ndi"></div>
+    <pre id="out-ndi">—</pre>
+  </section>
+</main>
+
+<footer>
+  General Social Survey (GSS), NORC at the University of Chicago. Keys stay on the server.
+</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+fetch("/api/health").then(r => r.json()).then(h => {
+  const n = $("pill-nace"), g = $("pill-gem");
+  n.textContent = h.nace_key ? "Nace key live" : "Nace key missing";
+  n.className = "pill " + (h.nace_key ? "on" : "off");
+  g.textContent = h.gemini_key ? "Gemini key live" : "Gemini key missing";
+  g.className = "pill " + (h.gemini_key ? "on" : "off");
+});
+
+function show(out, meta, data) {
+  const status = data.http_status ? `HTTP <b>${data.http_status}</b>` : "";
+  meta.innerHTML = [status, data.wall_ms != null ? `<b>${data.wall_ms}</b> ms wall` : "", data.request_id ? `request <b>${data.request_id}</b>` : (data.error ? `<span class="err"><b>${data.error}</b></span>` : "")].filter(Boolean).join(" · ");
+  out.textContent = JSON.stringify(data.response ?? data, null, 2);
+}
+
+$("btn-drex").onclick = async () => {
+  const btn = $("btn-drex");
+  btn.disabled = true; btn.textContent = "Calling Drex…";
+  $("out-drex").textContent = "…";
+  try {
+    const data = await fetch("/api/probe/drex").then(r => r.json());
+    show($("out-drex"), $("meta-drex"), data);
+  } catch (err) {
+    $("out-drex").textContent = String(err);
+  }
+  btn.disabled = false; btn.textContent = "Run Drex call";
+};
+
+$("btn-ndi").onclick = async () => {
+  const btn = $("btn-ndi");
+  btn.disabled = true; btn.textContent = "Uploading and parsing…";
+  $("out-ndi").textContent = "…";
+  try {
+    const pdf = await fetch("/samples/sample_survey.pdf").then(r => r.blob());
+    const form = new FormData();
+    form.append("file", new File([pdf], "sample_survey.pdf", { type: "application/pdf" }));
+    const data = await fetch("/api/probe/ndi", { method: "POST", body: form }).then(r => r.json());
+    show($("out-ndi"), $("meta-ndi"), data);
+  } catch (err) {
+    $("out-ndi").textContent = String(err);
+  }
+  btn.disabled = false; btn.textContent = "Parse sample PDF";
+};
+</script>
+</body>
+</html>

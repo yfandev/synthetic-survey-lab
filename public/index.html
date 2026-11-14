@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Synthetic Survey Lab</title>
+<style>
+  :root { --bg:#0a0c10; --panel:#121620; --line:#222a38; --ink:#eef2f8; --muted:#93a0b5;
+          --accent:#7c5cff; --real:#2fd4a7; --bad:#ff5d73; --warn:#ffb84d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:20px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Inter,sans-serif; }
+  header { padding:20px 34px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:22px; flex-wrap:wrap; position:sticky; top:0; background:#0b0e14; z-index:6; }
+  h1 { font-size:24px; margin:0; letter-spacing:-0.4px; }
+  .steps { display:flex; gap:8px; }
+  .steps span { font-size:14px; color:var(--muted); border:1px solid var(--line); padding:3px 11px; border-radius:999px; }
+  .steps span.on { color:#fff; border-color:var(--accent); background:#1b1533; }
+  .grow { flex:1; }
+  a.pill { font-size:14px; color:var(--muted); border:1px solid var(--line); padding:3px 11px; border-radius:999px; text-decoration:none; }
+  main { padding:24px 34px 90px; display:grid; gap:18px; max-width:1240px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 24px; }
+  h2 { font-size:21px; margin:0 0 4px; }
+  .card p.lead { color:var(--muted); margin:0 0 16px; font-size:17px; max-width:74ch; }
+  .row { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  .file { font-size:17px; font-weight:600; border:1px dashed #35405a; border-radius:10px; padding:11px 18px; cursor:pointer; }
+  .file.has { border-style:solid; border-color:var(--real); color:var(--real); }
+  input[type=number] { width:84px; font:inherit; font-size:17px; background:#0a0d14; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  select { font:inherit; font-size:17px; background:#0a0d14; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:9px 12px; }
+  .range { color:var(--muted); font-size:16px; display:flex; gap:8px; align-items:center; }
+  button { font:inherit; font-size:17px; font-weight:600; background:var(--accent); color:#fff; border:0; padding:12px 22px; border-radius:10px; cursor:pointer; }
+  button.ghost { background:transparent; border:1px solid var(--line); color:var(--ink); font-weight:500; }
+  button:disabled { opacity:.45; cursor:default; }
+  .err { margin-top:14px; color:var(--bad); font-size:16px; border:1px solid #4d1d28; background:#1e0d12; border-radius:10px; padding:12px 14px; white-space:pre-wrap; }
+  .meta { margin-top:12px; color:var(--muted); font-size:15px; display:flex; gap:18px; flex-wrap:wrap; }
+  .meta b { color:var(--ink); }
+  .qlist { display:grid; gap:10px; margin-top:14px; }
+  .q { background:#0f131c; border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .q.sel { border-color:var(--accent); }
+  .qhead { display:flex; align-items:center; gap:10px; }
+  .qid { font:600 14px ui-monospace,Menlo,monospace; color:var(--muted); }
+  .page { font-size:13px; color:var(--accent); border:1px solid #322a55; background:#171331; padding:1px 9px; border-radius:999px; }
+  .page.none { color:var(--warn); border-color:#4d3a1d; background:#241c0e; }
+  .unverified { font-size:13px; color:var(--warn); border:1px solid #4d3a1d; padding:1px 9px; border-radius:999px; }
+  .del { margin-left:auto; background:transparent; border:1px solid var(--line); color:var(--muted); padding:3px 11px; font-size:15px; font-weight:400; }
+  .qtext { margin:8px 0; font-size:19px; line-height:1.4; outline:none; }
+  .opts { display:flex; gap:7px; flex-wrap:wrap; }
+  .opt { font-size:15px; color:#c9d4e6; background:#0a0d14; border:1px solid var(--line); border-radius:8px; padding:3px 10px; }
+  .chart { display:grid; gap:14px; margin-top:8px; }
+  .pair { display:grid; gap:6px; }
+  .pair .lbl { font-size:18px; font-weight:600; }
+  .track { height:26px; background:#0a0d14; border:1px solid var(--line); border-radius:7px; overflow:hidden; display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+  .fill { height:100%; }
+  .fill.drex { background:var(--accent); }
+  .fill.real { background:var(--real); }
+  .num { font-size:15px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .legend2 { display:flex; gap:20px; font-size:15px; color:var(--muted); margin-top:6px; }
+  .sw { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; }
+  .stats3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+  .stat { background:#0f131c; border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .stat .k { font-size:14px; color:var(--muted); }
+  .stat .v { font-size:26px; font-weight:650; font-variant-numeric:tabular-nums; }
+  .bad { color:var(--bad); } .good { color:var(--real); } .warnc { color:var(--warn); }
+  .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  footer { padding:0 34px 40px; color:var(--muted); font-size:14px; }
+  code { color:var(--ink); background:#0a0d14; padding:1px 5px; border-radius:4px; font-size:14px; }
+  .empty { color:var(--muted); font-size:17px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Synthetic Survey Lab</h1>
+  <div class="steps"><span class="on">1 Read</span><span id="step2">2 Predict</span><span>3 Panel</span><span>4 Reword</span></div>
+  <div class="grow"></div>
+  <a class="pill" href="/proofs">API proofs</a>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Read a questionnaire</h2>
+    <p class="lead">NDI reads the PDF and returns every question with its options and the page it was printed on.
+      Nothing is invented: a question with no page says so.</p>
+    <div class="row">
+      <label class="file" id="pick">Choose PDF<input id="file" type="file" accept="application/pdf" hidden /></label>
+      <div class="range">Pages <input id="from" type="number" value="1" min="1" /> to
+        <input id="to" type="number" value="0" min="0" placeholder="end" /></div>
+      <button id="go" disabled>Read questions</button>
+    </div>
+    <div id="err" class="err" hidden></div>
+    <div id="meta" class="meta"></div>
+    <div id="qlist" class="qlist"><div class="empty">No file read yet.</div></div>
+  </section>
+
+  <section class="card">
+    <h2>Predict a group</h2>
+    <p class="lead">Pick a question, describe the group, and Drex answers with a share for every option.
+      Where the GSS asked the same question, the weighted real result appears beside it.</p>
+    <div class="row">
+      <select id="qsel"></select>
+      <div class="grid4">
+        <select id="age"></select><select id="edu"></select><select id="party"></select><select id="sex"></select>
+      </div>
+      <button id="predict" disabled>Predict</button>
+    </div>
+    <div id="verr" class="err" hidden></div>
+    <div id="vmeta" class="meta"></div>
+    <div id="chart" class="chart"></div>
+    <div id="dstats" class="stats3"></div>
+  </section>
+
+  <section class="card">
+    <h2>Scoreboard</h2>
+    <p class="lead">Every verified question × group pair, once. Distance is total variation: 0 is identical,
+      1 is no overlap. Bigger distance is worse. The whole-sample baseline answers the same for everyone.</p>
+    <div class="row">
+      <button id="runall">Run all pairs</button>
+      <span id="runmeta" class="meta"></span>
+    </div>
+    <div id="serr" class="err" hidden></div>
+    <div id="summary" class="stats3"></div>
+    <div id="table" style="margin-top:16px"></div>
+    <div id="misses" style="margin-top:18px"></div>
+  </section>
+
+  <section class="card">
+    <h2>Panel run</h2>
+    <p class="lead">Drex answers as N real GSS respondents, one call each. The split it produces is compared with the real one.</p>
+    <div class="row">
+      <select id="prunq"></select>
+      <label class="range">respondents <input id="pn" type="number" value="100" min="20" max="2000" /></label>
+      <button id="prun">Run panel</button>
+      <span id="pstatus" class="meta"></span>
+    </div>
+    <div id="perr" class="err" hidden></div>
+    <div id="pcounter" class="stats3"></div>
+    <div id="pchart" class="chart"></div>
+  </section>
+
+  <section class="card">
+    <h2>Reword test</h2>
+    <p class="lead">Gemini writes four rewordings, Drex keeps only those it judges identical in meaning, then the split is recomputed for each.</p>
+    <div class="row">
+      <select id="rwq"></select>
+      <button id="rwrun">Run reword test</button>
+    </div>
+    <div id="rwerr" class="err" hidden></div>
+    <div id="rwout" style="margin-top:14px"></div>
+  </section>
+</main>
+
+<footer>Real shares: General Social Survey (GSS) 2024, NORC at the University of Chicago · weighted by <code>wtssnrps_as</code>.</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let groups = null;
+let questions = [];
+let file = null;
+let lastMatch = null;
+
+/* ------------------------------------------------------------- intake ---- */
+$("file").onchange = (e) => {
+  file = e.target.files[0] || null;
+  $("pick").classList.toggle("has", !!file);
+  $("pick").firstChild.textContent = file ? file.name : "Choose PDF";
+  $("go").disabled = !file;
+};
+
+function renderQuestions() {
+  if (!questions.length) { $("qlist").innerHTML = '<div class="empty">Nothing extracted.</div>'; }
+  else {
+    $("qlist").innerHTML = questions.map((q, i) => `
+      <div class="q" data-i="${i}">
+        <div class="qhead">
+          <span class="qid">${esc(q.id)}</span>
+          <span class="page ${q.page ? "" : "none"}">${q.page ? "page " + q.page : "no page"}</span>
+          <span class="unverified" data-badge="${i}" hidden>unverified</span>
+          <button class="del" data-del="${i}">delete</button>
+        </div>
+        <div class="qtext" contenteditable data-text="${i}">${esc(q.text)}</div>
+        <div class="opts">${(q.options || []).map(o => `<span class="opt">${esc(o)}</span>`).join("")}</div>
+      </div>`).join("");
+  }
+  const opts = questions.map((q, i) => `<option value="${i}">${esc(q.id)} · ${esc(q.text.slice(0, 48))}</option>`).join("");
+  $("qsel").innerHTML = opts;
+  if ($("prunq")) $("prunq").innerHTML = opts;
+  if ($("rwq")) $("rwq").innerHTML = opts;
+  $("predict").disabled = !questions.length;
+  $("meta").innerHTML = questions.length
+    ? `<span><b>${questions.length}</b> questions · <b>${questions.filter(q => q.page).length}</b> with a page citation</span>`
+    : "";
+}
+
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+$("qlist").addEventListener("input", (e) => {
+  const i = e.target.dataset.text;
+  if (i != null) questions[Number(i)].text = e.target.textContent;
+});
+$("qlist").addEventListener("click", (e) => {
+  const i = e.target.dataset.del;
+  if (i != null) { questions.splice(Number(i), 1); renderQuestions(); }
+});
+
+$("go").onclick = async () => {
+  if (!file) return;
+  const btn = $("go");
+  btn.disabled = true; btn.textContent = "Reading…";
+  $("err").hidden = true; $("meta").innerHTML = "";
+  try {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("from", $("from").value || "1");
+    form.append("to", $("to").value || "0");
+    const data = await fetch("/api/extract", { method: "POST", body: form }).then(r => r.json());
+    if (data.error) {
+      $("err").hidden = false;
+      $("err").textContent = `NDI did not return questions.\nstage: ${data.stage || "?"}\n${data.job_error ? JSON.stringify(data.job_error) : data.error}`;
+      return;
+    }
+    questions = data.questions || [];
+    renderQuestions();
+    $("meta").innerHTML = [
+      `<span>${data.cached ? "<b>cached</b>" : "<b>live</b> NDI job"}</span>`,
+      `<span>NDI <b>${(data.wall_ms / 1000).toFixed(1)}</b> s</span>`,
+      `<span><b>${data.units ?? "—"}</b> units</span>`,
+      data.page_range ? `<span>pages <b>${data.page_range.from}–${data.page_range.to}</b></span>` : "<span>all pages</span>",
+    ].join("");
+  } catch (err) {
+    $("err").hidden = false; $("err").textContent = String(err);
+  }
+  btn.disabled = false; btn.textContent = "Read questions";
+};
+
+/* ------------------------------------------------------------ predict ---- */
+async function loadGroups() {
+  const meta = await fetch("/api/gss").then(r => r.json());
+  groups = meta.groups;
+  const fill = (id, key, blank) => {
+    $(id).innerHTML = `<option value="">${blank}</option>` +
+      groups[key].options.map((o, i) => `<option value="${i}">${o}</option>`).join("");
+  };
+  fill("age", "age_group", "any age");
+  fill("edu", "education", "any education");
+  fill("party", "party_id", "any party");
+  fill("sex", "sex", "any sex");
+}
+
+function selection() {
+  const sel = {};
+  for (const [id, key] of [["age", "age_group"], ["edu", "education"], ["party", "party_id"], ["sex", "sex"]]) {
+    const v = $(id).value;
+    if (v !== "") sel[key] = Number(v);
+  }
+  return sel;
+}
+
+$("predict").onclick = async () => {
+  const i = Number($("qsel").value || 0);
+  const q = questions[i];
+  if (!q) return;
+  const btn = $("predict");
+  btn.disabled = true; btn.textContent = "Deciding…";
+  $("verr").hidden = true; $("vmeta").innerHTML = ""; $("chart").innerHTML = ""; $("dstats").innerHTML = "";
+  try {
+    const match = await fetch("/api/match", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text: q.text, options: q.options }),
+    }).then(r => r.json());
+
+    if (match.error) { fail(match.error); return; }
+    lastMatch = match.accepted;
+    const badge = document.querySelector(`[data-badge="${i}"]`);
+    if (badge) badge.hidden = !!match.accepted;
+    if (!match.accepted) {
+      $("vmeta").innerHTML = `<span class="warnc"><b>Unverified prediction</b> — no GSS question matched at 0.80.</span>
+        <span>best: ${match.candidates[0] ? esc(match.candidates[0].label) + " · " + (match.candidates[0].same_thing ?? 0).toFixed(2) : "—"}</span>`;
+      return;
+    }
+
+    const sel = selection();
+    const data = await fetch("/api/predict", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ variable: match.accepted.variable, text: q.text, selection: sel }),
+    }).then(r => r.json());
+
+    if (data.error) { fail(data.error); return; }
+    render(data, match.accepted, q);
+  } catch (err) { fail(String(err)); }
+  btn.disabled = false; btn.textContent = "Predict";
+};
+
+function fail(msg) {
+  $("verr").hidden = false; $("verr").textContent = msg;
+  $("predict").disabled = false; $("predict").textContent = "Predict";
+}
+
+function render(d, match, q) {
+  $("vmeta").innerHTML = [
+    `<span>${esc(d.persona)}</span>`,
+    `<span>GSS <code>${esc(d.variable)}</code> · match <b>${(match.same_thing || 0).toFixed(2)}</b></span>`,
+    `<span>page <b>${q.page ?? "—"}</b></span>`,
+    `<span>${d.drex.wall_ms} ms · <b>${d.drex.input_tokens}</b> tokens</span>`,
+  ].join("");
+
+  const realByOption = new Map(d.real.shares.map(s => [s.option, s.p]));
+  const rows = d.drex.probabilities.map(p => {
+    const real = realByOption.get(p.option) ?? 0;
+    return `<div class="pair">
+      <div class="lbl">${esc(p.option)}</div>
+      <div class="track">
+        <div class="fill drex" style="width:${(p.p * 100).toFixed(1)}%"></div>
+        <div class="fill real" style="width:${(real * 100).toFixed(1)}%"></div>
+      </div>
+      <div class="num">Drex ${(p.p * 100).toFixed(1)}% · real ${(real * 100).toFixed(1)}%</div>
+    </div>`;
+  }).join("");
+
+  $("chart").innerHTML = rows + `<div class="legend2">
+      <span><i class="sw" style="background:var(--accent)"></i>Drex prediction</span>
+      <span><i class="sw" style="background:var(--real)"></i>real GSS ${esc(d.group || "whole sample")}</span>
+    </div>`;
+
+  const dist = (v) => v == null ? "—" : v.toFixed(3);
+  $("dstats").innerHTML = `
+    <div class="stat"><div class="k">Drex distance</div><div class="v ${d.distance.drex < 0.2 ? "good" : "warnc"}">${dist(d.distance.drex)}</div>
+      <div class="num">total variation · 0 is identical</div></div>
+    <div class="stat"><div class="k">Whole-sample baseline</div><div class="v">${dist(d.distance.whole_sample)}</div>
+      <div class="num">same answer for everyone</div></div>
+    <div class="stat"><div class="k">Uniform baseline</div><div class="v">${dist(d.distance.uniform)}</div>
+      <div class="num">every option equal</div></div>`;
+  if (d.too_few) $("vmeta").innerHTML += `<span class="bad">only ${d.real.n} respondents — result skipped</span>`;
+}
+
+/* ---------------------------------------------------------- scoreboard ---- */
+
+async function post(url, body) {
+  return fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then(r => r.json());
+}
+
+$("runall").onclick = async () => {
+  const btn = $("runall");
+  btn.disabled = true; $("serr").hidden = true; $("summary").innerHTML = ""; $("table").innerHTML = ""; $("misses").innerHTML = "";
+  try {
+    const demo = await fetch("/data/demo_questions.json").then(r => r.json());
+    const rows = [];
+    let done = 0;
+    const total = demo.questions.length * demo.groups.length;
+
+    for (const q of demo.questions) {
+      $("runmeta").textContent = `matching ${q.id}…`;
+      const match = await post("/api/match", { text: q.text, options: q.options });
+      if (match.error) throw new Error(match.error);
+      if (!match.accepted) {
+        rows.push({ qid: q.id, group: "—", variable: null, unverified: true, best: match.candidates?.[0] || null, q });
+        done += demo.groups.length;
+        continue;
+      }
+      for (const group of demo.groups) {
+        $("runmeta").textContent = `${q.id} · ${group.label} (${done + 1}/${total})`;
+        const p = await post("/api/predict", { variable: match.accepted.variable, text: q.text, selection: group.selection });
+        done += 1;
+        if (p.error) { rows.push({ qid: q.id, group: group.label, error: p.error }); continue; }
+        rows.push({
+          qid: q.id, group: group.label, variable: p.variable, match: match.accepted.same_thing,
+          groupDesc: p.group, persona: p.persona, real_n: p.real.n,
+          dist: p.distance, gemini: p.gemini, too_few: p.too_few, q, probs: p.drex.probabilities,
+        });
+      }
+    }
+
+    const usable = rows.filter(r => !r.unverified && !r.error && r.dist && r.dist.drex != null && !r.too_few);
+    const avg = (key, sub) => {
+      const vals = usable.map(r => key === "gemini" ? (r.gemini && r.gemini.distance_to_real) : r.dist[key]).filter(v => typeof v === "number");
+      return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
+    };
+    const f = (v) => v == null ? "—" : v.toFixed(3);
+
+    $("summary").innerHTML = `
+      <div class="stat"><div class="k">Drex mean distance</div><div class="v">${f(avg("drex"))}</div><div class="num">${usable.length} pairs</div></div>
+      <div class="stat"><div class="k">Gemini (recorded)</div><div class="v">${f(avg("gemini"))}</div><div class="num">${usable.filter(r => r.gemini).length} recorded</div></div>
+      <div class="stat"><div class="k">Whole-sample baseline</div><div class="v">${f(avg("whole_sample"))}</div><div class="num">uniform ${f(avg("uniform"))}</div></div>`;
+
+    $("table").innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:17px">
+      <thead><tr style="text-align:left;color:var(--muted);font-size:14px">
+        <th style="padding:6px 8px">Question</th><th>Group</th><th>GSS</th><th>n</th><th>Drex</th><th>Gemini</th><th>Whole</th></tr></thead>
+      <tbody>${rows.map(r => {
+        if (r.unverified) return `<tr style="border-top:1px solid var(--line)"><td style="padding:6px 8px">${r.qid}</td><td colspan="6" class="warnc">Unverified prediction — no GSS match</td></tr>`;
+        if (r.error) return `<tr><td style="padding:6px 8px">${r.qid}</td><td colspan="6" class="bad">${esc(r.error)}</td></tr>`;
+        const g = r.gemini && r.gemini.distance_to_real;
+        return `<tr style="border-top:1px solid var(--line)">
+          <td style="padding:6px 8px">${r.qid}</td><td>${esc(r.group)}</td><td><code>${esc(r.variable)}</code></td>
+          <td>${r.real_n}</td><td>${f(r.dist.drex)}</td><td>${f(g)}</td><td>${f(r.dist.whole_sample)}</td></tr>`;
+      }).join("")}</tbody></table>`;
+
+    const worst = usable.slice().sort((a, b) => b.dist.drex - a.dist.drex).slice(0, 5);
+    $("misses").innerHTML = `<h3 style="font-size:18px;margin:0 0 8px">Biggest misses</h3>` +
+      (worst.length ? worst.map(r => `<div class="num" style="margin:4px 0">
+        <b style="color:var(--ink)">${r.dist.drex.toFixed(3)}</b> · ${r.qid} ${esc(r.group)} · <code>${esc(r.variable)}</code>
+        · real n=${r.real_n} · Drex said ${r.probs.map(p => `${esc(p.option)} ${(p.p * 100).toFixed(0)}%`).join(", ")}</div>`).join("")
+        : `<div class="num">No verified pairs to score.</div>`);
+
+    $("runmeta").textContent = `${usable.length} scored · ${rows.filter(r => r.unverified).length} unverified`;
+  } catch (err) {
+    $("serr").hidden = false; $("serr").textContent = String(err);
+  }
+  btn.disabled = false;
+};
+
+/* --------------------------------------------------------- panel run ---- */
+
+async function ensureMatched(q) {
+  const match = await post("/api/match", { text: q.text, options: q.options });
+  if (match.error) throw new Error(match.error);
+  return match;
+}
+
+$("prun").onclick = async () => {
+  const q = questions[Number($("prunq").value || 0)];
+  if (!q) return;
+  const btn = $("prun");
+  btn.disabled = true; $("perr").hidden = true; $("pchart").innerHTML = "";
+  const t0 = Date.now();
+  const tick = setInterval(() => { $("pstatus").textContent = `running · ${((Date.now() - t0) / 1000).toFixed(1)} s`; }, 100);
+  try {
+    const match = await ensureMatched(q);
+    if (!match.accepted) { $("perr").hidden = false; $("perr").textContent = "Unverified prediction — no GSS question matched at 0.80."; return; }
+    // The deployed free plan allows ~50 subrequests per invocation, so the
+    // panel runs in batches of 40 and the counts are summed here.
+    const wanted = Number($("pn").value || 100);
+    const batch = 15;
+    const batches = Math.max(1, Math.ceil(wanted / batch));
+    let counts = null, calls = 0, failures = 0, tokens = 0, cost = 0, elapsed = 0, real = null, variable = null, lastErr = null;
+    for (let b = 0; b < batches; b++) {
+      $("pstatus").textContent = `batch ${b + 1}/${batches} · ${((Date.now() - t0) / 1000).toFixed(1)} s`;
+      const part = await post("/api/panel-run", { variable: match.accepted.variable, text: q.text, n: Math.min(batch, wanted - b * batch) || batch });
+      if (part.error) throw new Error(part.error);
+      real = part.real; variable = part.variable;
+      counts = counts ? counts.map((c, i) => c + (part.counts?.[i] || 0)) : (part.counts || []).slice();
+      calls += part.counters.calls; failures += part.counters.failures;
+      tokens += part.counters.input_tokens; cost += part.counters.cost_usd;
+      elapsed += part.counters.elapsed_ms; lastErr = part.counters.last_error;
+    }
+    const total = counts.reduce((a, b) => a + b, 0) || 1;
+    const sim = counts.map((c, i) => ({ option: match.accepted.options[i], p: c / total }));
+    const realByOpt = new Map(real.shares.map(s => [s.option, s.p]));
+    const dist = sim.reduce((a, s) => a + Math.abs(s.p - (realByOpt.get(s.option) || 0)), 0) / 2;
+    const d = { counters: { calls, failures, elapsed_ms: elapsed, cost_usd: cost, input_tokens: tokens, calls_per_second: Number((calls / Math.max(0.001, elapsed / 1000)).toFixed(2)), last_error: lastErr }, simulated: sim, real, distance: dist, variable };
+    $("pcounter").innerHTML = `
+      <div class="stat"><div class="k">Decisions made</div><div class="v">${d.counters.calls}</div><div class="num">${d.counters.calls_per_second}/s · ${(d.counters.elapsed_ms / 1000).toFixed(1)} s</div></div>
+      <div class="stat"><div class="k">Estimated cost</div><div class="v">$${d.counters.cost_usd.toFixed(4)}</div><div class="num">${d.counters.input_tokens} tokens · $0.03/M launch price</div></div>
+      <div class="stat"><div class="k">Distance to real</div><div class="v ${d.distance < 0.2 ? "good" : "warnc"}">${d.distance == null ? "—" : d.distance.toFixed(3)}</div><div class="num">${d.variable} · n=${d.real.n}</div></div>`;
+    const realBy = new Map(d.real.shares.map(s => [s.option, s.p]));
+    $("pchart").innerHTML = d.simulated.map(s => `<div class="pair">
+      <div class="lbl">${esc(s.option)}</div>
+      <div class="track"><div class="fill drex" style="width:${(s.p * 100).toFixed(1)}%"></div><div class="fill real" style="width:${((realBy.get(s.option) || 0) * 100).toFixed(1)}%"></div></div>
+      <div class="num">simulated ${(s.p * 100).toFixed(1)}% · real ${((realBy.get(s.option) || 0) * 100).toFixed(1)}%</div></div>`).join("");
+    $("pstatus").textContent = `${d.counters.calls} calls · ${d.counters.failures} failed`;
+  } catch (err) {
+    $("perr").hidden = false; $("perr").textContent = String(err);
+  }
+  clearInterval(tick);
+  btn.disabled = false;
+};
+
+/* ------------------------------------------------------------ reword ---- */
+
+$("rwrun").onclick = async () => {
+  const q = questions[Number($("rwq").value || 0)];
+  if (!q) return;
+  const btn = $("rwrun");
+  btn.disabled = true; $("rwerr").hidden = true; $("rwout").innerHTML = "working…";
+  try {
+    const match = await ensureMatched(q);
+    if (!match.accepted) { $("rwout").innerHTML = `<div class="warnc">Unverified prediction — no GSS question matched.</div>`; btn.disabled = false; return; }
+    const d = await post("/api/reword", { variable: match.accepted.variable, text: q.text, selection: selection() });
+    if (d.skipped) { $("rwout").innerHTML = `<div class="warnc">Skipped: ${esc(d.reason)}</div>`; btn.disabled = false; return; }
+    if (d.error) throw new Error(d.error);
+    $("rwout").innerHTML = `
+      <div class="num" style="margin-bottom:10px">${esc(d.persona)} · ${d.proposed} proposed · <b>${d.kept.length}</b> kept at ≥0.90 · worst pair distance <b>${d.max_distance.toFixed(3)}</b>
+      ${d.unstable ? '<span class="bad">unstable</span>' : '<span class="good">stable</span>'} · ${esc(d.note)}</div>` +
+      d.variants.map(v => `<div class="pair" style="margin-bottom:8px">
+        <div class="lbl" style="font-size:17px">${v.original ? "original" : "reworded"} <span class="num">same=${(v.same * 100).toFixed(0)}%</span></div>
+        <div class="num" style="margin-bottom:4px">${esc(v.text)}</div>
+        <div class="track"><div class="fill drex" style="width:${(v.probabilities[0].p * 100).toFixed(1)}%"></div><div class="fill real" style="width:${(v.probabilities[1].p * 100).toFixed(1)}%"></div></div>
+        <div class="num">${v.probabilities.map(p => `${esc(p.option)} ${(p.p * 100).toFixed(0)}%`).join(" · ")}</div></div>`).join("");
+  } catch (err) {
+    $("rwerr").hidden = false; $("rwerr").textContent = String(err);
+  }
+  btn.disabled = false;
+};
+
+loadGroups().catch(e => { $("verr").hidden = false; $("verr").textContent = String(e); });
+renderQuestions();
+</script>
+</body>
+</html>

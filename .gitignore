@@ -1,0 +1,14 @@
+!.env.example
+*.log
+.decision_workspace/
+.env
+.env.*
+.intern/
+.next/
+.secret_*
+.venv/
+__pycache__/
+data/gss/
+dist/
+node_modules/
+results/

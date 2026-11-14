@@ -1,0 +1,59 @@
+{
+  "source": "public/samples/sample_survey.pdf",
+  "note": "Extracted by NDI (job d48695b0) with page citations. Used as the fixed demo set so the scoreboard is reproducible.",
+  "questions": [
+    {
+      "id": "Q1",
+      "page": 1,
+      "text": "Are we spending too much, too little, or about the right amount on education?",
+      "options": ["Spend too little", "About right", "Spend too much", "Don't know"]
+    },
+    {
+      "id": "Q2",
+      "page": 1,
+      "text": "Taken all together, how would you say things are these days -- would you say that you are very happy, pretty happy, or not too happy?",
+      "options": ["Very happy", "Pretty happy", "Not too happy"]
+    },
+    {
+      "id": "Q3",
+      "page": 1,
+      "text": "I'm going to read several things people might say about their jobs. How often do you find your work stressful?",
+      "options": ["Always", "Often", "Sometimes", "Hardly ever", "Never"]
+    },
+    {
+      "id": "Q4",
+      "page": 1,
+      "text": "Would you say that most people can be trusted, or that you can't be too careful in dealing with people?",
+      "options": ["Most people can be trusted", "You can't be too careful", "Depends"]
+    },
+    {
+      "id": "Q5",
+      "page": 2,
+      "text": "Do you think the government should do more to solve our country's problems, or should the government stay out of it?",
+      "options": ["Government should do more", "Government should stay out", "Agree with both"]
+    },
+    {
+      "id": "Q6",
+      "page": 2,
+      "text": "How often do you attend religious services?",
+      "options": ["Never", "Less than once a year", "Once a year", "Several times a year", "Once a month", "Weekly or more"]
+    },
+    {
+      "id": "Q7",
+      "page": 2,
+      "text": "Would you be willing to pay higher taxes in order to improve the quality of the environment?",
+      "options": ["Willing", "Not willing", "Depends"]
+    },
+    {
+      "id": "Q8",
+      "page": 2,
+      "text": "On a scale of 1 to 7, where 1 is a strong Democrat and 7 is a strong Republican, where would you place yourself?",
+      "options": ["1 Strong Democrat", "2", "3", "4 Independent", "5", "6", "7 Strong Republican"]
+    }
+  ],
+  "groups": [
+    { "label": "18-29, bachelor's", "selection": { "age_group": 0, "education": 3 } },
+    { "label": "65+", "selection": { "age_group": 3 } },
+    { "label": "Democrats", "selection": { "party_id": 0 } }
+  ]
+}

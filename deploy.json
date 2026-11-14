@@ -1,0 +1,10 @@
+{
+  "entrypoint": "worker/index.js",
+  "compatibilityDate": "2026-11-01",
+  "modules": [
+    { "name": "worker/index.js", "type": "esm", "path": "./worker/index.js" },
+    { "name": "worker/gss.js", "type": "esm", "path": "./worker/gss.js" }
+  ],
+  "assetsDirectory": "./public",
+  "spa": false
+}

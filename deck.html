@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Synthetic Survey Lab · Drexathon</title>
+<style>
+  :root { --bg:#0a0c10; --ink:#eef2f8; --muted:#93a0b5; --line:#222a38; --accent:#7c5cff; --real:#2fd4a7; --bad:#ff5d73; --warn:#ffb84d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:24px/1.45 ui-sans-serif,-apple-system,"Segoe UI",Inter,sans-serif; }
+  section { width:1280px; min-height:720px; padding:72px 84px; border-bottom:1px solid var(--line); page-break-after:always; }
+  h1 { font-size:64px; line-height:1.05; margin:0 0 26px; letter-spacing:-1.6px; }
+  h2 { font-size:44px; line-height:1.1; margin:0 0 30px; letter-spacing:-0.8px; }
+  p { color:var(--muted); margin:0 0 18px; max-width:60ch; }
+  .big { font-size:40px; color:var(--ink); margin:0 0 18px; }
+  .kicker { color:var(--accent); font-size:22px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:22px; }
+  table { border-collapse:collapse; width:100%; font-size:30px; margin:14px 0 22px; }
+  th, td { text-align:left; padding:14px 12px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:500; font-size:22px; text-transform:uppercase; letter-spacing:.08em; }
+  td.n { font-variant-numeric:tabular-nums; }
+  .win { color:var(--real); font-weight:700; }
+  .lose { color:var(--bad); font-weight:700; }
+  .note { font-size:20px; color:var(--muted); }
+  ul { margin:0; padding-left:28px; color:var(--muted); }
+  li { margin-bottom:14px; font-size:26px; }
+  li b { color:var(--ink); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:36px; }
+  .box { border:1px solid var(--line); border-radius:14px; padding:26px; }
+  .box .v { font-size:52px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .box .k { color:var(--muted); font-size:20px; }
+  .flow { display:flex; gap:14px; align-items:center; font-size:24px; flex-wrap:wrap; }
+  .flow span { border:1px solid var(--line); border-radius:10px; padding:12px 16px; background:#0f131c; }
+  .flow i { color:var(--accent); font-style:normal; }
+  footer { color:var(--muted); font-size:20px; margin-top:40px; }
+  code { background:#0f131c; padding:2px 7px; border-radius:5px; font-size:22px; }
+  @media print { body { background:#fff; color:#111; } section { border:0; } }
+</style>
+</head>
+<body>
+
+<section>
+  <div class="kicker">Nace Drexathon · Apex Predator</div>
+  <h1>Can a decision model predict what Americans answer?</h1>
+  <p class="big">A questionnaire PDF goes in. Drex predicts the country's answer. The real General Social Survey
+     is the referee — 3,986 respondents, 2024, official weights.</p>
+  <p class="note">Live: site-9744494842a94abab91693c343f61169.freebuff.page · NDI + Drex + Gemini recorded baseline</p>
+</section>
+
+<section>
+  <h2>Why this is a fair fight</h2>
+  <ul>
+    <li>The referee is <b>real survey data</b>, not a rubric we wrote: GSS 2024, weighted by <code>wtssnrps_as</code>.</li>
+    <li>Every prediction is scored against the <b>actual weighted split</b> for that group.</li>
+    <li>Two baselines always on screen: <b>the national average</b> and <b>uniform</b>.</li>
+    <li>The frontier model is <b>recorded once, sequentially</b>, and labelled recorded — never a live retry until it looks good.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>How it works</h2>
+  <div class="flow">
+    <span>PDF</span><i>→</i><span>NDI parse + citations</span><i>→</i><span>Drex: same question? (0.80)</span>
+    <i>→</i><span>persona + options</span><i>→</i><span>Drex probabilities</span><i>→</i><span>real GSS split</span>
+  </div>
+  <p style="margin-top:36px">NDI found all 8 questions in the sample ballot, each with its page. Drex accepted
+    <code>happy</code> at 0.993 and rejected <code>hapmar</code> at 0.008 — same options, different question.
+    Four of eight had no GSS counterpart and are shown as <b>unverified</b>, not guessed.</p>
+</section>
+
+<section>
+  <h2>The result, all eleven verified pairs</h2>
+  <table>
+    <tr><th>Predictor</th><th>Mean distance to real</th><th>Mean latency</th></tr>
+    <tr><td>Drex</td><td class="n lose">0.267</td><td class="n win">275 ms</td></tr>
+    <tr><td>Gemini 3.1 Flash-Lite (recorded)</td><td class="n">0.180</td><td class="n">1,304 ms</td></tr>
+    <tr><td>Whole-sample baseline</td><td class="n win">0.073</td><td class="n">—</td></tr>
+    <tr><td>Uniform baseline</td><td class="n">0.279</td><td class="n">—</td></tr>
+  </table>
+  <p class="big">Drex is <b>4.7× faster</b>, and it <b>loses on accuracy to a frontier model and to the naive
+     national average</b>.</p>
+  <p class="note">Distance is total variation: 0 identical, 1 no overlap. Lower is better.</p>
+</section>
+
+<section>
+  <h2>We tried the two obvious rescues</h2>
+  <div class="grid">
+    <div class="box">
+      <div class="k">Microsimulation — one decision per real demographic cell, weighted</div>
+      <p style="margin-top:14px">Helped <code>nateduc</code>: 0.342 → <b>0.263</b><br/>Hurt <code>happy</code>: 0.039 → <b>0.126</b><br/>Still behind the baselines.</p>
+    </div>
+    <div class="box">
+      <div class="k">Confidence as a trust signal</div>
+      <div class="v lose">r = +0.27</div>
+      <p style="margin-top:14px">Wrong direction over 11 pairs. The two most confident predictions were the two worst.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>What Drex does win</h2>
+  <div class="grid">
+    <div class="box"><div class="k">Latency per decision</div><div class="v win">275 ms</div><div class="k">vs 1,304 ms recorded frontier</div></div>
+    <div class="box"><div class="k">Panel throughput</div><div class="v win">22.5 calls/s</div><div class="k">60 real respondents in 2.7 s</div></div>
+    <div class="box"><div class="k">Cost per 1,000 decisions</div><div class="v win">$0.006</div><div class="k">$0.03/M input tokens, launch price</div></div>
+    <div class="box"><div class="k">Wording stability</div><div class="v win">0.089</div><div class="k">worst split movement across 4 rewordings, gate 0.90</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>What we would do next</h2>
+  <ul>
+    <li>Move to <b>per-person prediction</b>: given a respondent's demographics and their earlier answers, predict
+        their next answer — individual ground truth, no averaging to hide in.</li>
+    <li>Ask Drex <b>calibration questions</b> (noul at fixed thresholds) instead of reading a choice distribution as shares.</li>
+    <li>Expand beyond eleven pairs once the unverified items get proper GSS counterparts.</li>
+  </ul>
+  <footer>General Social Survey (GSS), NORC at the University of Chicago. Code, data pipeline and every API call in the repo.</footer>
+</section>
+
+</body>
+</html>
